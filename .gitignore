@@ -1,0 +1,51 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+*.swp
+*.swo
+
+# --- Django ---
+*.sqlite3
+*.db
+db.sqlite3
+/media/
+/staticfiles/
+/core/migrations/*.py
+!/core/migrations/__init__.py
+*.log
+*.pot
+*.pyc
+__pycache__/
+
+# --- Docker ---
+*.env
+docker-compose.override.yml
+.DS_Store
+
+# --- IDE/Editor ---
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- macOS ---
+.DS_Store
+
+# --- Windows ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- PostgreSQL (dans le conteneur Docker) ---
+# (Pas besoin d'ignorer les données PostgreSQL, car elles sont dans un volume Docker,
+# mais ignore les fichiers de config locaux si tu en as)
+pgdata/
+
+# --- Node.js (si tu ajoutes React plus tard) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
