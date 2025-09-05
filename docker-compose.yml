@@ -18,7 +18,9 @@ services:
       retries: 5
 
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"  # <-- Ajoute la migration au démarrage
     volumes:
       - .:/app
@@ -29,6 +31,8 @@ services:
         condition: service_healthy  # <-- Attend que db soit "healthy"
     environment:
       DATABASE_URL: postgres://user:pass@db:5432/pisciculture
+      VIRTUAL_ENV: /opt/venv
+      PATH: /opt/venv/bin:$PATH
 
 volumes:
   postgres_data:
