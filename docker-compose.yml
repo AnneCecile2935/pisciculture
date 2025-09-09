@@ -1,40 +1,30 @@
 services:
-  db:
-    image: postgres:15
-    env_file: #ne pas commiter ses secrets dans Git
-      - .env
-    environment:
-      POSTGRES_DB: pisciculture
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:  # <-- Ajoute cette section
-      test: ["CMD-SHELL", "pg_isready -U user -d pisciculture"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  backend:
+  app:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"  # <-- Ajoute la migration au démarrage
     volumes:
       - .:/app
     ports:
       - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy  # <-- Attend que db soit "healthy"
     environment:
-      DATABASE_URL: postgres://user:pass@db:5432/pisciculture
-      VIRTUAL_ENV: /opt/venv
-      PATH: /opt/venv/bin:$PATH
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
 
 volumes:
   postgres_data:
-
-
