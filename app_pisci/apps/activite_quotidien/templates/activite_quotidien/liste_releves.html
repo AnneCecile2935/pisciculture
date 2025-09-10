@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Relevés du {{ today|date:"d/m/Y" }}</h1>
+<form method="get">
+  <label>Site:
+    <select name="site" onchange="this.form.submit()">
+      <option value="">Tous les sites</option>
+      {% for site in sites %}
+        <option value="{{ site.id }}" {% if site.id == site_id %}selected{% endif %}>{{ site.nom }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</form>
+<a href="{% url 'activite_quotidien:ajouter_releve' %}">Ajouter un relevé</a>
+<a href="{% url 'activite_quotidien:releves_manquants' %}">Voir manquants</a>
+<table border="1">
+  <tr><th>Site</th><th>Matin</th><th>Soir</th></tr>
+  {% for site in sites %}
+    <tr>
+      <td>{{ site.nom }}</td>
+      <td>{% if site.releve_matin %}{{ site.releve_matin.temperature }}°C{% else %}---{% endif %}</td>
+      <td>{% if site.releve_soir %}{{ site.releve_soir.temperature }}°C{% else %}---{% endif %}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

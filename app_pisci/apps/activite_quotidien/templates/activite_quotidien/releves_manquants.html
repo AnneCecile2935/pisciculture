@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Relevés manquants</h1>
+<ul>
+  {% for site in sites_manquants %}
+    <li>{{ site.nom }} : {{ site.date_manquant|date:"d/m/Y" }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

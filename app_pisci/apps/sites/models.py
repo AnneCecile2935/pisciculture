@@ -1,5 +1,5 @@
 from django.db import models
-from commun.models import TimeStampedModel
+from apps.commun.models import TimeStampedModel
 
 class Site(TimeStampedModel):
     nom = models.CharField(max_length=100)

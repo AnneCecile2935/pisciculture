@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     # Tes apps personnalisées (ordre important !)
     'apps.commun',          # Doit être avant les apps qui en dépendent
     'apps.sites',
-    'apps.activité_quotidien',
+    'apps.activite_quotidien',
     'apps.stocks',
     'apps.users',
     'apps.fournisseurs',
@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'apps.ventes',
 
     # Ton projet principal
-    'app_pisci',
 ]
 
 MIDDLEWARE = [
@@ -69,7 +68,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

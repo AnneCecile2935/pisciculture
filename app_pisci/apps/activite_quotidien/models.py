@@ -1,6 +1,6 @@
 from django.db import models
-from commun.models import TimeStampedModel
-from sites.models import Site
+from apps.commun.models import TimeStampedModel
+from apps.sites.models import Site
 
 class ReleveTempOxy(TimeStampedModel):
     MOMENT_CHOICES = [

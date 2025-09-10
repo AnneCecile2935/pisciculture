@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import date
-from sites.models import Site
-from .models import ReleveTempOxy
-from .forms import ReleveForm
+from apps.sites.models import Site
+from apps.activite_quotidien.models import ReleveTempOxy
+from apps.activite_quotidien.forms import ReleveForm
 
 def index(request):
     return HttpResponse("Bienvenue!")
@@ -15,7 +15,7 @@ def liste_releves(request):
     if site_id:
         releves = releves.filter(site_id=site_id)
     sites = Site.objects.all()
-    return render(request, 'activité_quotidien/liste_releves.html', {
+    return render(request, 'activite_quotidien/liste_releves.html', {
         'releves': releves,
         'sites': sites,
         'today': today,
@@ -29,7 +29,7 @@ def ajouter_releve(request):
             return redirect('liste_releves')
     else:
         form = ReleveForm()
-    return render(request, 'activité_quotidien/ajouter_releve.html', {'form': form})
+    return render(request, 'activite_quotidien/ajouter_releve.html', {'form': form})
 
 def releves_manquants(request):
     today = date.today()
@@ -43,4 +43,4 @@ def releves_manquants(request):
                 'matin_manquant': not matin,
                 'soir_manquant': not soir,
             })
-    return render(request, 'activité_quotidien/releves_manquants.html', {'manquants': manquants, 'today': today})
+    return render(request, 'activite_quotidien/releves_manquants.html', {'manquants': manquants, 'today': today})
