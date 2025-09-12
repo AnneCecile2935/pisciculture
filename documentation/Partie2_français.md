@@ -56,4 +56,9 @@ Créer une application web et mobile responsive et accessible pour gérer la pro
 
 ### **Diagramme de Gantt**
 
-![image-20250912141205299](C:\Users\anne-\AppData\Roaming\Typora\typora-user-images\image-20250912141205299.png)
+![![Gantt Chart](diagramme_de_gantt.png)
+
+
+
+
+

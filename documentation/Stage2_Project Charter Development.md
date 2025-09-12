@@ -66,10 +66,6 @@ Create a responsive and accessible web and mobile application to manage fish pro
 
 ### **Gantt Chart**
 
-```
-![Gantt Chart](diagramme_de_gantt.png)
-```
 
 
-
-![diagramme_de_gantt](\\wsl.localhost\Ubuntu\home\anne-ce2935\pisciculture-1\documentation\diagramme_de_gantt.png)
+![![Gantt Chart](diagramme_de_gantt.png)
