@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Apps Django par défaut
+    'apps.users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,12 +46,17 @@ INSTALLED_APPS = [
     'apps.sites',
     'apps.activite_quotidien',
     'apps.stocks',
-    'apps.users',
     'apps.fournisseurs',
     'apps.clients',
     'apps.ventes',
 
     # Ton projet principal
+]
+
+AUTH_USER_MODEL = 'users.User'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Auth par défaut (compatible avec le modèle)
 ]
 
 MIDDLEWARE = [
@@ -89,9 +95,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'db',
         'PORT': 5432,
     }
@@ -138,3 +144,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Dossier pour les fichiers statiques en production
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')         # Dossier pour les uploads utilisateurs
+STATIC_URL = '/static/'  # URL pour accéder aux fichiers statiques
+MEDIA_URL = '/media/'    # URL pour accéder aux fichiers uploadés

@@ -1,11 +1,14 @@
 from django.db import models
+import uuid
 
 class TimeStampedModel(models.Model):
     """
     Classe de base abstraite pour ajouter automatiquement :
+    - id : identifiant unique
     - date_creation : date/heure de création
     - date_modification : date/heure de dernière modification
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date_creation = models.DateTimeField(
         verbose_name="Date de création",
         auto_now_add=True  # Rempli automatiquement à la création
