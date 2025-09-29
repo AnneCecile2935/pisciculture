@@ -25,8 +25,19 @@ class User(AbstractUser):
         default=False
     )
 
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
+
+    def save(self, *args, **kwargs):
+        #  Synchronise is_staff avec is_admin à chaque sauvegarde
+        if self.is_admin and not self.is_staff:
+            self.is_staff = True
+        elif not self.is_admin and self.is_staff:
+            self.is_staff = False
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.email
+

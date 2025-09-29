@@ -1,14 +1,35 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="fr">  <!-- ✅ Ajoute la langue pour l'accessibilité -->
 <head>
-    <title>Pisciculture - {% block title %}{% endblock %}</title>
+    <meta charset="UTF-8">  <!-- ✅ Encodage des caractères -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- ✅ Responsive design -->
+    <title>Pisciculture - {% block title %}Accueil{% endblock %}</title>  <!-- ✅ Titre par défaut -->
+    <!-- ✅ Ajoute un lien vers un fichier CSS commun (optionnel) -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <header>
-        <h1>Gestion des sites de pisciculture</h1>
+        <h1>Les Truites de la vallée</h1>
+        <nav>  <!-- ✅ Balise sémantique pour la navigation -->
+            {% if user.is_authenticated %}
+                <p>Bonjour, {{ user.email }}
+				<a href="{% url 'dashboard' %}">Tableau de bord</a>
+				<a href="{% url 'logout' %}">Déconnexion</a></p>
+            {% else %}
+                <a href="{% url 'login' %}">Connexion</a> |
+                <a href="{% url 'signup' %}">Inscription</a>
+            {% endif %}
+        </nav>
     </header>
     <main>
-        {% block content %}{% endblock %}
+        {% block content %}
+        <!-- Contenu spécifique aux pages filles -->
+        {% endblock %}
     </main>
+    <footer>  <!-- ✅ Pied de page pour les mentions légales/liens utiles -->
+        <p>&copy; 2025 - Pisciculture App</p>
+    </footer>
 </body>
 </html>

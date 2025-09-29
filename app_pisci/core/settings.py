@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'users.User'
 
 AUTHENTICATION_BACKENDS = [
+    'apps.users.backends.EmailAuthBackend',
     'django.contrib.auth.backends.ModelBackend',  # Auth par défaut (compatible avec le modèle)
 ]
 
@@ -149,3 +150,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Dossier pour les fichiers
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')         # Dossier pour les uploads utilisateurs
 STATIC_URL = '/static/'  # URL pour accéder aux fichiers statiques
 MEDIA_URL = '/media/'    # URL pour accéder aux fichiers uploadés
+
+LOGIN_REDIRECT_URL = 'dashboard'  # ✅ Après connexion
+LOGOUT_REDIRECT_URL = 'login'    # ✅ Après déconnexion
