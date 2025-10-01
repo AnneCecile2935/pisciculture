@@ -8,6 +8,8 @@ from .models import User
 from .serializers import UserSerializer
 from .forms import CustomUserCreationForm
 from django.contrib import messages
+from rest_framework.permissions import IsAdminUser
+from rest_framework import status
 
 class SignupView(UserPassesTestMixin,CreateView):
     form_class = CustomUserCreationForm
@@ -30,7 +32,13 @@ class SignupView(UserPassesTestMixin,CreateView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            permission_classes = []
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
@@ -39,4 +47,5 @@ class UserViewSet(viewsets.ModelViewSet):
                 {"detail": "Vous ne pouvez pas supprimer votre propre compte"},
                 status=status.HTTP_403_FORBIDDEN
             )
+        self.check_object_permissions(request, user)
         return super().destroy(request, *args, **kwargs)

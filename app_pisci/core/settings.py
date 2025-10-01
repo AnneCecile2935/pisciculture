@@ -14,7 +14,6 @@ https://docs.djangoproject.com/fr/5.2/topics/settings/
 
 from pathlib import Path
 import os
-
 # =============================================
 # CHEMINS DE BASE
 # =============================================
@@ -55,11 +54,10 @@ INSTALLED_APPS = [
 
     # Apps personnalisées (ordre important !)
     'apps.commun',          # Module commun utilisé par d'autres apps
-    'apps.users',          # Modèle User personnalisé → doit être avant auth-dependent apps
     'apps.sites',          # Gestion des sites/bassins
+    'apps.activite_quotidien',  # Activités quotidiennes (nourrissage, etc.)
     'apps.stocks',         # Gestion des stocks (aliments, poissons)
     'apps.fournisseurs',   # Fournisseurs
-    'apps.activite_quotidien',  # Activités quotidiennes (nourrissage, etc.)
     'apps.clients',        # Clients
     'apps.ventes',         # Ventes
 ]
@@ -165,7 +163,11 @@ dict:
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     # Vérifie que le mot de passe n'est pas trop similaire aux infos de l'utilisateur
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
+    },
      # Vérifie la longueur minimale (8 caractères par défaut)
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     # Vérifie que le mot de passe n'est pas trop courant (ex: "123456")
@@ -182,7 +184,7 @@ list:
 # 8. INTERNATIONALIZATION
 # =============================================
 LANGUAGE_CODE = 'fr-FR'
-TIME_ZONE = 'Europe/paris'
+TIME_ZONE = 'Europe/Paris'
 USE_I18N = True
 USE_TZ = True
 

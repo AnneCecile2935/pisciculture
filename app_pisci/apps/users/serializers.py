@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         #indique que ce serializer est lié au model User qu'on a récupéré
         model = User
         # liste des champs du modele à inclure dans le JSON
-        fields = ['id', 'email', 'username', 'firstname', 'last_name', 'is_admin', 'password']
+        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'is_admin', 'password']
         # Permet de personnaliser certains champs
         extra_kwargs = {
             'password': {
@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
                 }, # ne mdp n'est jamais renvoyé en clair, peut seulement être envoyé
             },
             'is_admin': {
-                'read-only': True, # champ non modifiable
+                'read_only': True, # champ non modifiable
                 'error_messages': {
                     'read_only': 'Seul un administrateur peut modifier ce champ'
                 }

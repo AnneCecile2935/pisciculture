@@ -1,14 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     email = models.EmailField(
         verbose_name= "Adresse e-mail",
         unique=True,
+        blank=False,
+        null=False,
         validators=[EmailValidator(message="Adresse mail invalide")],
         error_messages={
-            "unique": "Un utilisateur avec cet email existe déjà"
+            "unique": "Un utilisateur avec cet email existe déjà",
+            "blank": "L'adresse email est obligatoire",
         }
     )
 
@@ -25,18 +29,19 @@ class User(AbstractUser):
         default=False
     )
 
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
-
-
     def save(self, *args, **kwargs):
-        #  Synchronise is_staff avec is_admin à chaque sauvegarde
-        if self.is_admin and not self.is_staff:
+        if not self.email:
+            raise ValidationError({"email": "L'adresse email est obligatoire"})
+        # Force is_staff à True si is_superuser est True
+        if self.is_superuser:
             self.is_staff = True
-        elif not self.is_admin and self.is_staff:
-            self.is_staff = False
+        # Synchronise is_staff avec is_admin
+        if self.is_admin:
+            self.is_staff = True
         super().save(*args, **kwargs)
+
+    class Meta:
+        app_label = 'users'
 
     def __str__(self):
         return self.email
