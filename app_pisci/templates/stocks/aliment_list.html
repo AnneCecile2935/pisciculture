@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Liste des aliments{% endblock %}
+
+{% block content %}
+<h1>Liste des aliments</h1>
+<a href="{% url 'aliment_add' %}" class="btn btn-primary">Ajouter un aliment</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Fournisseur</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for aliment in aliments %}
+        <tr>
+            <td>{{ aliment.nom }}</td>
+            <td>{{ aliment.fournisseur|default:"-" }}</td>
+            <td>
+                <a href="{% url 'aliment_edit' aliment.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Aucun aliment enregistré.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

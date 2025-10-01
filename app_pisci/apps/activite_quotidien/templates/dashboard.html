@@ -1,0 +1,22 @@
+% extends "base.html" %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Bienvenue, {{ user.email }} !</h1>
+    <p>Voici ton tableau de bord pour gérer tes sites de pisciculture.</p>
+
+    <div class="actions">
+        <a href="{% url 'ajouter_nourrissage' %}" class="button">Ajouter un nourrissage</a>
+        <a href="#" class="button">Relever la température</a>
+        <a href="#" class="button">Voir les bassins</a>
+    </div>
+
+    <div class="stats">
+        <h2>Statistiques récentes</h2>
+        <p>Aucune activité enregistrée pour le moment.</p>
+        <!-- Ici s'afficheront les dernières activités -->
+    </div>
+</div>
+{% endblock %}

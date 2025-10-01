@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Liste des fournisseurs{% endblock %}
+
+{% block content %}
+<h1>Liste des fournisseurs</h1>
+<a href="{% url 'fournisseur_add' %}" class="btn btn-primary">Ajouter un fournisseur</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fournisseur in fournisseurs %}
+        <tr>
+            <td>{{ fournisseur.nom }}</td>
+            <td>{{ fournisseur.email|default:"-" }}</td>
+            <td>{{ fournisseur.telephone|default:"-" }}</td>
+            <td>
+                <a href="{% url 'fournisseur_edit' fournisseur.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Aucun fournisseur enregistré.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

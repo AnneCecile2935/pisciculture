@@ -1,4 +1,5 @@
 from django.urls import path
+from .views import DashboardView
 from . import views  # Import depuis le dossier courant (activité_quotidien)
 
 app_name = 'activite_quotidien'  # Namespace pour éviter les conflits
@@ -7,4 +8,5 @@ urlpatterns = [
     path('releves/', views.liste_releves, name='liste_releves'),
     path('releves/ajouter/', views.ajouter_releve, name='ajouter_releve'),
     path('releves/manquants/', views.releves_manquants, name='releves_manquants'),
+    path('dashboard/', DashboardView.as_view(), name='dashboard')
 ]

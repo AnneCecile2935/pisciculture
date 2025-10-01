@@ -4,7 +4,14 @@ from datetime import date
 from apps.sites.models import Site
 from apps.activite_quotidien.models import ReleveTempOxy
 from apps.activite_quotidien.forms import ReleveForm
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 
+@method_decorator(login_required, name='dispatch')
+class DashboardView(TemplateView):
+    template_name = 'activité_quotidien/dashboard.html'
+    
 def index(request):
     return HttpResponse("Bienvenue!")
 
