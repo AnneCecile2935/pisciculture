@@ -15,6 +15,22 @@ services:
       timeout: 5s
       retries: 5
 
+  db_test: #base de donnée de test
+    image: postgres:15
+    environment:
+      POSTGRES_DB: pisciculture_test  # Nom différent
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d pisciculture_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   web:
     build: .
     command: sh -c "while ! nc -z db 5432; do sleep 1; done && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
@@ -33,5 +49,28 @@ services:
       db:
         condition: service_healthy
 
+  test:
+    build:
+      context: .
+      args:
+        BUILD_FOR_TEST: "true"  # Active l'installation des dépendances de test
+    command: pytest --cov
+    volumes:
+      - ./app_pisci:/app
+    working_dir: /app
+    depends_on:
+      db_test:
+        condition: service_healthy
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.test  # Utilise les settings de test
+      - DB_NAME=pisciculture_test
+      - DB_USER=test_user
+      - DB_PASSWORD=test_password
+      - DB_HOST=db_test
+      - DB_PORT=5432
+      - PYTHONPATH=/app
+
+
 volumes:
   postgres_data:  # <-- Un nouveau volume sera créé
+  postgres_test_data: # volume pour la base de données de test

@@ -1,6 +1,11 @@
 Django==4.2
 psycopg2-binary==2.9.6
 djangorestframework==3.14.0
+pytest==8.0.0
+pytest-django==4.5.2
+pytest-cov==4.1.0
+factory-boy==3.3.0
 # Ajoute d'autres packages si nécessaire, par exemple :
 # django-cors-headers==4.3.1
 # drf-yasg==1.21.7  # Pour la documentation de l'API
+

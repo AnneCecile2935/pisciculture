@@ -1,0 +1,7 @@
+-r requirements.txt       # Hérite des dépendances principales
+
+# Dépendances de test
+pytest==8.0.0
+pytest-django==4.5.2
+pytest-cov==4.1.0
+factory-boy==3.3.0
