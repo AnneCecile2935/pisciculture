@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Liste des sites</h1>
+<ul>
+	{% for site in sites %}
+	<li>
+		{{site.nom}}
+		<a href="{% url 'sites: site-update' site.pk %}">Modifier</a>
+		<a href="{% url 'sites: site-delete' site.pk %}">Supprimer</a>
+		<a href="{% url 'sites:bassin-list' site.id %}">Voir les bassins</a>
+	</li>
+	{% endfor %}
+</ul>
+<a href="{% url 'sites: site-create' %}">Créer un site</a>
+{% endblock %}

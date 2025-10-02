@@ -1,0 +1,9 @@
+{% extends "base.html"%}
+{% black content %}
+<h1>Bassins du site : {{ bassins.first.site.nom}}</h1>
+<ul>
+	{% for bassin in bassins %}
+	<li>{{ bassin.nom }} (Volume: {{ bassin.volume}} m3)</li>
+	{ % endfor %}
+</ul>
+{% endblock%}
