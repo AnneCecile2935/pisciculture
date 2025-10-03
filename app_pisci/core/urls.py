@@ -21,13 +21,25 @@ from django.contrib.auth import views as auth_views
 from .views import dashboard
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('activite/', include('apps.activite_quotidien.urls')),
+    # Auth
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html', authentication_form=CustomAuthenticationForm), name='login'),
-    path('dashboard/', dashboard, name='dashboard'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('users/', include('apps.users.urls')),
+    # Dashboard
+    path('dashboard/', dashboard, name='dashboard'),
+
+    #API
+    path('api/user/', include('apps.users.urls')),
+
+    # Apps métiers
+    path('sites/', include('apps.sites.urls')),
+    path('activite/', include('apps.activite_quotidien.urls')),
     path('fournisseurs/', include('apps.fournisseurs.urls')),
     path('aliment/', include('apps.stocks.urls')),
-    path('api/user/', include('apps.users.urls'))
+
+    # Utilisateurs
+    path('users/', include('apps.users.urls')),
+
+    #Admin
+    path('admin/', admin.site.urls),
+
 ]
