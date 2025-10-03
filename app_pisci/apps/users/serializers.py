@@ -42,6 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
                 }
             },
         }
+        read_only_fields = ['is_staff']
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
