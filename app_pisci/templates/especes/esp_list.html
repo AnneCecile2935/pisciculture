@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Liste des espèces</h1>
+<a href="{% url 'especes:add' %}" class="btn btn-primary mb-3">Ajouter une espèce</a>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nom commun</th>
+      <th>Nom scientifique</th>
+      <th>Active</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for espece in especes %}
+    <tr>
+      <td>{{ espece.nom_commun }}</td>
+      <td>{{ espece.nom_scientifique }}</td>
+      <td>{% if espece.est_active %}✅{% else %}❌{% endif %}</td>
+      <td>
+        <a href="{% url 'especes:edit' espece.pk %}" class="btn btn-sm btn-warning">Éditer</a>
+        <a href="{% url 'especes:delete' espece.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4">Aucune espèce enregistrée.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

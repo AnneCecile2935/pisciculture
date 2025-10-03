@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{% if object %}Éditer{% else %}Ajouter{% endif %} une espèce</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Enregistrer</button>
+  <a href="{% url 'especes:list' %}" class="btn btn-secondary">Annuler</a>
+</form>
+{% endblock %}
