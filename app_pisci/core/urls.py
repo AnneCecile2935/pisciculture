@@ -18,14 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from apps.users.forms import CustomAuthenticationForm
 from django.contrib.auth import views as auth_views
-from .views import dashboard
+#from .views import dashboard
 
 urlpatterns = [
     # Auth
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html', authentication_form=CustomAuthenticationForm), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     # Dashboard
-    path('dashboard/', dashboard, name='dashboard'),
+    #path('dashboard/', dashboard, name='dashboard'),
 
     #API
     path('api/user/', include('apps.users.urls')),
@@ -34,7 +34,7 @@ urlpatterns = [
     path('sites/', include('apps.sites.urls')),
     path('activite/', include('apps.activite_quotidien.urls')),
     path('fournisseurs/', include('apps.fournisseurs.urls')),
-    path('aliment/', include('apps.stocks.urls')),
+    #path('aliment/', include('apps.stocks.urls')),
 
     # Utilisateurs
     path('users/', include('apps.users.urls')),

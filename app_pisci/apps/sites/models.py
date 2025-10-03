@@ -3,7 +3,7 @@ from apps.commun.models import TimeStampedModel
 
 class Site(TimeStampedModel):
     nom = models.CharField(max_length=100)
-    est_actif = models.Boolean(default=True)
+    est_actif = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nom
