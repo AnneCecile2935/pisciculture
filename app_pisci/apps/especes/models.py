@@ -20,14 +20,8 @@ class Espece(TimeStampedModel):
 
     class Meta:
         verbose_name = "Espèce"
-        verbose_plural = "Espèces"
+        verbose_name_plural = "Espèces"
         ordering = ['nom_commun']
-        permissions = [
-            ("view_espece", "Can view espèce"),
-            ("add_espece", "Can add espèce"),
-            ("change_espece", "Can change espèce"),
-            ("delete_espece", "Can delete espèce"),
-        ]
-
+        
     def __str__(self):
         return f"{self.nom_commun} ({self.nom_scientifique})"
