@@ -1,9 +1,9 @@
 from django import forms
-from .models import Fournisseurs
+from .models import Fournisseur
 
 class FournisseurForm(forms.ModelForm):
     class Meta:
-        model = Fournisseurs
+        model = Fournisseur
         fields = [
             'nom', 'adresse', 'ville', 'code_postal',
             'telephone', 'contact', 'email', 'est_actif', 'type_fournisseur'
