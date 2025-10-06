@@ -16,5 +16,5 @@ urlpatterns = [
     path("<int:site_id>/bassins/", BassinListView.as_view(), name="bassin-list"),
     path("bassins/create/", BassinCreateView.as_view(), name="bassin-create"),
     path("bassins/<int:pk>/update/", BassinUpdateView.as_view(), name="bassin-update"),
-    path("bassins/<int:pk>/delete", BassinDeleteView.as_view(), naem="bassins-delete"),
+    path("bassins/<int:pk>/delete", BassinDeleteView.as_view(), name="bassins-delete"),
 ]

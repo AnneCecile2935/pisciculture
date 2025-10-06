@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}
+        Éditer {{ object.nom }}
+    {% else %}
+        Ajouter un aliment
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">
+    {% if object %}
+        Éditer {{ object.nom }}
+    {% else %}
+        Ajouter un aliment
+    {% endif %}
+</h2>
+
+<!-- Messages de succès/erreur -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Formulaire -->
+<form method="post" class="needs-validation" novalidate>
+    {% csrf_token %}
+
+    <!-- Champ : Code -->
+    <div class="mb-3">
+        <label for="{{ form.code_alim.id_for_label }}" class="form-label">Code</label>
+        {{ form.code_alim }}
+        <div class="invalid-feedback">
+            {{ form.code_alim.errors }}
+        </div>
+    </div>
+
+    <!-- Champ : Nom -->
+    <div class="mb-3">
+        <label for="{{ form.nom.id_for_label }}" class="form-label">Nom</label>
+        {{ form.nom }}
+        <div class="invalid-feedback">
+            {{ form.nom.errors }}
+        </div>
+    </div>
+
+    <!-- Champ : Description -->
+    <div class="mb-3">
+        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+        {{ form.description }}
+        <div class="invalid-feedback">
+            {{ form.description.errors }}
+        </div>
+    </div>
+
+    <!-- Champ : Fournisseur -->
+    <div class="mb-3">
+        <label for="{{ form.fournisseur.id_for_label }}" class="form-label">Fournisseur</label>
+        {{ form.fournisseur }}
+        <div class="invalid-feedback">
+            {{ form.fournisseur.errors }}
+        </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save"></i> Enregistrer
+        </button>
+        <a href="{% url 'aliments:list' %}" class="btn btn-secondary">
+            <i class="bi bi-x"></i> Annuler
+        </a>
+    </div>
+</form>
+{% endblock %}
