@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, FloatField, Q
 from apps.commun.models import TimeStampedModel
 from django.core.exceptions import ValidationError
+from apps.fournisseurs.models import Fournisseur
 
 class LotDePoisson(TimeStampedModel):
     STATUT_CHOICES = [
@@ -24,7 +25,7 @@ class LotDePoisson(TimeStampedModel):
         verbose_name="Site de production"
     )
     fournisseur = models.ForeignKey(
-        'fournisseurs.Fournisseurs',
+        Fournisseur,
         on_delete=models.PROTECT,
         related_name='lot_fournis',
         verbose_name="Fournisseur"

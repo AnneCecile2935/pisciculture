@@ -54,7 +54,7 @@ services:
       context: .
       args:
         BUILD_FOR_TEST: "true"  # Active l'installation des dépendances de test
-    command: pytest --cov
+    command: sh -c "DB_HOST=db_test python manage.py migrate && pytest"
     volumes:
       - ./app_pisci:/app
     working_dir: /app
@@ -62,7 +62,7 @@ services:
       db_test:
         condition: service_healthy
     environment:
-      - DJANGO_SETTINGS_MODULE=core.test  # Utilise les settings de test
+      - DJANGO_SETTINGS_MODULE=core.settings  # Utilise les settings de test
       - DB_NAME=pisciculture_test
       - DB_USER=test_user
       - DB_PASSWORD=test_password

@@ -14,6 +14,7 @@ https://docs.djangoproject.com/fr/5.2/topics/settings/
 
 from pathlib import Path
 import os
+import sys
 # =============================================
 # CHEMINS DE BASE
 # =============================================
@@ -55,9 +56,11 @@ INSTALLED_APPS = [
     # Apps personnalisées (ordre important !)
     'apps.commun',          # Module commun utilisé par d'autres apps
     'apps.sites',          # Gestion des sites/bassins
+    'apps.fournisseurs',   # Fournisseurs
+    'apps.especes',
+    'apps.aliments',
     'apps.activite_quotidien',  # Activités quotidiennes (nourrissage, etc.)
     'apps.stocks',         # Gestion des stocks (aliments, poissons)
-    'apps.fournisseurs',   # Fournisseurs
     'apps.clients',        # Clients
     'apps.ventes',         # Ventes
 ]
@@ -133,15 +136,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # =============================================
 # 6. DATABASE
 # =============================================
-
+TESTING = 'test' in sys.argv
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Moteur PostgreSQL
-        'NAME': 'postgres',   # Nom de la base de données
-        'USER': 'postgres',  # Utilisateur PostgreSQL
-        'PASSWORD': 'postgres',  # Mot de passe (à changer en production !)
-        'HOST': 'db',  # Nom du service dans docker-compose.yml
-        'PORT': 5432,  # Port par défaut de PostgreSQL
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'postgres'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 """
@@ -155,7 +158,16 @@ dict:
     - 'USER': os.getenv('DB_USER', 'postgres'),
     - etc.
 """
-
+# =============================================
+# Surcharge pour les tests
+# =============================================
+if TESTING:
+    DATABASES['default'].update({
+        'NAME': os.getenv('DB_NAME', 'pisciculture_test'),
+        'USER': os.getenv('DB_USER', 'test_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'test_password'),
+        'HOST': os.getenv('DB_HOST', 'db_test'),
+    })
 # =============================================
 # 7. AUTH / SECURITY
 # =============================================

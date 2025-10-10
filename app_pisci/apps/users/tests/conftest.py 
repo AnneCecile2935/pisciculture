@@ -1,2 +1,0 @@
-import pytest
-import apps.users.serializers  # Force l'importation pour la couverture
