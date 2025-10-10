@@ -9,7 +9,6 @@ from .serializers import UserSerializer
 from .forms import CustomUserCreationForm
 from django.contrib import messages
 from rest_framework.permissions import IsAdminUser
-from rest_framework import status
 
 class SignupView(UserPassesTestMixin,CreateView):
     form_class = CustomUserCreationForm
@@ -18,10 +17,11 @@ class SignupView(UserPassesTestMixin,CreateView):
 
     # Methode pour vérifier si l'utilisateur est un admin
     def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.is_admin
+        return self.request.user.is_authenticated and self.request.user.is_staff
 
     # Méthode pour rediriger si l'utilisateur n'est pas admin
     def handle_no_permission(self):
+        messages.error(self.request, "Seuls les admins peuvent créer des utilisateurs")
         return redirect('login')
 
     def form_valid(self, form):
@@ -34,10 +34,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     def get_permissions(self):
-        if self.action == 'destroy':
-            permission_classes = []
-        else:
-            permission_classes = [IsAdminUser]
+        permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
     def destroy(self, request, *args, **kwargs):
@@ -47,5 +44,4 @@ class UserViewSet(viewsets.ModelViewSet):
                 {"detail": "Vous ne pouvez pas supprimer votre propre compte"},
                 status=status.HTTP_403_FORBIDDEN
             )
-        self.check_object_permissions(request, user)
         return super().destroy(request, *args, **kwargs)
