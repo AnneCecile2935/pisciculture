@@ -44,4 +44,10 @@ class UserViewSet(viewsets.ModelViewSet):
                 {"detail": "Vous ne pouvez pas supprimer votre propre compte"},
                 status=status.HTTP_403_FORBIDDEN
             )
+        # Règle métier : Seuls les superutilisateurs (via l'admin Django) peuvent supprimer un admin.
+        if user.is_admin:
+            return Response(
+            {"detail": "Un admin ne peut pas supprimer un autre admin"},
+            status=status.HTTP_403_FORBIDDEN
+        )
         return super().destroy(request, *args, **kwargs)
