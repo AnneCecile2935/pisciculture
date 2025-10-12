@@ -44,6 +44,18 @@ class UserSerializer(serializers.ModelSerializer):
         }
         read_only_fields = ['is_staff']
 
+    def to_internal_value(self, data):
+        # Vérifie si is_admin ou is_staff sont présents dans les données
+        if 'is_admin' in data:
+            raise serializers.ValidationError({
+                'is_admin': 'Seul un administrateur peut modifier ce champ'
+            })
+        if 'is_staff' in data:
+            raise serializers.ValidationError({
+                'is_staff': ["Ce champ ne peut pas être modifié via l\'API"]
+            })
+        return super().to_internal_value(data)
+
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
