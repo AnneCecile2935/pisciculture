@@ -8,8 +8,10 @@ class LotDePoisson(TimeStampedModel):
     STATUT_CHOICES = [
         ('OEUF', 'Œufs'),
         ('ALEVIN', 'Alevin'),
-        ('JUVENILE', 'Juvenile'),
-        ('ADULTE', 'Adulte'),
+        ('TRUITELLE', 'Truitelle'),
+        ('PORTION', 'Portion'),
+        ('GROSSE(G)', 'Grosse'),
+        ('TRES GROSSE(TG)', 'TG'),
     ]
 
     espece = models.ForeignKey(
