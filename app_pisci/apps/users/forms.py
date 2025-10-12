@@ -1,3 +1,4 @@
+from typing import Any
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import get_user_model
@@ -8,6 +9,11 @@ User = get_user_model()
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label="Adresse email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
