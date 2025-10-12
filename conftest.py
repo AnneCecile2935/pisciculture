@@ -1,5 +1,8 @@
 import pytest
 from django.conf import settings
+from tests.factories import UserFactory, AdminUserFactory
+from rest_framework.test import APIClient
+from django.test import Client
 
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker):
@@ -10,3 +13,19 @@ def django_db_setup(django_db_setup, django_db_blocker):
     settings.DATABASES["default"]["PASSWORD"] = "test_password"
     with django_db_blocker.unblock():
         yield
+
+@pytest.fixture
+def admin_user(db):
+    return AdminUserFactory()
+
+@pytest.fixture
+def standard_user(db):
+    return UserFactory()
+
+@pytest.fixture
+def client(db):
+    return Client()
+
+@pytest.fixture
+def api_client(db):
+    return APIClient()
