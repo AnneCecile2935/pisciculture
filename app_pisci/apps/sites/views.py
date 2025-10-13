@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from .models import Site, Bassin
 from django.urls import reverse_lazy
 from .forms import SiteForm, BassinForm
+from django.urls import reverse
 
 class SiteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Site
@@ -14,7 +15,6 @@ class SiteCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = SiteForm
     model = Site
     template_name = "sites/site_form.html"
-    fields = ["nom", "est_actif"]
     success_url = reverse_lazy("sites:site-list")
     permission_required = "sites.add_site"
 
@@ -45,20 +45,24 @@ class BassinCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = BassinForm
     model = Bassin
     template_name = "sites/bassin_form.html"
-    fields = ["nom", "est_actif"]
-    success_url = reverse_lazy("sites:bassin-list")
     permission_required = "sites.add_bassin"
 
+    def get_success_url(self):
+        return reverse('sites:bassin-list', args=[self.object.site.id])
+
 class BassinUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    form_class = BassinForm
     model = Bassin
     template_name = "sites/bassin_form.html"
-    fields = ["nom", "est_actif"]
-    success_url = reverse_lazy("sites:bassin-list")
     permission_required = "sites.change_bassin"
+
+    def get_success_url(self):
+        return reverse('sites:bassin-list', args=[self.object.site.id])
 
 class BassinDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Bassin
     template_name = "sites/bassin_confirm_delete.html"
     fields = ["nom", "est_actif"]
-    success_url = reverse_lazy("sites:bassin_list")
     permission_required = "sites.delete_bassin"
+    def get_success_url(self):
+        return reverse('sites:site-list')

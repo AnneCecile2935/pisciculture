@@ -1,9 +1,15 @@
-{% extends "base.html"%}
-{% black content %}
-<h1>Bassins du site : {{ bassins.first.site.nom}}</h1>
-<ul>
-	{% for bassin in bassins %}
-	<li>{{ bassin.nom }} (Volume: {{ bassin.volume}} m3)</li>
-	{ % endfor %}
-</ul>
-{% endblock%}
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Liste des bassins</h1>
+  <ul>
+    {% for bassin in bassins %}
+      <li>
+        {{ bassin.nom }} ({{ bassin.site.nom }})
+        <a href="{% url 'sites:bassin-update' bassin.id %}">Modifier</a>
+      </li>
+    {% empty %}
+      <li>Aucun bassin trouvé.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

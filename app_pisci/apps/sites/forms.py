@@ -21,3 +21,4 @@ class BassinForm(forms.ModelForm):
             'type': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type (ex: Écloserie)'}),
             'est_actif': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+   
