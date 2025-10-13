@@ -13,7 +13,7 @@
         {% csrf_token %}
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
-            <a href="{% url 'fournisseurs:liste' %}" class="btn btn-secondary">Annuler</a>
+            <a href="{% url 'fournisseurs:fournisseur-list' %}" class="btn btn-secondary">Annuler</a>
         </div>
     </form>
 </div>
