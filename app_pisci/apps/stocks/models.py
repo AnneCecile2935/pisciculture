@@ -77,12 +77,6 @@ class LotDePoisson(TimeStampedModel):
     class Meta:
         verbose_name= "Lot de poissons"
         verbose_name_plural= "Lots de poissons"
-        permissions = [
-            ("pisciculture_view_lot", "Can view lot de poissons"),
-            ("pisciculture_add_lot", "Can add lot de poissons"),
-            ("pisciculture_change_lot", "Can change lot de poissons"),
-            ("pisciculture_delete_lot", "Can delete lot de poissons"),
-        ]
         ordering = ['-date_arrivee']
         constraints = [
             models.CheckConstraint(
