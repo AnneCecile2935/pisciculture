@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Liste des espèces</h1>
-<a href="{% url 'especes:add' %}" class="btn btn-primary mb-3">Ajouter une espèce</a>
+<a href="{% url 'especes:espece-create' %}" class="btn btn-primary mb-3">Ajouter une espèce</a>
 
 <table class="table">
   <thead>
@@ -20,8 +20,8 @@
       <td>{{ espece.nom_scientifique }}</td>
       <td>{% if espece.est_active %}✅{% else %}❌{% endif %}</td>
       <td>
-        <a href="{% url 'especes:edit' espece.pk %}" class="btn btn-sm btn-warning">Éditer</a>
-        <a href="{% url 'especes:delete' espece.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+        <a href="{% url 'especes:espece-update' espece.pk %}" class="btn btn-sm btn-warning">Éditer</a>
+        <a href="{% url 'especes:espece-delete' espece.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
       </td>
     </tr>
     {% empty %}

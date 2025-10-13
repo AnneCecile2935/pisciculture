@@ -14,18 +14,26 @@ class EspeceCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Espece
     form_class = EspeceForm
     template_name = "especes/esp_form.html"
-    success_url = reverse_lazy("especes:list")
+    success_url = reverse_lazy("especes:espece-list")  
     permission_required = "especes.add_espece"
+
+    def form_valid(self, form):
+        return super().form_valid(form)
 
 class EspeceUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Espece
     form_class = EspeceForm
     template_name = "especes/esp_form.html"
-    success_url = reverse_lazy("especes:list")
+    success_url = reverse_lazy("especes:espece-list")
     permission_required = "especes.change_espece"
+    context_object_name = "espece"
+
+    def form_valid(self, form):
+        return super().form_valid(form)
 
 class EspeceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Espece
     template_name = "especes/esp_confirm_delete.html"
-    success_url = reverse_lazy("especes:list")
+    success_url = reverse_lazy("especes:espece-list")
     permission_required = "especes.delete_espece"
+    context_object_name = "espece"

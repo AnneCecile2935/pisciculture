@@ -1,12 +1,11 @@
 {% extends "base.html" %}
-
 {% block content %}
 <h1>Supprimer une espèce</h1>
 <p>Êtes-vous sûr de vouloir supprimer "{{ object }}" ?</p>
-
 <form method="post">
   {% csrf_token %}
   <button type="submit" class="btn btn-danger">Supprimer</button>
-  <a href="{% url 'especes:list' %}" class="btn btn-secondary">Annuler</a>
+  <!-- Corrige ici : utilise 'especes:espece-list' au lieu de 'especes:espece-delete' -->
+  <a href="{% url 'especes:espece-list' %}" class="btn btn-secondary">Annuler</a>
 </form>
 {% endblock %}
