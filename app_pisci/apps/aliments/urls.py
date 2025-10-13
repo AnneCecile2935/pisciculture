@@ -5,7 +5,7 @@ app_name = "aliments"
 
 urlpatterns = [
     path("", AlimentListView.as_view(), name="list"),
-    path("ajouter/", AlimentCreateView.as_view(), name="create"),
-    path("<int:pk>/editer/", AlimentUpdateView.as_view(), name="update"),
-    path("<int:pk>/supprimer/", AlimentDeleteView.as_view(), name="delete"),
+    path("create/", AlimentCreateView.as_view(), name="create"),
+    path("<uuid:pk>/update/", AlimentUpdateView.as_view(), name="update"),
+    path("<uuid:pk>/delete/", AlimentDeleteView.as_view(), name="delete"),
 ]

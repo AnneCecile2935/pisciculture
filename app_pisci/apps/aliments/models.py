@@ -8,7 +8,7 @@ class Aliment(TimeStampedModel):
     description = models.TextField(blank=True, verbose_name="Description", help_text="Description détaillée de l'aliment")
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.RESTRICT, related_name="aliments", verbose_name="Fournisseur", help_text="Fournisseur de l'aliment")
 
-    class Meta:
+    class Meta: 
         verbose_name = "Aliment"
         verbose_name_plural = "Aliments"
         ordering = ["code_alim"]
