@@ -3,11 +3,8 @@ from .models import LotDePoisson
 
 @admin.register(LotDePoisson)
 class LotDePoissonAdmin(admin.ModelAdmin):
-    list_display = (
-        'site_prod', 'bassin', 'espece',
-        'fournisseur',
-        'date_arrivee', 'quantite', 'statut', 'code_lot', 'poids'
-    )
-    list_filter = ('site_prod', 'fournisseur')
-    search_fields = ('site_prod', 'bassin', 'fournisseur', 'statut', 'code_lot')
-
+    list_display = ('code_lot', 'espece', 'site_prod', 'bassin', 'date_arrivee', 'quantite', 'statut')
+    list_filter = ('site_prod', 'espece', 'statut')
+    search_fields = ('code_lot', 'espece__nom_commun')
+    ordering = ('-date_arrivee',)
+    readonly_fields = ('poids_moyen', 'date_creation', 'date_modification')

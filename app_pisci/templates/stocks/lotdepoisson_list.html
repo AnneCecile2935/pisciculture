@@ -16,7 +16,7 @@
 
     <!-- Bouton pour créer un nouveau lot -->
     {% if perms.stocks.add_lotdepoisson %}
-        <a href="{% url 'lots:create' %}" class="btn btn-primary mb-3">
+        <a href="{% url 'stocks:create' %}" class="btn btn-primary mb-3">
             <i class="bi bi-plus-circle"></i> Créer un nouveau lot
         </a>
     {% endif %}
@@ -63,14 +63,14 @@
                         <!-- Boutons d'action -->
                         <div class="d-flex gap-2">
                             {% if perms.stocks.change_lotdepoisson %}
-                                <a href="{% url 'lots:update' lot.pk %}"
+                                <a href="{% url 'stocks:update' lot.pk %}"
                                    class="btn btn-sm btn-warning"
                                    title="Modifier">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             {% endif %}
                             {% if perms.stocks.delete_lotdepoisson %}
-                                <a href="{% url 'lots:delete' lot.pk %}"
+                                <a href="{% url 'stocks:delete' lot.pk %}"
                                    class="btn btn-sm btn-danger"
                                    title="Supprimer">
                                     <i class="bi bi-trash"></i>
