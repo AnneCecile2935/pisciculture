@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.test import Client
 from apps.fournisseurs.models import Fournisseur
 from apps.fournisseurs.admin import FournisseurAdmin
+from apps.fournisseurs.tests.factories import FournisseurFactory
 from apps.users.tests.factories import UserFactory
 
 @pytest.mark.django_db
@@ -86,19 +87,9 @@ class TestFournisseurAdmin:
         user = UserFactory(is_staff=True, is_superuser=True)
         client.force_login(user)
 
-        # Crée des fournisseurs avec différents types
-        Fournisseur.objects.create(
-            nom="Fournisseur Aliment",
-            ville="Ville Aliment",
-            type_fournisseur="ALIMENT",
-            est_actif=True
-        )
-        Fournisseur.objects.create(
-            nom="Fournisseur Oeufs",
-            ville="Ville Oeufs",
-            type_fournisseur="OEUFS",
-            est_actif=False
-        )
+        # Utilise la factory pour créer des fournisseurs valides
+        FournisseurFactory(nom="Fournisseur Aliment", ville="Ville Aliment", type_fournisseur="ALIMENT", est_actif=True)
+        FournisseurFactory(nom="Fournisseur Oeufs", ville="Ville Oeufs", type_fournisseur="OEUFS", est_actif=False)
 
         # Filtre par type_fournisseur=ALIMENT
         response = client.get(reverse('admin:fournisseurs_fournisseur_changelist'), {'type_fournisseur': 'ALIMENT'})
