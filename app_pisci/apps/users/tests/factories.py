@@ -8,10 +8,12 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
         skip_postgeneration_save = True
+    is_staff = False
 
     email = factory.Sequence(lambda n: f"user{n}@example.com")
     username = factory.Sequence(lambda n: f"user{n}")
     is_admin = False
+    is_staff = False
     is_superuser = False
 
     @factory.post_generation
@@ -23,10 +25,8 @@ class UserFactory(factory.django.DjangoModelFactory):
         if create:
             self.save()
 
-    @factory.post_generation
-    def is_staff(self, create, extracted, **kwargs):
-        self.is_staff = self.is_admin or self.is_superuser
 
 class AdminUserFactory(UserFactory):
     is_admin = True
+    is_staff = True
     is_superuser = True

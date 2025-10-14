@@ -14,16 +14,16 @@ User = get_user_model()
 def test_signup_view_admin_can_access(admin_user, client):
     """Test : un admin peut accéder à la page de création d'utilisateur."""
     client.force_login(admin_user)
-    url = reverse('signup')  # Remplace 'signup' par le nom de ton URL
+    url = reverse('signup')
     response = client.get(url)
     assert response.status_code == 200
 
 @pytest.mark.django_db(transaction=True)
 def test_signup_view_non_admin_redirected(standard_user, client):
-    """Test : un utilisateur standard est redirigé s'il essaie d'accéder à la page de création."""
     client.force_login(standard_user)
     url = reverse('signup')
     response = client.get(url, follow=True)
+    assert response.redirect_chain[0][1] == 302
     assert reverse('login') in response.redirect_chain[0][0]
     messages = list(get_messages(response.wsgi_request))
     assert len(messages) == 1
@@ -31,7 +31,6 @@ def test_signup_view_non_admin_redirected(standard_user, client):
 
 @pytest.mark.django_db(transaction=True)
 def test_signup_view_creates_user(admin_user, client):
-    """Test : un admin peut créer un utilisateur valide."""
     client.force_login(admin_user)
     url = reverse('signup')
     data = {
@@ -41,14 +40,14 @@ def test_signup_view_creates_user(admin_user, client):
         'password2': 'motdepasse123',
     }
     response = client.post(url, data, follow=True)
-    assert response.status_code == 200
+    assert response.redirect_chain[0][1] == 302  # Vérifie la redirection
+    assert reverse('login') in response.redirect_chain[0][0]  # Vérifie l'URL de redirection
     assert User.objects.filter(email='nouvel@example.com').exists()
     messages = list(get_messages(response.wsgi_request))
     assert any("Utilisateur crée avec succès!" in str(message) for message in messages)
 
 @pytest.mark.django_db(transaction=True)
 def test_signup_view_fails_without_email(admin_user, client):
-    """Test : la création échoue si l'email est manquant."""
     client.force_login(admin_user)
     url = reverse('signup')
     data = {
@@ -61,7 +60,7 @@ def test_signup_view_fails_without_email(admin_user, client):
     assert response.status_code == 200  # Le formulaire est réaffiché
     assert not User.objects.filter(username='noemailuser').exists()
     form = response.context['form']
-    assert form.errors['email']
+    assert 'email' in form.errors  # Vérifie que l'erreur est sur le champ email
 
 # --- Tests pour UserViewSet ---
 @pytest.mark.django_db(transaction=True)
@@ -78,15 +77,15 @@ def test_user_viewset_non_admin_cannot_list_users(standard_user, api_client):
     api_client.force_authenticate(user=standard_user)
     url = reverse('user-list')
     response = api_client.get(url)
-    assert response.status_code == 403  # Forbidden
+    assert response.status_code == 403
 
 @pytest.mark.django_db(transaction=True)
 def test_user_viewset_admin_can_delete_user(admin_user, api_client, standard_user):
     """Test : un admin peut supprimer un utilisateur standard."""
     api_client.force_authenticate(user=admin_user)
-    url = reverse('user-detail', args=[standard_user.id])  # Remplace 'user-detail' par le nom de ton endpoint
+    url = reverse('user-detail', args=[standard_user.id])
     response = api_client.delete(url)
-    assert response.status_code == 204  # No Content
+    assert response.status_code == 204
     assert not User.objects.filter(id=standard_user.id).exists()
 
 @pytest.mark.django_db(transaction=True)
@@ -179,4 +178,4 @@ def test_user_viewset_standard_user_cannot_list_users(standard_user, api_client)
     api_client.force_authenticate(user=standard_user)
     url = reverse('user-list')
     response = api_client.get(url)
-    assert response.status_code == 403  # Forbidden
+    assert response.status_code == 403
