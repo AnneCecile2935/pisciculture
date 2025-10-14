@@ -29,15 +29,16 @@ class User(AbstractUser):
         default=False
     )
 
+    is_staff = models.BooleanField(
+        verbose_name="Est membre du staff",
+        default=False,
+    )
+
     def save(self, *args, **kwargs):
         if not self.email:
             raise ValidationError({"email": "L'adresse email est obligatoire"})
-        # Force is_staff à True si is_superuser est True
-        if self.is_superuser:
-            self.is_staff = True
-        # Synchronise is_staff avec is_admin
-        if self.is_admin:
-            self.is_staff = True
+        # Synchronise is_staff avec is_admin ou is_superuser
+        self.is_staff = self.is_admin or self.is_superuser
         super().save(*args, **kwargs)
 
     class Meta:
