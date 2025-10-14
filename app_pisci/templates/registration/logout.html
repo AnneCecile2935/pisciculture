@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Déconnexion</h2>
+<p>Êtes-vous sûr de vouloir vous déconnecter ?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-primary">Confirmer</button>
+</form>
+{% endblock %}

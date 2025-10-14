@@ -1,4 +1,5 @@
 from django.views.generic import CreateView
+from django.contrib.auth.views import LoginView, LogoutView
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from django.shortcuts import redirect
@@ -6,7 +7,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin #restreindre l'accès
 from django.urls import reverse_lazy
 from .models import User
 from .serializers import UserSerializer
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib import messages
 from rest_framework.permissions import IsAdminUser
 
@@ -51,3 +52,22 @@ class UserViewSet(viewsets.ModelViewSet):
             status=status.HTTP_403_FORBIDDEN
         )
         return super().destroy(request, *args, **kwargs)
+
+class CustomLoginView(LoginView):
+        template_name = 'registration/login.html'
+        authentication_form = CustomAuthenticationForm
+
+        def form_valid(self, form):
+            response = super().form_valid(form)
+            messages.success(self.request, f"Bonjour, {self.request.user.get_username}!")
+            return response
+
+
+class CustomLogoutView(LogoutView):
+    template_name = 'registration/logout.html'
+    next_page = 'login'
+
+    def dispatch(self, request, *args, **kwargs):
+        messages.success(request, "Vous avez été déconnecté avec succès.")
+        return super().dispatch(request, *args, **kwargs)
+
