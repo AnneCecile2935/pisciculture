@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import ReleveTempOxy, Nourrissage
 
-admin.register(Nourrissage)
+admin.site.register(Nourrissage)
 admin.site.register(ReleveTempOxy)
 
 class NourrissageAdmin(admin.ModelAdmin):

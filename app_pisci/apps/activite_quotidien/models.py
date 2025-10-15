@@ -8,11 +8,10 @@ from apps.users.models import User
 
 
 class Nourrissage(TimeStampedModel):
-    crea_lot = models.ForeignKey(
-        LotDePoisson,
+    site_prod = models.ForeignKey(
+        Site,
         on_delete=models.CASCADE,
-        verbose_name="Lot de poissons",
-        related_name="nourrissages"
+        verbose_name="Site de production"
     )
 
     bassin = models.ForeignKey(
@@ -20,13 +19,12 @@ class Nourrissage(TimeStampedModel):
         on_delete=models.CASCADE,
         verbose_name="Bassin"
     )
-
-    site_prod = models.ForeignKey(
-        Site,
+    crea_lot = models.ForeignKey(
+        LotDePoisson,
         on_delete=models.CASCADE,
-        verbose_name="Site de production"
+        verbose_name="Lot de poissons",
+        related_name="nourrissages"
     )
-
     aliment = models.ForeignKey(
         Aliment,
         on_delete=models.CASCADE,
@@ -58,6 +56,7 @@ class Nourrissage(TimeStampedModel):
     class Meta:
         verbose_name = "Repas Journalier"
         db_table = 'Repas_journ'
+        app_label = 'activite_quotidien'
 
     def __str__(self):
         return f"{self.code_lot} - {self.qte} kg le {self.date_repas}"
