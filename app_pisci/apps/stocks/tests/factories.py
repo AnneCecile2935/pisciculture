@@ -12,6 +12,7 @@ class LotDePoissonFactory(factory.django.DjangoModelFactory):
     espece = factory.SubFactory(EspeceFactory)
     site_prod = factory.SubFactory(SiteFactory)
     fournisseur = factory.SubFactory(FournisseurFactory)
+
     @factory.lazy_attribute
     def bassin(self):
         return BassinFactory(site=self.site_prod)
@@ -20,6 +21,6 @@ class LotDePoissonFactory(factory.django.DjangoModelFactory):
     quantite = factory.Faker("random_int", min=100, max=10000)
     quantite_actuelle = factory.LazyAttribute(lambda o: o.quantite)
     statut = "OEUF"
-    code_lot = factory.Sequence(lambda n: f"LOT{n:04d}")
+    code_lot = factory.Sequence(lambda n: f"LOT{n}")
     poids = factory.Faker("random_int", min=1, max=100)
     poids_moyen = None  # Calculé automatiquement dans save()

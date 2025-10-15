@@ -4,6 +4,7 @@ from apps.sites.models import Site, Bassin
 class SiteFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Site
+        skip_postgeneration_save = True
 
     nom = factory.Sequence(lambda n: f"Site {n}")
     est_actif = True

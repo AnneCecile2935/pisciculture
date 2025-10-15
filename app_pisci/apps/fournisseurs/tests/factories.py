@@ -10,6 +10,7 @@ def generate_phone_number():
 class FournisseurFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Fournisseur
+        skip_postgeneration_save = True
 
     nom = factory.Sequence(lambda n: f"Fournisseur {n}")
     adresse = factory.Faker("street_address")
