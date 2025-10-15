@@ -1,0 +1,17 @@
+{% block content %}
+<h2>Détail du repas</h2>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ nourrissage.code_lot }} - {{ nourrissage.qte }} kg</h5>
+        <p class="card-text">
+            <strong>Date:</strong> {{ nourrissage.date_repas }}<br>
+            <strong>Bassin:</strong> {{ nourrissage.bassin }}<br>
+            <strong>Aliment:</strong> {{ nourrissage.aliment }}<br>
+            <strong>Notes:</strong> {{ nourrissage.notes|default:"Aucune note" }}
+        </p>
+        <a href="{% url 'activite_quotidien:nourrissage-update' nourrissage.pk %}" class="btn btn-warning">Modifier</a>
+        <a href="{% url 'activite_quotidien:nourrissage-delete' nourrissage.pk %}" class="btn btn-danger">Supprimer</a>
+        <a href="{% url 'activite_quotidien:nourrissage-list' %}" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}

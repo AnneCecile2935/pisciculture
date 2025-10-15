@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Liste des repas</h2>
+<a href="{% url 'activite_quotidien:nourrissage-create' %}" class="btn btn-success mb-3">Ajouter un repas</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Lot</th>
+            <th>Quantité (kg)</th>
+            <th>Date</th>
+            <th>Aliment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for nourrissage in nourrissages %}
+        <tr>
+            <td>{{ nourrissage.code_lot }}</td>
+            <td>{{ nourrissage.qte }}</td>
+            <td>{{ nourrissage.date_repas }}</td>
+            <td>{{ nourrissage.aliment }}</td>
+            <td>
+                <a href="{% url 'activite_quotidien:nourrissage-detail' nourrissage.pk %}" class="btn btn-info btn-sm">Voir</a>
+                <a href="{% url 'activite_quotidien:nourrissage-update' nourrissage.pk %}" class="btn btn-warning btn-sm">Modifier</a>
+                <a href="{% url 'activite_quotidien:nourrissage-delete' nourrissage.pk %}" class="btn btn-danger btn-sm">Supprimer</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Aucun repas enregistré.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
