@@ -179,3 +179,140 @@ def test_user_viewset_standard_user_cannot_list_users(standard_user, api_client)
     url = reverse('user-list')
     response = api_client.get(url)
     assert response.status_code == 403
+
+# --- Tests pour CustomLoginView ---
+@pytest.mark.django_db(transaction=True)
+def test_login_view_success(standard_user, client):
+    """Test : un utilisateur peut se connecter avec succès."""
+    url = reverse('login')
+    response = client.post(url, {
+        'username': standard_user.email,  # ou standard_user.username selon ton formulaire
+        'password': 'securepassword123'    # Mot de passe par défaut dans UserFactory
+    }, follow=True)
+
+    # Vérifie la redirection vers 'dashboard'
+    assert response.redirect_chain[0][1] == 302
+    assert reverse('dashboard') in response.redirect_chain[0][0]
+
+    # Vérifie que l'utilisateur est connecté
+    assert response.context['user'].is_authenticated
+
+    # Vérifie le message de succès
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) == 1
+    assert f"Bonjour, {standard_user.username}!" in str(messages[0])
+
+@pytest.mark.django_db(transaction=True)
+def test_login_view_failure(client):
+    """Test : échec de connexion avec identifiants invalides."""
+    url = reverse('login')
+    response = client.post(url, {
+        'username': 'wrong@example.com',
+        'password': 'wrongpassword'
+    }, follow=True)
+
+    # Vérifie que l'utilisateur n'est pas connecté
+    assert not response.context['user'].is_authenticated
+
+    # Vérifie le message d'erreur
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) == 1
+    assert "Identifiants invalides" in str(messages[0])
+
+@pytest.mark.django_db(transaction=True)
+def test_login_view_template(client):
+    """Test : la page de login utilise le bon template."""
+    url = reverse('login')
+    response = client.get(url)
+    assert response.status_code == 200
+    assert 'registration/login.html' in [t.name for t in response.templates]
+
+@pytest.mark.django_db(transaction=True)
+def test_login_view_with_empty_username(client):
+    """Test : échec de connexion si le champ username/email est vide."""
+    response = client.post(reverse('login'), {
+        'username': '',
+        'password': 'securepassword123'
+    })
+    assert response.status_code == 200  # Le formulaire est réaffiché
+    form = response.context['form']
+    assert 'username' in form.errors
+
+@pytest.mark.django_db(transaction=True)
+def test_login_view_with_empty_password(client):
+    """Test : échec de connexion si le mot de passe est vide."""
+    response = client.post(reverse('login'), {
+        'username': 'test@example.com',
+        'password': ''
+    })
+    assert response.status_code == 200
+    form = response.context['form']
+    assert 'password' in form.errors
+
+# --- Tests pour CustomLogoutView ---
+@pytest.mark.django_db(transaction=True)
+def test_logout_view_success(standard_user, client):
+    """Test : un utilisateur connecté peut se déconnecter."""
+    client.force_login(standard_user)
+    url = reverse('logout')
+    response = client.post(url, follow=True)
+
+    # Vérifie la redirection vers 'login'
+    assert response.redirect_chain[0][1] == 302
+    assert reverse('login') in response.redirect_chain[0][0]
+
+    # Vérifie que l'utilisateur est déconnecté
+    assert not response.context['user'].is_authenticated
+
+    # Vérifie le message de succès
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) == 1
+    assert "Vous avez été déconnecté avec succès" in str(messages[0])
+
+@pytest.mark.django_db(transaction=True)
+def test_logout_view_when_not_logged_in(client):
+    """Test : déconnexion d'un utilisateur non connecté (comportement par défaut)."""
+    url = reverse('logout')
+    response = client.post(url, follow=True)
+    assert response.redirect_chain[0][1] == 302
+    assert reverse('login') in response.redirect_chain[0][0]
+
+# --- Tests pour les redirections ---
+@pytest.mark.django_db(transaction=True)
+def test_login_redirect_url(standard_user, client):
+    """Test : redirection après login vers 'dashboard'."""
+    response = client.post(reverse('login'), {
+        'username': standard_user.email,
+        'password': 'securepassword123'
+    }, follow=True)
+    assert response.redirect_chain[-1][0] == reverse('dashboard')
+
+@pytest.mark.django_db(transaction=True)
+def test_logout_redirect_url(standard_user, client):
+    """Test : redirection après logout vers 'login'."""
+    client.force_login(standard_user)
+    response = client.post(reverse('logout'), follow=True)
+    assert response.redirect_chain[-1][0] == reverse('login')
+
+# --- Tests pour les messages personnalisés ---
+@pytest.mark.django_db(transaction=True)
+def test_login_message_with_username(standard_user, client):
+    """Test : le message de bienvenue affiche le username."""
+    response = client.post(reverse('login'), {
+        'username': standard_user.email,
+        'password': 'securepassword123'
+    }, follow=True)
+    messages = list(get_messages(response.wsgi_request))
+    assert standard_user.username in str(messages[0])
+
+@pytest.mark.django_db(transaction=True)
+def test_login_message_fallback_to_email(admin_user, client):
+    """Test : si username est vide, le message utilise l'email (fallback)."""
+    admin_user.username = ""  # Force un username vide
+    admin_user.save()
+    response = client.post(reverse('login'), {
+        'username': admin_user.email,
+        'password': 'securepassword123'
+    }, follow=True)
+    messages = list(get_messages(response.wsgi_request))
+    assert admin_user.email.split('@')[0] in str(messages[0])  # Vérifie le fallback

@@ -136,7 +136,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # =============================================
 # 6. DATABASE
 # =============================================
-TESTING = 'test' in sys.argv
+TESTING = os.getenv('TESTING', 'false').lower() == 'true'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -144,30 +145,26 @@ DATABASES = {
         'USER': os.getenv('DB_USER', 'postgres'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
         'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+
     }
 }
-"""
-dict:
-    Configuration de la base de données.
-    Pour ton projet :
-    - 'NAME' : Nom de la base (ex: 'pisciculture_db' en production).
-    - 'HOST': 'db' car tu utilises Docker (le service s'appelle 'db' dans docker-compose.yml).
-    En production, utiliser des variables d'environnement :
-    - 'NAME': os.getenv('DB_NAME', 'postgres'),
-    - 'USER': os.getenv('DB_USER', 'postgres'),
-    - etc.
-"""
+
 # =============================================
 # Surcharge pour les tests
 # =============================================
 if TESTING:
-    DATABASES['default'].update({
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'pisciculture_test'),
         'USER': os.getenv('DB_USER', 'test_user'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'test_password'),
         'HOST': os.getenv('DB_HOST', 'db_test'),
-    })
+        'PORT': os.getenv('DB_PORT', '5432'),
+        'TEST': {
+            'NAME': os.getenv('DB_NAME', 'pisciculture_test'),  # Utilise la même base pour les tests
+        },
+
+    }
 # =============================================
 # 7. AUTH / SECURITY
 # =============================================
@@ -212,6 +209,6 @@ MEDIA_URL = '/media/'    # URL pour accéder aux fichiers uploadés
 # =============================================
 # 10. REDIRECTIONS (login/logout)
 # =============================================
-
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'dashboard'  # ✅ Après connexion
 LOGOUT_REDIRECT_URL = 'login'    # ✅ Après déconnexion

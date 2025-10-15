@@ -59,8 +59,15 @@ class CustomLoginView(LoginView):
 
         def form_valid(self, form):
             response = super().form_valid(form)
-            messages.success(self.request, f"Bonjour, {self.request.user.get_username}!")
+            user = self.request.user
+            display_name = user.username if user.username else user.email.split('@')[0]
+            messages.success(self.request, f"Bonjour, {display_name}!")
             return response
+
+        def form_invalid(self, form):
+            messages.error(self.request, "Identifiants invalides")
+            return super().form_invalid(form)
+
 
 
 class CustomLogoutView(LogoutView):
