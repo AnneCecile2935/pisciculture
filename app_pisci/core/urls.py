@@ -35,6 +35,7 @@ urlpatterns = [
     # Apps métiers
     path('sites/', include('apps.sites.urls')),
     #path('activite/', include('apps.activite_quotidien.urls')),
+    path('nourrissage/', include('apps.activite_quotidien.urls')),
     path('fournisseurs/', include('apps.fournisseurs.urls')),
     path('especes/', include('apps.especes.urls')),
     path('stocks/', include('apps.stocks.urls')),
