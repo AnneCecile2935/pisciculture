@@ -1,12 +1,9 @@
 from django.apps import AppConfig
 
-
-class AppPisciConfig(AppConfig):
+class ActiviteQuotidienConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'app_pisci'
+    name = 'apps.activite_quotidien'
 
 class CommunConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.commun'
-
-# ne pas modifier
