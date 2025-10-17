@@ -1,0 +1,82 @@
+/* Thème par défaut (clair) */
+:root {
+    --bg-color: #f8f9fa;
+    --text-color: #333;
+    --sidebar-bg: #f8f9fa;
+    --nav-link-color: #333;
+    --card-bg: #ffffff;
+	--sidebar-heading-color: #333;
+
+}
+
+/* Thème sombre */
+[data-theme="dark"] {
+    --bg-color: #212529;
+    --text-color: #f8f9fa;
+    --sidebar-bg: #343a40;
+    --nav-link-color: #afadbd;
+    --card-bg: #495057;
+	--sidebar-heading-color: #f8f9fa;
+}
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+.sidebar {
+    background-color: var(--sidebar-bg) !important;
+}
+.sidebar-heading {
+    color: var(--sidebar-heading-color) !important;  /* Force la couleur du titre */
+}
+.sidebar .nav-link {
+    color: var(--nav-link-color) !important;
+}
+
+.card {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* Style du bouton de bascule */
+#theme-toggle {
+    margin-bottom: 1rem;
+}
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: 2px 0 0.5rem rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+    width: 250px;
+}
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+    padding: 0.75rem 1rem;
+}
+.sidebar .nav-link.active {
+    color: #0d6efd;
+    background-color: #e7f1ff;
+}
+.sidebar .nav-link:hover {
+    color: #0d6efd;
+    background-color: #f0f4ff;
+}
+.main-content {
+    padding: 20px;
+}
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+}

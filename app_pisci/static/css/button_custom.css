@@ -1,0 +1,87 @@
+/* static/css/custom_buttons.css */
+/* Couleurs principales */
+:root {
+    --color-primary: #2563eb;       /* Bleu principal */
+    --color-success: #10b981;       /* Vert succès */
+    --color-danger: #ef4444;        /* Rouge danger */
+    --color-secondary: #6b7280;     /* Gris secondaire */
+    --color-outline: #d1d5db;       /* Gris outline */
+    --color-text-light: #f9fafb;    /* Texte clair pour boutons colorés */
+    --color-text-dark: #374151;     /* Texte foncé pour boutons outline */
+    --color-warning: #f59e0b;       /* Orange pour "Mettre à jour" */
+    --btn-hover-filter: brightness(90%);
+}
+
+/* Effet de transition pour tous les boutons */
+.btn {
+    transition: all 0.2s ease;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Style pour les icônes dans les boutons */
+.btn i {
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+/* Bouton "Créer/Ajouter" */
+.btn-create {
+    --bs-btn-bg: var(--color-primary) !important;
+    --bs-btn-border-color: var(--color-primary) !important;
+    --bs-btn-hover-bg: #{shade-color(var(--color-primary), 10%)} !important;
+    --bs-btn-color: var(--color-text-light) !important;
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-text-light) !important;
+}
+
+/* Bouton "Mettre à jour" */
+.btn-update {
+    --bs-btn-bg: var(--color-warning) !important;
+    --bs-btn-border-color: var(--color-warning) !important;
+    --bs-btn-hover-bg: #{shade-color(var(--color-warning), 10%)} !important;
+    --bs-btn-color: var(--color-text-dark) !important;
+    background-color: var(--color-warning) !important;
+    border-color: var(--color-warning) !important;
+    color: var(--color-text-dark) !important;
+}
+
+/* Bouton "Supprimer" */
+.btn-delete {
+    --bs-btn-bg: var(--color-danger) !important;
+    --bs-btn-border-color: var(--color-danger) !important;
+    --bs-btn-hover-bg: #{shade-color(var(--color-danger), 10%)} !important;
+    --bs-btn-color: var(--color-text-light) !important;
+    background-color: var(--color-danger) !important;
+    border-color: var(--color-danger) !important;
+    color: var(--color-text-light) !important;
+}
+
+/* Boutons dans les tableaux */
+table .btn-sm {
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Boutons dans les tableaux (spécifique) */
+table .btn-update {
+    --bs-btn-bg: var(--color-warning) !important;
+    --bs-btn-border-color: var(--color-warning) !important;
+    --bs-btn-hover-bg: #{shade-color(var(--color-warning), 10%)} !important;
+    background-color: var(--color-warning) !important;
+    border-color: var(--color-warning) !important;
+    color: var(--color-text-dark) !important;
+}
+
+table .btn-delete {
+    --bs-btn-bg: var(--color-danger) !important;
+    --bs-btn-border-color: var(--color-danger) !important;
+    --bs-btn-hover-bg: #{shade-color(var(--color-danger), 10%)} !important;
+    background-color: var(--color-danger) !important;
+    border-color: var(--color-danger) !important;
+    color: var(--color-text-light) !important;
+}
