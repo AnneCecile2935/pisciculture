@@ -5,6 +5,7 @@ from .models import Aliment
 from .forms import AlimentForm
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.http import JsonResponse
 
 
 class AlimentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -68,3 +69,17 @@ class AlimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context["title"] = f"Supprimer l'aliment {self.object.code_alim}"
         return context
+
+class AlimentListJsonView(ListView):
+    model = Aliment
+    context_object_name = 'aliments'
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # Si la requête est AJAX, retourner les données en JSON
+            aliments = list(self.get_queryset().values(
+                'id', 'code_alim', 'nom', 'fournisseur__nom'
+            ))
+            return JsonResponse(aliments, safe=False)
+        # Sinon, comportement normal de la ListView
+        return super().get(request, *args, **kwargs)
