@@ -1,34 +1,101 @@
 {% extends "base.html" %}
-
+{% block title %}Liste des espèces{% endblock %}
 {% block content %}
-<h1>Liste des espèces</h1>
-<a href="{% url 'especes:espece-create' %}" class="btn btn-primary mb-3">Ajouter une espèce</a>
+<h2 class="mb-4">Liste des espèces</h2>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Nom commun</th>
-      <th>Nom scientifique</th>
-      <th>Active</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for espece in especes %}
-    <tr>
-      <td>{{ espece.nom_commun }}</td>
-      <td>{{ espece.nom_scientifique }}</td>
-      <td>{% if espece.est_active %}✅{% else %}❌{% endif %}</td>
-      <td>
-        <a href="{% url 'especes:espece-update' espece.pk %}" class="btn btn-sm btn-warning">Éditer</a>
-        <a href="{% url 'especes:espece-delete' espece.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="4">Aucune espèce enregistrée.</td>
-    </tr>
+<!-- Messages de succès/erreur -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     {% endfor %}
-  </tbody>
+{% endif %}
+
+<!-- Bouton pour ajouter une espèce -->
+<a href="{% url 'especes:espece-create' %}" class="btn btn-create mb-3">
+    <i class="bi bi-plus"></i> Ajouter une espèce
+</a>
+
+<!-- Tableau des espèces avec DataTables -->
+<table id="especesTable" class="table table-striped table-hover table-bordered" style="width:100%">
+    <thead class="table-dark">
+        <tr>
+            <th>Nom commun</th>
+            <th>Nom scientifique</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for espece in especes %}
+        <tr>
+            <td>{{ espece.nom_commun }}</td>
+            <td>{{ espece.nom_scientifique }}</td>
+            <td>{% if espece.est_active %}✅{% else %}❌{% endif %}</td>
+            <td>
+                <a href="{% url 'especes:espece-update' espece.pk %}" class="btn btn-sm btn-update">
+                    <i class="bi bi-pencil"></i> Éditer
+                </a>
+                <a href="{% url 'especes:espece-delete' espece.pk %}" class="btn btn-sm btn-delete">
+                    <i class="bi bi-trash"></i> Supprimer
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">Aucune espèce enregistrée.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery (requis pour DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<!-- DataTables Bootstrap 5 JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- DataTables Responsive -->
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script>
+    $(document).ready(function() {
+			$('#especesTable').DataTable({
+					"ajax": {
+							"url": "{% url 'especes:espece-list-json' %}",
+							"dataSrc": ""
+					},
+					"columns": [
+							{ "data": "nom_commun" },
+							{ "data": "nom_scientifique" },
+							{ "data": "est_actif", "render": function(data) {
+									return data ? "✅" : "❌";
+							}},
+							{ "data": null, "render": function(data) {
+									return `
+											<a href="/especes/${data.id}/update/" class="btn btn-sm btn-warning">
+													<i class="bi bi-pencil"></i> Éditer
+											</a>
+											<a href="/especes/${data.id}/delete/" class="btn btn-sm btn-danger">
+													<i class="bi bi-trash"></i> Supprimer
+											</a>
+									`;
+							}}
+					],
+					"language": {
+							"url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+					},
+					"responsive": true,
+					"ordering": true,
+					"paging": true,
+					"searching": true,
+					"lengthChange": false,
+					"info": true,
+					"autoWidth": false,
+    	});
+	});
+</script>
 {% endblock %}
