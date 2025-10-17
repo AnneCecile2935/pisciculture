@@ -4,13 +4,14 @@ from datetime import date
 from apps.sites.models import Site
 from apps.activite_quotidien.models import ReleveTempOxy
 from apps.activite_quotidien.forms import ReleveForm
-from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, View
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Nourrissage
 from .forms import NourrissageForm
 from django.contrib import messages
 from django.utils import timezone
+from django.http import JsonResponse
 
 class NourrissageCreateView(LoginRequiredMixin, CreateView):
     model = Nourrissage
@@ -87,6 +88,13 @@ class NourrissageDeleteView(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, "Le repas a bien été supprimé.")
         return super().form_valid(form)
+
+class NourrissageListJsonView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        nourrissages = Nourrissage.objects.all().values(
+            'id', 'crea_lot__code_lot', 'qte', 'date_repas', 'aliment__nom'
+        ).order_by('-date_repas')
+        return JsonResponse(list(nourrissages), safe=False)
 
 
 def index(request):
