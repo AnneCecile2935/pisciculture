@@ -1,9 +1,8 @@
-{% extends "base.html" %}  <!-- Si tu as un template de base -->
-
+{% extends "base.html" %}
+{% block title %}Liste des lots de poissons{% endblock %}
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <h1 class="mb-4">Liste des lots de poissons</h1>
-
     <!-- Messages Django (succès, erreurs, etc.) -->
     {% if messages %}
         {% for message in messages %}
@@ -13,17 +12,21 @@
             </div>
         {% endfor %}
     {% endif %}
-
     <!-- Bouton pour créer un nouveau lot -->
     {% if perms.stocks.add_lotdepoisson %}
-        <a href="{% url 'stocks:create' %}" class="btn btn-primary mb-3">
+        <a href="{% url 'stocks:create' %}" class="btn btn-create mb-3">
             <i class="bi bi-plus-circle"></i> Créer un nouveau lot
         </a>
     {% endif %}
-
-    <!-- Tableau des lots -->
+    <!-- Loader -->
+    <div id="loader" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+    </div>
+    <!-- Tableau des lots avec DataTables -->
     <div class="table-responsive">
-        <table class="table table-striped table-hover">
+        <table id="lotsTable" class="table table-striped table-hover table-bordered" style="width:100%; display: none;">
             <thead class="table-dark">
                 <tr>
                     <th>Code lot</th>
@@ -38,54 +41,83 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for lot in lots %}
-                <tr>
-                    <td>{{ lot.code_lot }}</td>
-                    <td>{{ lot.espece.nom_commun|default:lot.espece }}</td>
-                    <td>{{ lot.site_prod.nom|default:lot.site_prod }}</td>
-                    <td>{{ lot.bassin.nom|default:lot.bassin }}</td>
-                    <td>
-                        <span class="badge
-                            {% if lot.statut == 'OEUF' %}bg-secondary
-                            {% elif lot.statut == 'ALEVIN' %}bg-primary
-                            {% elif lot.statut == 'JUVENILE' %}bg-info
-                            {% elif lot.statut == 'ADULTE' %}bg-success
-                            {% endif %}">
-                            {{ lot.get_statut_display }}
-                        </span>
-                    </td>
-                    <td>{{ lot.quantite }}</td>
-                    <td>{{ lot.quantite_actuelle }}</td>
-                    <td>{{ lot.poids_moyen|floatformat:1 }}</td>
-                    <td>{{ lot.date_arrivee|date:"d/m/Y" }}</td>
-                    <td>
-                        <!-- Boutons d'action -->
-                        <div class="d-flex gap-2">
-                            {% if perms.stocks.change_lotdepoisson %}
-                                <a href="{% url 'stocks:update' lot.pk %}"
-                                   class="btn btn-sm btn-warning"
-                                   title="Modifier">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                            {% endif %}
-                            {% if perms.stocks.delete_lotdepoisson %}
-                                <a href="{% url 'stocks:delete' lot.pk %}"
-                                   class="btn btn-sm btn-danger"
-                                   title="Supprimer">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="10" class="text-center">Aucun lot enregistré.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#lotsTable').DataTable({
+        "processing": true,
+        "ajax": {
+            "url": "{% url 'stocks:list-json' %}",
+            "dataSrc": "",
+            "error": function(xhr, error, thrown) {
+                console.error("Erreur AJAX :", xhr.responseText);
+                alert("Erreur lors du chargement des lots.");
+            }
+        },
+        "columns": [
+            { "data": "code_lot" },
+            { "data": "espece__nom_commun", "defaultContent": "-" },
+            { "data": "site_prod__nom", "defaultContent": "-" },
+            { "data": "bassin__nom", "defaultContent": "-" },
+            { "data": "statut", "render": function(data) {
+                var statutText = {
+                    'OEUF': {text: 'Œuf', class: 'bg-secondary'},
+                    'ALEVIN': {text: 'Alevin', class: 'bg-primary'},
+                    'JUVENILE': {text: 'Juvenile', class: 'bg-info'},
+                    'ADULTE': {text: 'Adulte', class: 'bg-success'}
+                };
+                var statut = statutText[data] || {text: data, class: 'bg-secondary'};
+                return `<span class="badge ${statut.class}">${statut.text}</span>`;
+            }},
+            { "data": "quantite" },
+            { "data": "quantite_actuelle" },
+            { "data": "poids_moyen", "render": function(data) {
+                return data ? data.toFixed(1) : '-';
+            }},
+            { "data": "date_arrivee", "render": function(data) {
+                return data ? new Date(data).toLocaleDateString('fr-FR') : '-';
+            }},
+            { "data": null, "render": function(data) {
+                var updateBtn = data.id ? `
+                    <a href="/stocks/${data.id}/update/" class="btn btn-sm btn-warning" title="Modifier">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>` : '';
+
+                var deleteBtn = data.id ? `
+                    <a href="/stocks/${data.id}/delete/" class="btn btn-sm btn-danger" title="Supprimer">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </a>` : '';
+
+                return updateBtn + ' ' + deleteBtn;
+            }}
+        ],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+        },
+        "drawCallback": function() {
+            $('a.btn-warning').addClass('btn-warning').css({
+                'background-color': 'var(--color-warning)',
+                'border-color': 'var(--color-warning)',
+                'color': 'var(--color-text-dark)'
+            });
+            $('a.btn-danger').addClass('btn-danger').css({
+                'background-color': 'var(--color-danger)',
+                'border-color': 'var(--color-danger)',
+                'color': 'var(--color-text-light)'
+            });
+        },
+        "initComplete": function() {
+            $('#loader').hide();
+            $('#lotsTable').show();
+        }
+    });
+});
+</script>
 {% endblock %}

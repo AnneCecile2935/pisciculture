@@ -1,9 +1,10 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import LotDePoisson
 from .forms import LotForm
+from django.http import JsonResponse
 
 class LotListView(LoginRequiredMixin, ListView):
     model = LotDePoisson
@@ -71,3 +72,12 @@ class LotDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context["title"] = f"Supprimer le lot {self.object.code_lot}"
         return context
+
+
+class LotListJsonView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        lots = list(LotDePoisson.objects.all().values(
+            'id', 'code_lot', 'espece__nom_commun', 'site_prod__nom', 'bassin__nom',
+            'statut', 'quantite', 'quantite_actuelle', 'poids_moyen', 'date_arrivee'
+        ))
+        return JsonResponse(lots, safe=False)
