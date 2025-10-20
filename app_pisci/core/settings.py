@@ -202,6 +202,7 @@ USE_TZ = True
 # =============================================
 
 STATIC_URL = '/static/'  # URL pour accéder aux fichiers statiques
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Dossier pour les fichiers statiques en production
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')         # Dossier pour les uploads utilisateurs
 MEDIA_URL = '/media/'    # URL pour accéder aux fichiers uploadés
