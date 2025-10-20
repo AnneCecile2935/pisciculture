@@ -91,9 +91,22 @@ class NourrissageDeleteView(LoginRequiredMixin, DeleteView):
 
 class NourrissageListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        nourrissages = Nourrissage.objects.all().values(
-            'id', 'crea_lot__code_lot', 'qte', 'date_repas', 'aliment__nom'
+        nourrissages = Nourrissage.objects.select_related(
+            'site_prod', 'bassin', 'crea_lot', 'aliment', 'cree_par'
+        ).values(
+            'id',
+            'site_prod__nom',  # Notez les doubles underscores pour les relations
+            'bassin__nom',
+            'crea_lot__code_lot',
+            'qte',
+            'date_repas',
+            'aliment__nom',
+            'cree_par__username',  # Notez les doubles underscores pour les relations
+            'notes'
         ).order_by('-date_repas')
+
+        print(list(nourrissages))  # Pour débogage
+
         return JsonResponse(list(nourrissages), safe=False)
 
 
