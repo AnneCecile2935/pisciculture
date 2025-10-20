@@ -1,129 +1,19 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">
-        {% if object %}
-            Éditer {{ object.nom }}
-        {% else %}
-            Ajouter un fournisseur
+{% extends "form_templates.html" %}
+{% block title %}Ajouter un fournisseur{% endblock %}
+{% block form_title %}Ajouter un fournisseur{% endblock %}
+{% block form_content %}
+<form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
         {% endif %}
-    </h1>
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-
-    <form method="post" class="needs-validation" novalidate>
-        {% csrf_token %}
-
-        <!-- Nom -->
-        <div class="mb-3">
-            <label for="{{ form.nom.id_for_label }}" class="form-label">
-                {{ form.nom.label }} <span class="text-danger">*</span>
-            </label>
-            {{ form.nom }}
-            {% if form.nom.errors %}
-                <div class="text-danger">{{ form.nom.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Type de fournisseur (liste déroulante) -->
-        <div class="mb-3">
-            <label for="{{ form.type_fournisseur.id_for_label }}" class="form-label">
-                {{ form.type_fournisseur.label }} <span class="text-danger">*</span>
-            </label>
-            {{ form.type_fournisseur }}
-            <div class="form-text">{{ form.type_fournisseur.help_text }}</div>
-            {% if form.type_fournisseur.errors %}
-                <div class="text-danger">{{ form.type_fournisseur.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Adresse -->
-        <div class="mb-3">
-            <label for="{{ form.adresse.id_for_label }}" class="form-label">
-                {{ form.adresse.label }} <span class="text-danger">*</span>
-            </label>
-            {{ form.adresse }}
-            {% if form.adresse.errors %}
-                <div class="text-danger">{{ form.adresse.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Ville -->
-        <div class="mb-3">
-            <label for="{{ form.ville.id_for_label }}" class="form-label">
-                {{ form.ville.label }} <span class="text-danger">*</span>
-            </label>
-            {{ form.ville }}
-            {% if form.ville.errors %}
-                <div class="text-danger">{{ form.ville.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Code postal -->
-        <div class="mb-3">
-            <label for="{{ form.code_postal.id_for_label }}" class="form-label">
-                {{ form.code_postal.label }} <span class="text-danger">*</span>
-            </label>
-            {{ form.code_postal }}
-            <div class="form-text">Format : 5 chiffres (ex: 75000)</div>
-            {% if form.code_postal.errors %}
-                <div class="text-danger">{{ form.code_postal.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Contact -->
-        <div class="mb-3">
-            <label for="{{ form.contact.id_for_label }}" class="form-label">
-                {{ form.contact.label }}
-            </label>
-            {{ form.contact }}
-            {% if form.contact.errors %}
-                <div class="text-danger">{{ form.contact.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Téléphone -->
-        <div class="mb-3">
-            <label for="{{ form.telephone.id_for_label }}" class="form-label">
-                {{ form.telephone.label }}
-            </label>
-            {{ form.telephone }}
-            {% if form.telephone.errors %}
-                <div class="text-danger">{{ form.telephone.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Email -->
-        <div class="mb-3">
-            <label for="{{ form.email.id_for_label }}" class="form-label">
-                {{ form.email.label }}
-            </label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <div class="text-danger">{{ form.email.errors }}</div>
-            {% endif %}
-        </div>
-
-        <!-- Est actif -->
-        <div class="mb-3 form-check">
-            {{ form.est_actif }}
-            <label class="form-check-label" for="{{ form.est_actif.id_for_label }}">
-                {{ form.est_actif.label }}
-            </label>
-        </div>
-
-        <!-- Boutons -->
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary">
-                {% if object %}Mettre à jour{% else %}Créer{% endif %}
-            </button>
-            <a href="{% url 'fournisseurs:fournisseur-list' %}" class="btn btn-secondary">Annuler</a>
-        </div>
-    </form>
-</div>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a href="{% url 'fournisseurs:fournisseur-list' %}" class="btn btn-secondary">Annuler</a>
+</form>
 {% endblock %}
