@@ -1,15 +1,99 @@
 {% extends "base.html" %}
-
+{% block title %}Liste des bassins - {{ site.nom }}{% endblock %}
 {% block content %}
-  <h1>Liste des bassins</h1>
-  <ul>
-    {% for bassin in bassins %}
-      <li>
-        {{ bassin.nom }} ({{ bassin.site.nom }})
-        <a href="{% url 'sites:bassin-update' bassin.id %}">Modifier</a>
-      </li>
-    {% empty %}
-      <li>Aucun bassin trouvé.</li>
+<h2 class="mb-4">Liste des bassins pour {{ site.nom }}</h2>
+<!-- Messages de succès/erreur -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     {% endfor %}
-  </ul>
+{% endif %}
+<!-- Bouton pour ajouter un bassin -->
+<a href="{% url 'sites:bassin-create' site.id %}" class="btn btn-create mb-3">
+    <i class="bi bi-plus"></i> Ajouter un bassin
+</a>
+<!-- Lien pour retourner à la liste des sites -->
+<a href="{% url 'sites:site-list' %}" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Retour aux sites
+</a>
+<!-- Loader -->
+<div id="loader" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+    </div>
+</div>
+<!-- Tableau des bassins avec DataTables -->
+<table id="bassinsTable" class="table table-striped table-hover table-bordered" style="width:100%; display: none;">
+    <thead class="table-dark">
+        <tr>
+            <th>Nom</th>
+            <th>Actif</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody></tbody>  <!-- Vide : DataTables le remplira -->
+</table>
+{% endblock %}
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+var siteId = "{{ site.id }}";
+
+$(document).ready(function() {
+    $('#bassinsTable').DataTable({
+        "processing": true,
+        "ajax": {
+            "url": "/sites/" + siteId + "/bassins/list-json/",
+            "dataSrc": "",
+            "error": function(xhr, error, thrown) {
+                console.error("Erreur AJAX :", xhr.responseText);
+                alert("Erreur lors du chargement des bassins.");
+            }
+        },
+        "columns": [
+            { "data": "nom" },
+            { "data": "est_actif", "render": function(data) {
+                return data ?
+                    '<span class="badge bg-success">Actif</span>' :
+                    '<span class="badge bg-danger">Inactif</span>';
+            }},
+            { "data": null, "render": function(data) {
+							var updateUrl = "/sites/" + siteId + "/bassins/" + data.id + "/update/";
+							var deleteUrl = "/sites/" + siteId + "/bassins/" + data.id + "/delete/";
+							return `
+									<a href="${updateUrl}" class="btn btn-sm btn-update">
+											<i class="bi bi-pencil"></i> Modifier
+									</a>
+									<a href="${deleteUrl}" class="btn btn-sm btn-delete">
+											<i class="bi bi-trash"></i> Supprimer
+									</a>
+							`;
+						}}
+        ],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+        },
+        "drawCallback": function() {
+            $('a.btn-update').addClass('btn-update').css({
+                'background-color': 'var(--color-warning)',
+                'border-color': 'var(--color-warning)',
+                'color': 'var(--color-text-dark)'
+            });
+            $('a.btn-delete').addClass('btn-delete').css({
+                'background-color': 'var(--color-danger)',
+                'border-color': 'var(--color-danger)',
+                'color': 'var(--color-text-light)'
+            });
+        },
+        "initComplete": function() {
+            $('#loader').hide();
+            $('#bassinsTable').show();
+        }
+    });
+});
+</script>
 {% endblock %}
