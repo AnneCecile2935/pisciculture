@@ -85,3 +85,36 @@ table .btn-delete {
     border-color: var(--color-danger) !important;
     color: var(--color-text-light) !important;
 }
+/* Boutons dans les tableaux DataTables */
+table.dataTable tbody td a.btn-update,
+table.dataTable tbody td a.btn-delete {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    text-align: center;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Bouton "Mettre à jour" dans DataTables */
+table.dataTable tbody td a.btn-update {
+    background-color: var(--color-warning) !important;
+    border-color: var(--color-warning) !important;
+    color: var(--color-text-dark) !important;
+}
+
+/* Bouton "Supprimer" dans DataTables */
+table.dataTable tbody td a.btn-delete {
+    background-color: var(--color-danger) !important;
+    border-color: var(--color-danger) !important;
+    color: var(--color-text-light) !important;
+}
+
+/* Icônes dans les boutons DataTables */
+table.dataTable tbody td a.btn-update i,
+table.dataTable tbody td a.btn-delete i {
+    font-size: 0.95rem;
+    vertical-align: middle;
+    margin-right: 0.25rem;
+}
