@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Liste des aliments{% endblock %}
 {% block content %}
+<style>
+    #alimentsTable td,
+    #alimentsTable th {
+        text-align: center !important;
+    }
+		#alimentsTable td a.btn {
+    display: inline-flex;
+    justify-content: center;
+}
+</style>
 <h2 class="mb-4">Liste des aliments</h2>
 <!-- Messages de succès/erreur -->
 {% if messages %}

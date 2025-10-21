@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Liste des bassins - {{ site.nom }}{% endblock %}
 {% block content %}
+<style>
+    #bassinsTable td,
+    #bassinsTable th {
+        text-align: center !important;
+    }
+		#bassinsTable td a.btn {
+    display: inline-flex;
+    justify-content: center;
+}
+</style>
 <h2 class="mb-4">Liste des bassins pour {{ site.nom }}</h2>
 <!-- Messages de succès/erreur -->
 {% if messages %}
