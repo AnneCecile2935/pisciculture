@@ -1,0 +1,208 @@
+:root {
+    /* Couleurs pour le mode clair */
+    --bs-body-bg: #f8f9fa;
+    --bs-body-color: #212529;
+    --bs-card-bg: #ffffff;
+    --bs-card-border: #dee2e6;
+    --bs-primary: #3a7bd5;
+    --bs-primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+    --bs-secondary: #6c757d;
+    --bs-input-bg: #ffffff;
+    --bs-input-border: #ced4da;
+    --bs-input-focus: rgba(58, 123, 213, 0.25);
+    --bs-input-radius: 0.5rem;
+    --bs-input-padding-y: 1rem;
+    --bs-input-padding-x: 1rem;
+    --bs-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --bs-transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] {
+    /* Couleurs pour le mode sombre */
+    --bs-body-bg: #121212;
+    --bs-body-color: #e0e0e0;
+    --bs-card-bg: #1e1e1e;
+    --bs-card-border: #444;
+    --bs-primary: #5d9cec;
+    --bs-primary-gradient: linear-gradient(135deg, #5d9cec 0%, #00d4ff 100%);
+    --bs-secondary: #adb5bd;
+    --bs-input-bg: #2d2d2d;
+    --bs-input-border: #444;
+    --bs-input-focus: rgba(93, 156, 236, 0.4);
+}
+
+/* Style global du body et des cartes */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    transition: var(--bs-transition);
+}
+
+.card {
+    background-color: var(--bs-card-bg);
+    border: 1px solid var(--bs-card-border);
+    border-radius: 1rem;
+    box-shadow: var(--bs-box-shadow);
+    transition: var(--bs-transition);
+}
+
+.card-header {
+    background: var(--bs-primary-gradient) !important;
+    border: none;
+    border-radius: 1rem 1rem 0 0 !important;
+    color: white;
+    padding: 1rem 1.5rem;
+}
+
+/* Style des floating labels */
+.form-floating {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(3.5rem + 2px);
+    padding: var(--bs-input-padding-y) var(--bs-input-padding-x);
+    line-height: 1.5;
+    background-color: var(--bs-input-bg);
+    border: 1px solid var(--bs-input-border);
+    border-radius: var(--bs-input-radius);
+    color: var(--bs-body-color);
+    transition: var(--bs-transition);
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem var(--bs-input-focus);
+    outline: none;
+    z-index: 2;
+}
+
+.form-floating > label {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    height: 100%;
+    padding: 1rem 0.75rem;
+    pointer-events: none;
+    border: 1px solid transparent;
+    transform-origin: 0 0;
+    transition: var(--bs-transition);
+    color: var(--bs-secondary);
+    z-index: 1;
+}
+
+.form-floating > .form-control:not(:-moz-placeholder-shown),
+.form-floating > .form-select:not(:-moz-placeholder-shown) {
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.form-floating > .form-control:not(:-moz-placeholder-shown) ~ label,
+.form-floating > .form-select:not(:-moz-placeholder-shown) ~ label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(-0.5rem);
+    color: var(--bs-primary);
+}
+
+/* Style des inputs avec icônes */
+.input-group-text {
+    background-color: var(--bs-input-bg);
+    border: 1px solid var(--bs-input-border);
+    border-right: none;
+    border-radius: var(--bs-input-radius) 0 0 var(--bs-input-radius);
+    color: var(--bs-secondary);
+    padding: var(--bs-input-padding-y) var(--bs-input-padding-x);
+    z-index: 3;
+}
+
+.form-floating .form-control.border-start-0 {
+    border-left: none;
+    border-radius: 0 var(--bs-input-radius) var(--bs-input-radius) 0;
+}
+
+/* Style des checkboxes UNIFORMISÉES */
+.form-floating .form-check {
+    padding: 0.5rem 1rem;
+    background-color: var(--bs-input-bg);
+    border: none;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.form-floating .form-check-input {
+    margin-top: 0;
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.form-floating .form-check-label {
+    margin-bottom: 0;
+    color: var(--bs-body-color);
+}
+
+/* Style des selects */
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236c757d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+/* Style des messages d'erreur et d'aide */
+.form-text {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Style des boutons */
+.btn-primary {
+    background: var(--bs-primary-gradient);
+    border: none;
+    transition: var(--bs-transition);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation pour les inputs */
+@keyframes inputFocus {
+    from { border-color: var(--bs-input-border); }
+    to { border-color: var(--bs-primary); }
+}
+
+.form-control:focus {
+    animation: inputFocus 0.3s ease forwards;
+}
+
+/* Style du bouton de thème */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* Animation pour les cartes */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out forwards;
+}
