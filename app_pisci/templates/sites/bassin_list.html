@@ -50,11 +50,14 @@
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script>
 var siteId = "{{ site.id }}";
 
 $(document).ready(function() {
     $('#bassinsTable').DataTable({
+			 "searching": false,
         "processing": true,
         "ajax": {
             "url": "/sites/" + siteId + "/bassins/list-json/",
@@ -75,17 +78,17 @@ $(document).ready(function() {
 							var updateUrl = "/sites/" + siteId + "/bassins/" + data.id + "/update/";
 							var deleteUrl = "/sites/" + siteId + "/bassins/" + data.id + "/delete/";
 							return `
-									<a href="${updateUrl}" class="btn btn-sm btn-update">
-											<i class="bi bi-pencil"></i> Modifier
+									<a href="${updateUrl}" class="btn btn-sm btn-update" title="Modifier">
+											<i class="bi bi-pencil"></i>
 									</a>
-									<a href="${deleteUrl}" class="btn btn-sm btn-delete">
-											<i class="bi bi-trash"></i> Supprimer
+									<a href="${deleteUrl}" class="btn btn-sm btn-delete" title="Supprimer">
+											<i class="bi bi-trash"></i>
 									</a>
 							`;
 						}}
         ],
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json"
         },
         "drawCallback": function() {
             $('a.btn-update').addClass('btn-update').css({

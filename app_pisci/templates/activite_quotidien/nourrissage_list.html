@@ -25,7 +25,7 @@
     <!-- Bouton pour créer un nouveau nourrissage -->
     {% if perms.activite_quotidien.add_nourrissage %}
         <a href="{% url 'activite_quotidien:nourrissage-create' %}" class="btn btn-create mb-3">
-            <i class="bi bi-plus-circle"></i> Ajouter un nourrissage
+            <i class="bi bi-plus-circle"></i> Ajouter un repas
         </a>
     {% endif %}
     <!-- Loader -->
@@ -58,12 +58,14 @@
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script>
 $(document).ready(function() {
     console.log("Initialisation de DataTables...");
 
     var table = $('#nourrissagesTable').DataTable({
+			 "searching": false,
         "processing": true,
         "serverSide": false,
         "ajax": {
@@ -90,19 +92,19 @@ $(document).ready(function() {
             }},
             { "data": null, "render": function(data) {
                 var updateBtn = data.id ? `
-                    <a href="/activite_quotidien/nourrissage/${data.id}/update/" class="btn btn-sm btn-warning" title="Modifier">
-                        <i class="bi bi-pencil"></i> Modifier
+                    <a href="/activite_quotidien/nourrissage/${data.id}/update/" class="btn btn-sm btn-update" title="Modfiier">
+                        <i class="bi bi-pencil"></i>
                     </a>` : '';
                 var deleteBtn = data.id ? `
-                    <a href="/activite_quotidien/nourrissage/${data.id}/delete/" class="btn btn-sm btn-danger" title="Supprimer">
-                        <i class="bi bi-trash"></i> Supprimer
+                    <a href="/activite_quotidien/nourrissage/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
+                        <i class="bi bi-trash"></i>
                     </a>` : '';
                 return updateBtn + ' ' + deleteBtn;
             }}
         ],
         "order": [[5, "desc"]],
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json"
         },
         "drawCallback": function(settings) {
             console.log("DataTables redessiné");

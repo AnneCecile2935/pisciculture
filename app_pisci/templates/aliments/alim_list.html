@@ -52,6 +52,7 @@
 <script>
     $(document).ready(function() {
         $('#alimentsTable').DataTable({
+					  "searching": false,
             "ajax": {
                 "url": "{% url 'aliments:list_json' %}",
                 "dataSrc": "",
@@ -65,17 +66,17 @@
                 { "data": "fournisseur__nom" },
                 { "data": null, "render": function(data) {
                     return `
-                        <a href="/aliments/${data.id}/update/" class="btn btn-sm btn-update">
-                            <i class="bi bi-pencil"></i> Mettre à jour
+                        <a href="/aliments/${data.id}/update/" class="btn btn-sm btn-update" title="Modfiier">
+                            <i class="bi bi-pencil"></i>
                         </a>
-                        <a href="#" class="btn btn-sm btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="/aliments/${data.id}/delete/">
-                            <i class="bi bi-trash"></i> Supprimer
+                        <a href="#" class="btn btn-sm btn-delete" title="Supprimer" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="/aliments/${data.id}/delete/">
+                            <i class="bi bi-trash"></i>
                         </a>
                     `;
                 }}
             ],
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+                "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json"
             },
             "drawCallback": function() {
                 // Réapplique les styles aux boutons
