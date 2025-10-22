@@ -13,15 +13,7 @@
 </style>
 <div class="container-fluid mt-4">
     <h1 class="mb-4">Liste des lots de poissons</h1>
-    <!-- Messages Django (succès, erreurs, etc.) -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
+    
     <!-- Bouton pour créer un nouveau lot -->
     {% if perms.stocks.add_lotdepoisson %}
         <a href="{% url 'stocks:create' %}" class="btn btn-create mb-3">

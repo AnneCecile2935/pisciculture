@@ -1,5 +1,6 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from .models import Aliment
 from .forms import AlimentForm
@@ -50,10 +51,9 @@ class AlimentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         messages.success(self.request, "L'aliment a été mis à jour avec succès")
         return super().form_valid(form)
 
-class AlimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class AlimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, StandardDeleteMixin, DeleteView):
     model = Aliment
-    template_name = "aliments/alim_confirm_delete.html"
-    success_url = reverse_lazy("aliments:list")
+    list_url_name= "aliments:list"
     login_url = '/login/'
 
     def test_func(self):
@@ -61,14 +61,6 @@ class AlimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         print(f"User has permission: {has_perm}, is_staff: {self.request.user.is_staff}")
         return has_perm and self.request.user.is_staff  # ⭐ Vérifie aussi is_staff
 
-    def get_success_url(self):
-        messages.success(self.request, f"L'aliment a été supprimé avec succès")
-        return super().get_success_url()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = f"Supprimer l'aliment {self.object.code_alim}"
-        return context
 
 class AlimentListJsonView(ListView):
     model = Aliment

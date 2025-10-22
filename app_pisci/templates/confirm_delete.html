@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">Confirmer la suppression</h4>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text fs-5">
+                        Êtes-vous sûr(e) de vouloir supprimer "<strong>{{ object }}</strong>" ?
+                        <br>
+                        <span class="text-danger">Cette action est irréversible.</span>
+                    </p>
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg me-2">
+                            <i class="bi bi-trash-fill"></i> Supprimer définitivement
+                        </button>
+                        <a href="{{ return_url }}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Annuler
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

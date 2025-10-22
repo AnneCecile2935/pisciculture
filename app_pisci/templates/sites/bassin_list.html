@@ -12,15 +12,7 @@
 }
 </style>
 <h2 class="mb-4">Liste des bassins pour {{ site.nom }}</h2>
-<!-- Messages de succès/erreur -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-{% endif %}
+
 <!-- Bouton pour ajouter un bassin -->
 <a href="{% url 'sites:bassin-create' site.id %}" class="btn btn-create mb-3">
     <i class="bi bi-plus"></i> Ajouter un bassin

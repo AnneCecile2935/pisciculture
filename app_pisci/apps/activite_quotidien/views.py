@@ -5,6 +5,7 @@ from apps.sites.models import Site
 from apps.activite_quotidien.models import ReleveTempOxy
 from apps.activite_quotidien.forms import ReleveForm
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, View
+from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Nourrissage
@@ -80,14 +81,10 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Le repas a été mis à jour avec succès!")
         return super().form_valid(form)
 
-class NourrissageDeleteView(LoginRequiredMixin, DeleteView):
+class NourrissageDeleteView(LoginRequiredMixin,StandardDeleteMixin, DeleteView):
     model = Nourrissage
-    template_name = 'activite_quotidien/nourrissage_confirm_delete.html'
-    success_url = reverse_lazy('activite_quotidien:nourrissage-list')
+    list_url_name='activite_quotidien:nourrissage-list'
 
-    def form_valid(self, form):
-        messages.success(self.request, "Le repas a bien été supprimé.")
-        return super().form_valid(form)
 
 class NourrissageListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):

@@ -1,5 +1,6 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import LotDePoisson
@@ -50,10 +51,9 @@ class LotUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         messages.success(self.request, "Le lot a été mis à jour avec succès")
         return super().form_valid(form)
 
-class LotDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class LotDeleteView(LoginRequiredMixin, UserPassesTestMixin, StandardDeleteMixin, DeleteView):
     model = LotDePoisson
-    template_name = "stocks/lot_confirm_delete.html"
-    success_url = reverse_lazy("stocks:list")
+    list_url_name= "stocks:list"
 
     def test_func(self):
         return self.request.user.is_admin
@@ -62,11 +62,6 @@ class LotDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.error(self.request, "Vous n'avez pas les droits pour effectuer cette action.")
         return super().handle_no_permission()
 
-
-    def form_valid(self, form):
-        # Déplace ta logique personnalisée ici
-        messages.success(self.request, "Le lot a été supprimé avec succès.")
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,6 +73,6 @@ class LotListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         lots = list(LotDePoisson.objects.all().values(
             'id', 'code_lot', 'espece__nom_commun', 'site_prod__nom', 'bassin__nom',
-            'statut', 'quantite', 'quantite_actuelle', 'poids_moyen', 'date_arrivee'
+            'statut', 'quantite', 'quantite_actuelle', 'poids', 'poids_moyen', 'date_arrivee'
         ))
         return JsonResponse(lots, safe=False)

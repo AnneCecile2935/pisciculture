@@ -12,15 +12,7 @@
 }
 </style>
 <h2 class="mb-4">Liste des aliments</h2>
-<!-- Messages de succès/erreur -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-{% endif %}
+
 <!-- Bouton pour ajouter un aliment -->
 <a href="{% url 'aliments:create' %}" class="btn btn-create mb-3">
     <i class="bi bi-plus"></i> Ajouter un aliment
@@ -43,6 +35,26 @@
     </thead>
     <tbody></tbody>  <!-- Vide : DataTables le remplira -->
 </table>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        Êtes-vous sûr de vouloir supprimer cet aliment ? Cette action est irréversible.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <form id="deleteForm" method="post" action="">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Supprimer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -104,5 +116,13 @@
             "autoWidth": false,
         });
     });
+</script>
+<script>
+	$('#deleteModal').on('show.bs.modal', function(event) {
+    var button = $(event.relatedTarget); // Bouton qui déclenche la modale
+    var url = button.data('url'); // URL de suppression (ex: /aliments/1/delete/)
+    var modal = $(this);
+    modal.find('#deleteForm').attr('action', url); // Met à jour l'action du formulaire
+});
 </script>
 {% endblock %}
