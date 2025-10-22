@@ -5,6 +5,8 @@ from django.urls import reverse_lazy
 from .forms import FournisseurForm
 from django.contrib import messages
 from django.http import JsonResponse
+from django.core.exceptions import PermissionDenied
+
 
 class FournisseurListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Fournisseur
@@ -22,6 +24,12 @@ class FournisseurCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
     def form_valid(self, form):
         messages.success(self.request, "Le fournisseur a été ajouté avec succès !")
         return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        # Vérifie que l'utilisateur a la permission d'ajouter un fournisseur
+        if not request.user.has_perm('fournisseurs.add_fournisseur'):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
 
 class FournisseurUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):

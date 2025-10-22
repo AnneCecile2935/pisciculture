@@ -67,8 +67,14 @@ class BassinCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         form.instance.site_id = self.kwargs['site_id']
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Récupère le site_id depuis les arguments de l'URL
+        context['site_id'] = self.kwargs.get('site_id')
+        return context
+
     def get_success_url(self):
-        return reverse('sites:bassin-list', args=[self.kwargs['site.id']])
+        return reverse('sites:bassin-list', kwargs={'site_id': self.kwargs.get('site_id')})
 
 class BassinUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = BassinForm

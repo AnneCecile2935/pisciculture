@@ -67,7 +67,7 @@ class TestBassinViews:
         user.user_permissions.add(Permission.objects.get(codename='add_bassin'))
         client.force_login(user)
         site = SiteFactory()
-        response = client.post(reverse('sites:bassin-create'), {
+        response = client.post(reverse('sites:bassin-create', args=[site.id]), {
             'nom': 'Nouveau Bassin',
             'site': site.id,
             'volume': 100.5,
@@ -82,7 +82,7 @@ class TestBassinViews:
         user.user_permissions.add(Permission.objects.get(codename='change_bassin'))
         client.force_login(user)
         bassin = BassinFactory(nom='Bassin à modifier', volume=100.0)
-        response = client.post(reverse('sites:bassin-update', args=[bassin.id]), {
+        response = client.post(reverse('sites:bassin-update', args=[bassin.site.id, bassin.id]), {
             'nom': 'Bassin modifié',
             'site': bassin.site.id,
             'volume': 200.0,
@@ -100,7 +100,7 @@ class TestBassinViews:
         user.user_permissions.add(Permission.objects.get(codename='delete_bassin'))
         client.force_login(user)
         bassin = BassinFactory()
-        response = client.post(reverse('sites:bassin-delete', args=[bassin.id]))
+        response = client.post(reverse('sites:bassin-delete', args=[bassin.site.id, bassin.id]))
         assert response.status_code == 302
         # Vérifie que la redirection utilise le bon nom d'URL :
         assert response.url == reverse('sites:site-list')  # ← `bassin-list` avec tiret

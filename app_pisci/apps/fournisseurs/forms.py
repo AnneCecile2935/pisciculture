@@ -10,10 +10,10 @@ class FournisseurForm(forms.ModelForm):
         ]
         widgets = {
             'nom': forms.TextInput(attrs={
-                'class': 'form-control', 'place_holder': 'Fournisseur'
+                'class': 'form-control', 'placeholder': 'Fournisseur'
             }),
             'adresse': forms.Textarea(attrs={
-                'class': 'form-control', 'place_holder':'Adresse'
+                'class': 'form-control', 'placeholder':'Adresse'
             }),
             'type_fournisseur': forms.Select(attrs={
                 'class': 'form-control',
@@ -24,8 +24,13 @@ class FournisseurForm(forms.ModelForm):
         labels = {
             'est_actif': "Fournisseur actif",
         }
-        help_text = {
+        help_texts = {
             'code_postal': "Format attendu : 5 Chiffres (ex: 35000)",
+        }
+        error_messages = {
+            'nom': {
+                'required': "Ce champ est obligatoire",  # Message personnalisé
+            },
         }
 
     def __init__(self, *args, **kwargs):

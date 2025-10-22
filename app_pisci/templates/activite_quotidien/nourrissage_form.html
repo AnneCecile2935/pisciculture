@@ -1,9 +1,23 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>{% if object %}Modifier{% else %}Ajouter{% endif %} un repas</h2>
+{% extends "form_templates.html" %}
+{% block title %}Ajouter un nourrissage{% endblock %}
+{% block form_title %}Ajouter un nourrissage{% endblock %}
+{% block form_content %}
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% for field in form %}
+    <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+            <div class="text-danger">  <!-- Affiche les erreurs en rouge -->
+                {{ field.errors|first }}  <!-- Affiche la première erreur du champ -->
+            </div>
+        {% endif %}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+    </div>
+    {% endfor %}
     <button type="submit" class="btn btn-primary">Enregistrer</button>
     <a href="{% url 'activite_quotidien:nourrissage-list' %}" class="btn btn-secondary">Annuler</a>
 </form>

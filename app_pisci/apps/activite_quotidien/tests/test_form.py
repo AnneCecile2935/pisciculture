@@ -110,7 +110,7 @@ class TestNourrissageForm:
         """Test : les widgets des champs sont corrects (ex: date_repas est un DateInput)."""
         form = NourrissageForm()
         assert isinstance(form.fields['date_repas'].widget, forms.DateInput)
-        print(form.fields['date_repas'].widget.attrs)  # Ajoute cette ligne pour déboguer
+        print(form.fields['date_repas'].widget.attrs)
         assert form.fields['date_repas'].widget.attrs.get('type') == 'date'
 
     def test_form_save(self):

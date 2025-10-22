@@ -75,7 +75,7 @@ class TestFournisseurCreateView:
             'type_fournisseur': 'ALIMENT',
         })
         assert response.status_code == 200  # Re-affiche le formulaire avec erreurs
-        assert 'Ce champ est obligatoire' in str(response.content)
+        assert "Ce champ est obligatoire" in response.content.decode('utf-8')
 
     def test_fournisseur_create_view_template(self, client):
         """Teste que le bon template est utilisé."""
