@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- CSS personnalisé -->
     <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="container mt-5">
@@ -29,50 +30,42 @@
                         <form method="post" novalidate>
                             {% csrf_token %}
                             {% for field in form %}
-                                {% if field|widget_type == 'CheckboxInput' %}
-                                    <!-- Style pour les checkboxes -->
-                                    <div class="form-check mb-3">
-                                        {{ field|add_class:"form-check-input" }}
-                                        <label class="form-check-label" for="{{ field.id_for_label }}">
-                                            {{ field.label }}
-                                        </label>
-                                        {% if field.help_text %}
-                                            <small class="form-text text-muted">{{ field.help_text }}</small>
-                                        {% endif %}
-                                        {% if field.errors %}
-                                            <div class="text-danger">{{ field.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                {% else %}
-                                    <!-- Style pour les floating labels avec icônes -->
-                                    <div class="form-floating mb-3">
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="bi
-                                                    {% if field.name == 'nom_commun' %}bi-tag-fill
-                                                    {% elif field.name == 'nom_scientifique' %}bi-book-fill
-                                                    {% elif field.name == 'est_actif' %}bi-toggle-on
-                                                    {% elif field.name == 'quantite' %}bi-calculator
-                                                    {% elif field.name == 'date' %}bi-calendar-date
-                                                    {% elif field.name == 'temperature' %}bi-thermometer-half
-                                                    {% elif field.name == 'email' %}bi-envelope-fill
-                                                    {% elif field.name == 'password' %}bi-lock-fill
-                                                    {% else %}bi-pencil-fill
-                                                    {% endif %} text-muted"></i>
-                                            </span>
+                                <div class="form-floating mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi
+                                                {% if field.name == 'nom' or field.name == 'nom_commun' %}bi-tag-fill
+                                                {% elif field.name == 'nom_scientifique' %}bi-book-fill
+                                                {% elif field.name == 'est_actif' %}bi-toggle-on
+                                                {% elif field.name == 'quantite' %}bi-calculator
+                                                {% elif field.name == 'date' %}bi-calendar-date
+                                                {% elif field.name == 'temperature' %}bi-thermometer-half
+                                                {% elif field.name == 'email' %}bi-envelope-fill
+                                                {% elif field.name == 'password' %}bi-lock-fill
+                                                {% else %}bi-pencil-fill
+                                                {% endif %} text-muted"></i>
+                                        </span>
+                                        {% if field|widget_type == 'CheckboxInput' %}
+                                            <div class="form-check form-switch ps-2">
+                                                {{ field|add_class:"form-check-input mt-0" }}
+                                                <label class="form-check-label" for="{{ field.id_for_label }}">
+                                                    {{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                                </label>
+                                            </div>
+                                        {% else %}
                                             {{ field|add_class:"form-control border-start-0" }}
                                             <label for="{{ field.id_for_label }}">
                                                 {{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
                                             </label>
-                                        </div>
-                                        {% if field.help_text %}
-                                            <small class="form-text text-muted">{{ field.help_text }}</small>
-                                        {% endif %}
-                                        {% if field.errors %}
-                                            <div class="text-danger">{{ field.errors }}</div>
                                         {% endif %}
                                     </div>
-                                {% endif %}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger">{{ field.errors|first }}</div>
+                                    {% endif %}
+                                </div>
                             {% endfor %}
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill">
@@ -91,12 +84,10 @@
             </div>
         </div>
     </div>
-
     <!-- Bouton pour basculer entre mode clair/sombre -->
     <button class="btn btn-floating theme-toggle btn-light shadow-sm rounded-circle p-2" onclick="toggleTheme()">
         <i id="theme-icon" class="bi bi-moon-stars-fill"></i>
     </button>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script pour basculer le thème -->
@@ -113,7 +104,6 @@
             }
             localStorage.setItem('theme', html.getAttribute('data-bs-theme'));
         }
-
         // Charger le thème sauvegardé
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -124,5 +114,6 @@
             }
         });
     </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

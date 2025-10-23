@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Choisir un site pour enregistrer les repas{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Choisir un site pour enregistrer les repas</h2>
+    <div class="row">
+        {% for site in sites %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ site.nom }}</h5>
+                    <a href="{% url 'activite_quotidien:enregistrer-repas-par-site' site.id %}"
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Enregistrer les repas
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

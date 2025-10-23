@@ -42,6 +42,7 @@ urlpatterns = [
     path('aliments/', include('apps.aliments.urls')),
     path('dashboard/', TemplateView.as_view(template_name='dashboard.html'), name='dashboard'),
 
+
     # Utilisateurs
     path('users/', include('apps.users.urls')),
 

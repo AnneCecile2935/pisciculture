@@ -1,18 +1,27 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import date
-from apps.sites.models import Site
+from apps.sites.models import Site, Bassin
 from apps.activite_quotidien.models import ReleveTempOxy
 from apps.activite_quotidien.forms import ReleveForm
-from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, View
+from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, View, FormView, TemplateView
 from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Nourrissage
-from .forms import NourrissageForm
+from .forms import NourrissageForm, NourrissageParSiteForm
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
+from django.db.models import Max
+from apps.stocks.models import LotDePoisson
+from django import forms
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy
+import json
+from django.http import JsonResponse
+from apps.aliments.models import Aliment
+
 
 class NourrissageCreateView(LoginRequiredMixin, CreateView):
     model = Nourrissage
@@ -105,6 +114,61 @@ class NourrissageListJsonView(LoginRequiredMixin, View):
         print(list(nourrissages))  # Pour débogage
 
         return JsonResponse(list(nourrissages), safe=False)
+
+class NourrissageParSiteView(FormView):
+    template_name = 'activite_quotidien/nourrissage_par_site_form.html'
+    form_class = NourrissageParSiteForm
+    success_url = reverse_lazy('dashboard')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['site_id'] = self.kwargs['site_id']
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['site'] = get_object_or_404(Site, id=self.kwargs['site_id'])
+
+        # Passe les bassins en JSON
+        form = context['form']
+        bassins = form.bassins
+        unique_bassins = []
+        bassin_ids = set()
+
+        for bassin in bassins:
+            if bassin.id not in bassin_ids:
+                bassin_ids.add(bassin.id)
+                unique_bassins.append(bassin)
+
+        context['bassins_json'] = json.dumps([
+            {
+                'id': str(bassin.id),
+                'nom': bassin.nom,
+                'dernier_aliment_id': str(bassin.dernier_aliment_id) if bassin.dernier_aliment_id else None,
+                'lot_id': str(bassin.lots_poissons.first().id) if bassin.lots_poissons.first() else None
+            }
+            for bassin in unique_bassins])
+
+        # Passe les aliments en JSON
+        aliments = Aliment.objects.all().values('id', 'nom')
+        aliments_list = list(aliments)
+        for aliment in aliments_list:
+            aliment['id'] = str(aliment['id'])
+        context['aliments_json'] = json.dumps(aliments_list)
+
+        return context
+
+    def form_valid(self, form):
+        form.save(self.request.user)
+        return super().form_valid(form)
+
+class ChoixSiteEnregistrementRepasView(TemplateView):
+    template_name = 'activite_quotidien/choix_site_enregistrement_repas.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sites'] = Site.objects.all()
+        return context
 
 
 def index(request):
