@@ -1,126 +1,38 @@
 {% extends "form_templates.html" %}
-{% block title %}Saisie des repas pour {{ site.nom }}{% endblock %}
-{% block form_title %}Saisie des repas pour {{ site.nom }}{% endblock %}
-
+{% block title %}Ajouter des nourrissages par site{% endblock %}
+{% block form_title %}Nourrissages pour {{ site.nom }}{% endblock %}
 {% block form_content %}
-<div class="alert alert-info">
-    Renseignez les repas pour chaque bassin. Les champs "Aliment" sont pré-remplis avec le dernier aliment utilisé.
-</div>
-
-<form method="post" id="nourrissage-form">
+<form method="post">
     {% csrf_token %}
+    {{ form.management_form }}  <!-- Obligatoire pour les FormSets -->
 
-    <div class="mb-3">
-        <label class="form-label">Site : {{ site.nom }}</label>
-    </div>
-
+    <!-- Champs communs -->
     <div class="mb-3">
         <label for="id_date_repas" class="form-label">Date du repas</label>
-        <input type="date" name="date_repas" id="id_date_repas" class="form-control"
-               value="{{ form.date_repas.value|date:'Y-m-d' }}">
+        <input type="date" class="form-control" id="id_date_repas" name="date_repas" value="{{ today }}" required>
     </div>
-
-    <div class="table-responsive">
-        <table class="table table-bordered" id="nourrissage-table">
-            <thead class="table-light">
-                <tr>
-                    <th>Bassin</th>
-                    <th>Aliment</th>
-                    <th>Quantité (kg)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Les lignes seront générées en JS -->
-            </tbody>
-        </table>
-    </div>
-
     <div class="mb-3">
-        <label for="id_notes" class="form-label">Commentaires</label>
-        <textarea name="notes" class="form-control" id="id_notes" rows="3"
-                  placeholder="Ajoutez des commentaires si nécessaire..."></textarea>
+        <label for="id_notes" class="form-label">Notes</label>
+        <textarea class="form-control" id="id_notes" name="notes" rows="3"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">
-        <i class="bi bi-save"></i> Enregistrer tous les repas
-    </button>
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
-        <i class="bi bi-x-circle"></i> Annuler
-    </a>
+    <!-- Boucle sur les sous-formulaires -->
+    {% for subform in form %}
+        <div class="card mb-3">
+            <div class="card-body">
+                {% for field in subform %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger">{{ field.errors|first }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
 </form>
-{% endblock %}
-
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tableBody = document.querySelector('#nourrissage-table tbody');
-
-    // Données passées depuis la vue (nettoyées côté Python)
-    const bassins = JSON.parse('{{ bassins_json|escapejs }}');
-    const aliments = JSON.parse('{{ aliments_json|escapejs }}');
-
-    // Ajout des lignes dynamiques dans le tableau
-    bassins.forEach(bassin => {
-        const row = document.createElement('tr');
-
-        // --- Colonne : Nom du bassin
-        const bassinCell = document.createElement('td');
-        bassinCell.textContent = bassin.nom;
-        row.appendChild(bassinCell);
-
-        // --- Colonne : Aliment
-        const alimentCell = document.createElement('td');
-        const alimentSelect = document.createElement('select');
-        alimentSelect.name = `aliment_${bassin.id}`;
-        alimentSelect.className = 'form-select';
-        alimentSelect.required = true;
-
-        // Ajoute les options d’aliments
-        aliments.forEach(aliment => {
-            const option = document.createElement('option');
-            option.value = aliment.id;
-            option.textContent = aliment.nom;
-            alimentSelect.appendChild(option);
-        });
-
-        // Pré-sélection du dernier aliment (si connu)
-        if (bassin.dernier_aliment_id) {
-            alimentSelect.value = bassin.dernier_aliment_id;
-        }
-
-        alimentCell.appendChild(alimentSelect);
-        row.appendChild(alimentCell);
-
-        // --- Colonne : Quantité
-        const qteCell = document.createElement('td');
-        const qteInput = document.createElement('input');
-        qteInput.type = 'number';
-        qteInput.name = `qte_${bassin.id}`;
-        qteInput.className = 'form-control';
-        qteInput.step = '1';
-        qteInput.min = '0';
-        qteCell.appendChild(qteInput);
-        row.appendChild(qteCell);
-
-        // --- Champs cachés : ID du bassin
-        const bassinHidden = document.createElement('input');
-        bassinHidden.type = 'hidden';
-        bassinHidden.name = `bassin_${bassin.id}`;
-        bassinHidden.value = bassin.id;
-        row.appendChild(bassinHidden);
-
-				if (bassin.lot_id) {
-						const lotHidden = document.createElement('input');
-						lotHidden.type = 'hidden';
-						lotHidden.name = `lot_${bassin.id}`;
-						lotHidden.value = bassin.lot_id;
-						row.appendChild(lotHidden);
-				}
-
-        // Ajoute la ligne au tableau
-        tableBody.appendChild(row);
-    });
-});
-</script>
 {% endblock %}

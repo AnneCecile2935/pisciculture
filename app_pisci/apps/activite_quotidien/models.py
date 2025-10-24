@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 from apps.commun.models import TimeStampedModel
 from apps.sites.models import Site, Bassin
 from apps.stocks.models import LotDePoisson
@@ -8,6 +8,14 @@ from apps.users.models import User
 
 
 class Nourrissage(TimeStampedModel):
+    MOTIFS_ABSENCE = [
+        ('eau_sale', 'Eau sale'),
+        ('ajeun', 'À jeun'),
+        ('vide', 'Vide'),
+        ('maladie', 'Maladie'),
+        ('autre', 'Autre (préciser en commentaire)'),
+    ]
+
     site_prod = models.ForeignKey(
         Site,
         on_delete=models.CASCADE,
@@ -28,17 +36,25 @@ class Nourrissage(TimeStampedModel):
     aliment = models.ForeignKey(
         Aliment,
         on_delete=models.CASCADE,
-        verbose_name="Type d'aliment"
+        verbose_name="Type d'aliment",
+        null=True,
+        blank=True
     )
 
-    qte = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
+    qte = models.IntegerField(
         verbose_name="Quantité(kg)",
-        validators=[MinValueValidator(0.01)]
+        null=True,
+        blank=True
     )
     date_repas = models.DateField(
         verbose_name="Date du repas"
+    )
+    motif_absence = models.CharField(
+        max_length=20,
+        choices=MOTIFS_ABSENCE,
+        blank=True,
+        null=True,
+        verbose_name="Motif d'absence de repas"
     )
     cree_par = models.ForeignKey(
         User,
@@ -58,8 +74,19 @@ class Nourrissage(TimeStampedModel):
         db_table = 'Repas_journ'
         app_label = 'activite_quotidien'
 
-    def __str__(self):
-        return f"{self.code_lot} - {self.qte} kg le {self.date_repas}"
+    def clean(self):
+        # Valide que si qte est None, alors motif_absence doit être renseigné
+        if self.qte is None and not self.motif_absence:
+            raise ValidationError(
+                {"motif_absence": "Un motif d'absence est requis si aucune quantité n'est renseignée."})
+        # Valide que si qte est 0, alors motif_absence doit être renseigné
+        if self.qte == 0 and not self.motif_absence:
+            raise ValidationError(
+                {"motif_absence": "Un motif d'absence est requis si la quantité est 0."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Valide avant sauvegarde
+        super().save(*args, **kwargs)
 
     @property
     def code_lot(self):
@@ -67,6 +94,13 @@ class Nourrissage(TimeStampedModel):
             return self.crea_lot.code_lot
         return f"LOT-{self.crea_lot.id}"
 
+    @property
+    def qte_affichage(self):
+        """Retourne l'affichage de la quantité ou 'Aucun repas' si None"""
+        return f"{self.qte} kg" if self.qte is not None else "Aucun repas"
+
+    def __str__(self):
+            return f"{self.code_lot} - {self.qte_affichage} le {self.date_repas}"
 
 class ReleveTempOxy(TimeStampedModel):
     MOMENT_CHOICES = [

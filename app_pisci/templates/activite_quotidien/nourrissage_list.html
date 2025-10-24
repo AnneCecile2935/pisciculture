@@ -9,7 +9,10 @@
 		#nourrissagesTable td a.btn {
     display: inline-flex;
     justify-content: center;
-}
+		}
+		#nourrissagesTable td:nth-child(7) {
+    text-align: center !important;
+		}
 </style>
 <div class="container-fluid p-0 m-0">
     <h1 class="mb-4">Liste des nourrissages</h1>
@@ -37,6 +40,7 @@
                     <th>Lot de poissons</th>
                     <th>Aliment</th>
                     <th>Quantité (kg)</th>
+										<th>Motif d'absence</th>
                     <th>Enregistré par</th>
                     <th>Commentaires</th>
                     <th>Actions</th>
@@ -78,13 +82,14 @@ $(document).ready(function() {
             { "data": "crea_lot__code_lot" },
             { "data": "aliment__nom" },
             { "data": "qte" },
+						{ "data": "motif_nom", "defaultContent": "-" },
             { "data": "cree_par__username", "defaultContent": "-" },
             { "data": "notes", "render": function(data) {
                 return data ? data.substring(0, 30) + (data.length > 30 ? '...' : '') : '-';
             }},
             { "data": null, "render": function(data) {
                 var updateBtn = data.id ? `
-                    <a href="/nourrissage/${data.id}/update/" class="btn btn-sm btn-update" title="Modfiier">
+                    <a href="/nourrissage/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
                         <i class="bi bi-pencil"></i>
                     </a>` : '';
                 var deleteBtn = data.id ? `
@@ -94,7 +99,7 @@ $(document).ready(function() {
                 return updateBtn + ' ' + deleteBtn;
             }}
         ],
-        "order": [[5, "desc"]],
+        "order": [[0, "desc"]],
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json"
         },

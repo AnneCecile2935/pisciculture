@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.db.models import Case, When, Value, CharField
 from datetime import date
 from apps.sites.models import Site, Bassin
 from apps.activite_quotidien.models import ReleveTempOxy
@@ -9,7 +10,7 @@ from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Nourrissage
-from .forms import NourrissageForm, NourrissageParSiteForm
+from .forms import NourrissageForm, NourrissageFormSet
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
@@ -21,6 +22,7 @@ from django.urls import reverse_lazy
 import json
 from django.http import JsonResponse
 from apps.aliments.models import Aliment
+from django.forms import formset_factory
 
 
 class NourrissageCreateView(LoginRequiredMixin, CreateView):
@@ -74,6 +76,16 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'activite_quotidien/nourrissage_form.html'
     success_url = reverse_lazy('activite_quotidien:nourrissage-list')
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Initialise le champ bassin avec la valeur actuelle
+        if hasattr(self, 'object') and self.object:
+            form.fields['bassin'].initial = self.object.bassin
+            # Filtre les bassins par site si nécessaire
+            if hasattr(self.object, 'site_prod'):
+                form.fields['bassin'].queryset = Bassin.objects.filter(site=self.object.site_prod)
+        return form
+    
     def form_valid(self, form):
         """Vérifie la cohérence bassin/site/lot."""
         bassin = form.cleaned_data['bassin']
@@ -99,68 +111,139 @@ class NourrissageListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         nourrissages = Nourrissage.objects.select_related(
             'site_prod', 'bassin', 'crea_lot', 'aliment', 'cree_par'
+        ).annotate(
+            motif_nom=Case(
+                *[When(motif_absence=m[0], then=Value(m[1])) for m in Nourrissage.MOTIFS_ABSENCE],
+                default=Value(None),
+                output_field=CharField()
+            )
         ).values(
-            'id',
-            'site_prod__nom',  # Notez les doubles underscores pour les relations
-            'bassin__nom',
-            'crea_lot__code_lot',
-            'qte',
-            'date_repas',
-            'aliment__nom',
-            'cree_par__username',  # Notez les doubles underscores pour les relations
-            'notes'
+            'id', 'site_prod__nom', 'bassin__nom', 'crea_lot__code_lot', 'qte',
+            'date_repas', 'aliment__nom', 'cree_par__username', 'notes',
+            'motif_absence', 'motif_nom'
         ).order_by('-date_repas')
-
-        print(list(nourrissages))  # Pour débogage
 
         return JsonResponse(list(nourrissages), safe=False)
 
+import json
+
 class NourrissageParSiteView(FormView):
     template_name = 'activite_quotidien/nourrissage_par_site_form.html'
-    form_class = NourrissageParSiteForm
-    success_url = reverse_lazy('dashboard')
+    success_url = reverse_lazy('activite_quotidien:nourrissage-list')
+    form_class = NourrissageFormSet
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['site_id'] = self.kwargs['site_id']
+        kwargs['initial'] = self.get_initial_data()
         return kwargs
+
+    def get_initial_data(self):
+        site = get_object_or_404(Site, id=self.kwargs['site_id'])
+        bassins = Bassin.objects.filter(site=site).prefetch_related('lots_poissons')
+        return [
+            {
+                'site_prod': str(site.id),  # UUID du site
+                'bassin': str(bassin.id),   # UUID du bassin (pas le nom !)
+                'crea_lot': str(bassin.lots_poissons.first().id) if bassin.lots_poissons.exists() else None,
+                'aliment': str(Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas').first().aliment.id)
+                        if Nourrissage.objects.filter(bassin=bassin).exists() and Nourrissage.objects.filter(bassin=bassin).first().aliment
+                        else None,
+            }
+            for bassin in bassins
+        ]
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Transmettre site_id à chaque sous-formulaire
+        for subform in form:
+            subform.site_id = self.kwargs['site_id']  # Passe site_id à chaque sous-formulaire
+            subform.fields['bassin'].queryset = Bassin.objects.filter(site_id=self.kwargs['site_id'])
+        return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['site'] = get_object_or_404(Site, id=self.kwargs['site_id'])
-
-        # Passe les bassins en JSON
-        form = context['form']
-        bassins = form.bassins
-        unique_bassins = []
-        bassin_ids = set()
-
-        for bassin in bassins:
-            if bassin.id not in bassin_ids:
-                bassin_ids.add(bassin.id)
-                unique_bassins.append(bassin)
-
-        context['bassins_json'] = json.dumps([
-            {
-                'id': str(bassin.id),
-                'nom': bassin.nom,
-                'dernier_aliment_id': str(bassin.dernier_aliment_id) if bassin.dernier_aliment_id else None,
-                'lot_id': str(bassin.lots_poissons.first().id) if bassin.lots_poissons.first() else None
-            }
-            for bassin in unique_bassins])
-
-        # Passe les aliments en JSON
-        aliments = Aliment.objects.all().values('id', 'nom')
-        aliments_list = list(aliments)
-        for aliment in aliments_list:
-            aliment['id'] = str(aliment['id'])
-        context['aliments_json'] = json.dumps(aliments_list)
-
+        site = get_object_or_404(Site, id=self.kwargs['site_id'])
+        context['site'] = site
+        context['today'] = timezone.now().date()
         return context
 
     def form_valid(self, form):
-        form.save(self.request.user)
+        self.formset = form  # Stocke le formset pour form_valid
+        date_repas = self.request.POST.get('date_repas')
+        notes = self.request.POST.get('notes')
+        nourrissages = []
+        erreurs = False
+
+        for subform in self.formset:
+            subform.site_id = self.kwargs['site_id']
+            bassin = subform.cleaned_data['bassin']
+            qte_str = subform.cleaned_data.get('qte')
+            motif = subform.cleaned_data.get('motif_absence')
+            aliment= subform.cleaned_data.get('aliment')
+            crea_lot = subform.cleaned_data.get('crea_lot')
+
+            # Validation de la quantité
+            try:
+                if qte_str:
+                    qte_str = str(qte_str).replace(',', '.')
+                    qte = float(qte_str)
+                    if qte <= 0:
+                        subform.add_error('qte', "La quantité doit être positive.")
+                        erreurs = True
+                        continue
+                else:
+                    qte = None
+            except ValueError:
+                subform.add_error('qte', "Saisissez un nombre valide.")
+                erreurs = True
+                continue
+
+            # Vérifie la cohérence quantité/motif/aliment
+            if qte is None or qte == 0:
+                if not motif:
+                    subform.add_error('motif_absence', "Un motif est requis si la quantité est vide ou nulle.")
+                    erreurs = True
+                    continue
+            else:
+                if not aliment:
+                    subform.add_error('aliment', "Un aliment est requis si une quantité est saisie.")
+                    erreurs = True
+                    continue
+
+            # Récupère le lot
+            lot = bassin.lots_poissons.first()
+            if not lot:
+                subform.add_error(None, f"Aucun lot trouvé pour le bassin {bassin.nom}.")
+                erreurs = True
+                continue
+
+            # Crée le repas
+            nourrissage = Nourrissage(
+                site_prod=bassin.site,
+                bassin=bassin,
+                crea_lot=lot,
+                aliment=aliment,
+                qte=qte,
+                motif_absence=motif if qte is None or qte == 0 else None,
+                date_repas=date_repas,
+                cree_par=self.request.user,
+                notes=notes,
+            )
+            nourrissages.append(nourrissage)
+
+        # Enregistrement
+        if nourrissages:
+            Nourrissage.objects.bulk_create(nourrissages)
+            messages.success(self.request, f"{len(nourrissages)} repas enregistrés !")
+        else:
+            messages.warning(self.request, "Aucun repas valide à enregistrer.")
+
+        if erreurs:
+            return self.form_invalid(form)
+
         return super().form_valid(form)
+
+
 
 class ChoixSiteEnregistrementRepasView(TemplateView):
     template_name = 'activite_quotidien/choix_site_enregistrement_repas.html'
