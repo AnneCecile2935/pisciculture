@@ -133,10 +133,10 @@ class TestNourrissageForm:
         form = NourrissageForm(data=data)
         assert form.is_valid()
         nourrissage = form.save(commit=False)
-        nourrissage.cree_par = user
+        nourrissage.cree_par = UserFactory
         nourrissage.save()
         assert Nourrissage.objects.count() == 1
-        assert Nourrissage.objects.first().qte == 2.5
+        assert Nourrissage.objects.first().qte == 2
 
     def test_form_initial_data(self):
         """Test : le formulaire peut être initialisé avec des données existantes."""
