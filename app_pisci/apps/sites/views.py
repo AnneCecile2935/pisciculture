@@ -82,6 +82,11 @@ class BassinUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name = "sites/bassin_form.html"
     permission_required = "sites.change_bassin"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['site_id'] = self.object.site.id
+        return context
+
     def get_success_url(self):
         return reverse('sites:bassin-list', args=[self.object.site.id]) # type: ignore
 
