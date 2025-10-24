@@ -1,6 +1,9 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.core.exceptions import ImproperlyConfigured
+from django.shortcuts import render
+
+
 
 class StandardDeleteMixin:
     template_name = "confirm_delete.html"
