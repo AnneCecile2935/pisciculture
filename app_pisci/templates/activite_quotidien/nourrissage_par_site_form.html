@@ -98,9 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
         qteInput.type = 'number';
         qteInput.name = `qte_${bassin.id}`;
         qteInput.className = 'form-control';
-        qteInput.step = '0.01';
-        qteInput.min = '0.01';
-        qteInput.required = true;
+        qteInput.step = '1';
+        qteInput.min = '0';
         qteCell.appendChild(qteInput);
         row.appendChild(qteCell);
 
