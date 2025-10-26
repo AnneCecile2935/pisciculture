@@ -7,12 +7,18 @@ from .forms import EspeceForm
 from django.http import JsonResponse
 from django.contrib import messages
 
-class EspeceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class EspeceListView(LoginRequiredMixin, ListView):
     model = Espece
     template_name = "especes/esp_list.html"
     context_object_name = "especes"
-    permission_required = "especes.view_espece"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_add'] = self.request.user.has_perm('especes.add_espece')
+        context['can_change'] = self.request.user.has_perm('especes.change_espece')
+        context['can_delete'] = self.request.user.has_perm('especes.delete_espece')
+        return context
+    
     def form_valid(self, form):
         messages.success(self.request, "L'espèce a été ajoutée avec succès !")
         return super().form_valid(form)
@@ -46,8 +52,7 @@ class EspeceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, StandardDele
     context_object_name = "espece"
 
 
-class EspeceListJsonView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = "especes.view_espece"
+class EspeceListJsonView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         especes = Espece.objects.all().values(

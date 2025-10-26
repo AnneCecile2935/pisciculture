@@ -6,16 +6,19 @@
     #especesTable th {
         text-align: center !important;
     }
-		#especesTable td a.btn {
-    display: inline-flex;
-    justify-content: center;
-}
+    #especesTable td a.btn {
+        display: inline-flex;
+        justify-content: center;
+    }
 </style>
 <h2 class="mb-4">Liste des espèces</h2>
 
-<a href="{% url 'especes:espece-create' %}" class="btn btn-create mb-3">
-    <i class="bi bi-plus"></i> Ajouter une espèce
-</a>
+<!-- Bouton pour ajouter une espèce (visible uniquement pour les utilisateurs avec la permission) -->
+{% if perms.especes.add_espece %}
+    <a href="{% url 'especes:espece-create' %}" class="btn btn-create mb-3">
+        <i class="bi bi-plus"></i> Ajouter une espèce
+    </a>
+{% endif %}
 
 <div id="loader" class="text-center my-5">
     <div class="spinner-border text-primary" role="status">
@@ -34,8 +37,13 @@
     </thead>
     <tbody></tbody>
 </table>
-{% endblock %}
 
+<script>
+    // Stocke les permissions dans des variables JavaScript
+    const canChange = {{ perms.especes.change_espece|lower }};
+    const canDelete = {{ perms.especes.delete_espece|lower }};
+</script>
+{% endblock %}
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -44,7 +52,7 @@
 <script>
 $(document).ready(function() {
     $('#especesTable').DataTable({
-			 "searching": false,
+        "searching": false,
         "ajax": {
             "url": "{% url 'especes:espece-list-json' %}",
             "dataSrc": "",
@@ -56,17 +64,28 @@ $(document).ready(function() {
             { "data": "nom_commun" },
             { "data": "nom_scientifique" },
             { "data": "est_actif", "render": function(data) {
-                return data ? "✅" : "❌";
+                return data ?
+                    '<span class="badge bg-success">Actif</span>' :
+                    '<span class="badge bg-danger">Inactif</span>';
             }},
             { "data": null, "render": function(data) {
-                return `
-                    <a href="/especes/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    <a href="/especes/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
-                        <i class="bi bi-trash"></i>
-                    </a>
-                `;
+                let actions = '';
+                // Utilise les variables JavaScript pour vérifier les permissions
+                if (canChange) {
+                    actions += `
+                        <a href="/especes/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    `;
+                }
+                if (canDelete) {
+                    actions += `
+                        <a href="/especes/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    `;
+                }
+                return actions;
             }}
         ],
         "language": {
