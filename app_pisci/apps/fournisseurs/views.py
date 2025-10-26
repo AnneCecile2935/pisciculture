@@ -9,11 +9,17 @@ from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
 
 
-class FournisseurListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class FournisseurListView(LoginRequiredMixin, ListView):
     model = Fournisseur
     template_name = "fournisseurs/frs_list.html"
     context_object_name = "fournisseurs"
-    permission_required = "fournisseurs.view_fournisseur"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_add'] = self.request.user.has_perm('fournisseurs.add_espece')
+        context['can_change'] = self.request.user.has_perm('fournisseurs.change_espece')
+        context['can_delete'] = self.request.user.has_perm('fournisseurs.delete_espece')
+        return context
 
 class FournisseurCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = FournisseurForm
@@ -50,8 +56,7 @@ class FournisseurDeleteView(LoginRequiredMixin, PermissionRequiredMixin, Standar
     permission_required = "fournisseurs.delete_fournisseur"
     contextçobject_name = "fournisseur"
 
-class FournisseurListJsonView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = "fournisseurs.view_fournisseur"
+class FournisseurListJsonView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         fournisseurs = list(Fournisseur.objects.values(
