@@ -1,0 +1,33 @@
+{% extends "form_templates.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}
+    {% if object %}
+        Modifier l'utilisateur
+    {% else %}
+        Créer un nouvel utilisateur
+    {% endif %}
+{% endblock %}
+
+{% block form_icon %}
+    {% if object %}
+        bi-pencil-square
+    {% else %}
+        bi-person-plus-fill
+    {% endif %}
+{% endblock %}
+
+{% block form_title %}
+    {% if object %}
+        Modifier l'utilisateur : {{ object.email }}
+    {% else %}
+        Créer un nouvel utilisateur
+    {% endif %}
+{% endblock %}
+
+{% block cancel_button %}
+<a href="{% url 'users:user_list' %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+    <i class="bi bi-x-circle me-2"></i> Annuler
+</a>
+{% endblock %}

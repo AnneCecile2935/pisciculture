@@ -1,4 +1,4 @@
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView, ListView
 from django.contrib.auth.views import LoginView, LogoutView
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
@@ -10,11 +10,13 @@ from .serializers import UserSerializer
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib import messages
 from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import api_view
 
 class SignupView(UserPassesTestMixin,CreateView):
+    model = User
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'users/signup.html'
+    success_url = reverse_lazy('user_list')
+    template_name = 'users/user_form.html'
 
     # Methode pour vérifier si l'utilisateur est un admin
     def test_func(self):
@@ -78,3 +80,35 @@ class CustomLogoutView(LogoutView):
         messages.success(request, "Vous avez été déconnecté avec succès.")
         return super().dispatch(request, *args, **kwargs)
 
+class UserUpdateView(UserPassesTestMixin, UpdateView):
+    model = User
+    form_class = CustomUserCreationForm
+    template_name = 'users/user_form.html'
+    success_url = reverse_lazy('user_list')
+
+    def test_func(self):
+        # Seuls les admins peuvent modifier un utilisateur
+        return self.request.user.is_authenticated and self.request.user.is_staff
+
+    def handle_no_permission(self):
+        messages.error(self.request, "Seuls les admins peuvent modifier les utilisateurs.")
+        return redirect('login')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Utilisateur mis à jour avec succès !")
+        return response
+
+class UserListView(UserPassesTestMixin, ListView):
+    model = User
+    template_name = 'users/user_list.html'
+    context_object_name = 'users'
+
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.is_staff
+
+@api_view(['GET'])
+def user_list_json(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)

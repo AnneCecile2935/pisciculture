@@ -30,7 +30,7 @@ urlpatterns = [
     #path('dashboard/', dashboard, name='dashboard'),
 
     #API
-    path('api/user/', include('apps.users.urls')),
+
 
     # Apps métiers
     path('sites/', include('apps.sites.urls')),
@@ -44,7 +44,7 @@ urlpatterns = [
 
 
     # Utilisateurs
-    path('users/', include('apps.users.urls')),
+    path('users/', include('apps.users.urls', namespace='users')),
 
     #Admin
     path('admin/', admin.site.urls),

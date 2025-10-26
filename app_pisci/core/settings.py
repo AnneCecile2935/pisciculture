@@ -160,9 +160,6 @@ if TESTING:
         'PASSWORD': os.getenv('DB_PASSWORD', 'test_password'),
         'HOST': os.getenv('DB_HOST', 'db_test'),
         'PORT': os.getenv('DB_PORT', '5432'),
-        'TEST': {
-            'NAME': os.getenv('DB_NAME', 'pisciculture_test'),  # Utilise la même base pour les tests
-        },
 
     }
 # =============================================
