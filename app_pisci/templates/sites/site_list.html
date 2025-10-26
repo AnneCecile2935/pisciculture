@@ -12,18 +12,21 @@
     }
 </style>
 <h2 class="mb-4">Liste des sites</h2>
-<!-- Bouton pour ajouter un site (visible uniquement pour les admins ou utilisateurs avec la permission) -->
+
+<!-- Bouton pour ajouter un site (visible uniquement pour les utilisateurs avec la permission) -->
 {% if perms.sites.add_site %}
     <a href="{% url 'sites:site-create' %}" class="btn btn-create mb-3">
         <i class="bi bi-plus"></i> Ajouter un site
     </a>
 {% endif %}
+
 <!-- Loader -->
 <div id="loader" class="text-center my-5">
     <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Chargement...</span>
     </div>
 </div>
+
 <!-- Tableau des sites avec DataTables -->
 <table id="sitesTable" class="table table-striped table-hover table-bordered" style="width:100%; display: none;">
     <thead class="table-dark">
@@ -35,7 +38,14 @@
     </thead>
     <tbody></tbody>  <!-- Vide : DataTables le remplira -->
 </table>
+
+<script>
+    // Stocke les permissions dans des variables JavaScript
+    const canChange = {{ perms.sites.change_site|lower }};
+    const canDelete = {{ perms.sites.delete_site|lower }};
+</script>
 {% endblock %}
+
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -44,7 +54,7 @@
 <script>
 $(document).ready(function() {
     $('#sitesTable').DataTable({
-			 "searching": false,
+        "searching": false,
         "processing": true,
         "ajax": {
             "url": "{% url 'sites:site-list-json' %}",
@@ -62,17 +72,26 @@ $(document).ready(function() {
                     '<span class="badge bg-danger">Inactif</span>';
             }},
             { "data": null, "render": function(data) {
-                return `
-                    <a href="/sites/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    <a href="/sites/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
-                        <i class="bi bi-trash"></i>
-                    </a>
-                    <a href="/sites/${data.id}/bassins/" class="btn btn-sm btn-secondary" title="Voir">
+                let actions = `
+                    <a href="/sites/${data.id}/bassins/" class="btn btn-sm btn-secondary" title="Voir les bassins">
                         <i class="bi bi-eye"></i>
                     </a>
                 `;
+                if (canChange) {
+                    actions += `
+                        <a href="/sites/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    `;
+                }
+                if (canDelete) {
+                    actions += `
+                        <a href="/sites/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    `;
+                }
+                return actions;
             }}
         ],
         "language": {
