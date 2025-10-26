@@ -8,11 +8,11 @@ from django.urls import reverse
 from django.http import JsonResponse
 from typing import Any
 
-class SiteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class SiteListView(LoginRequiredMixin, ListView):
     model = Site
     template_name = "sites/site_list.html"
     context_object_name = "sites"
-    permission_required = "sites.view_site"
+
 
 class SiteCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = SiteForm
@@ -34,18 +34,15 @@ class SiteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, StandardDelete
     list_url_name = "sites:site-list"
     permission_required = "sites.delete_site"
 
-class SiteListJsonView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = "sites.view_site"
-
+class SiteListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         sites = list(Site.objects.all().values('id', 'nom', 'est_actif'))
         return JsonResponse(sites, safe=False)
 
-class BassinListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class BassinListView(LoginRequiredMixin, ListView):
     model = Bassin
     template_name = "sites/bassin_list.html"
     context_object_name = "bassins"
-    permission_required = "sites.view_bassin"
 
 
     def get_queryset(self):
@@ -96,8 +93,7 @@ class BassinDeleteView(LoginRequiredMixin, PermissionRequiredMixin, StandardDele
     permission_required = "sites.delete_bassin"
     list_url_name = 'sites:site-list'
 
-class BassinListJsonView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = "sites.view_bassin"
+class BassinListJsonView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         site_id = self.kwargs.get("site_id")

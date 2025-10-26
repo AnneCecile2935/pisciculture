@@ -6,17 +6,18 @@
     #sitesTable th {
         text-align: center !important;
     }
-		#sitesTable td a.btn {
-    display: inline-flex;
-    justify-content: center;
-}
+    #sitesTable td a.btn {
+        display: inline-flex;
+        justify-content: center;
+    }
 </style>
 <h2 class="mb-4">Liste des sites</h2>
-
-<!-- Bouton pour ajouter un site -->
-<a href="{% url 'sites:site-create' %}" class="btn btn-create mb-3">
-    <i class="bi bi-plus"></i> Ajouter un site
-</a>
+<!-- Bouton pour ajouter un site (visible uniquement pour les admins ou utilisateurs avec la permission) -->
+{% if perms.sites.add_site %}
+    <a href="{% url 'sites:site-create' %}" class="btn btn-create mb-3">
+        <i class="bi bi-plus"></i> Ajouter un site
+    </a>
+{% endif %}
 <!-- Loader -->
 <div id="loader" class="text-center my-5">
     <div class="spinner-border text-primary" role="status">
