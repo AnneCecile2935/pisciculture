@@ -6,23 +6,27 @@
     #alimentsTable th {
         text-align: center !important;
     }
-		#alimentsTable td a.btn {
-    display: inline-flex;
-    justify-content: center;
-}
+    #alimentsTable td a.btn {
+        display: inline-flex;
+        justify-content: center;
+    }
 </style>
 <h2 class="mb-4">Liste des aliments</h2>
 
-<!-- Bouton pour ajouter un aliment -->
-<a href="{% url 'aliments:create' %}" class="btn btn-create mb-3">
-    <i class="bi bi-plus"></i> Ajouter un aliment
-</a>
+<!-- Bouton pour ajouter un aliment (visible uniquement pour les utilisateurs avec la permission) -->
+{% if perms.aliments.add_aliment %}
+    <a href="{% url 'aliments:create' %}" class="btn btn-create mb-3">
+        <i class="bi bi-plus"></i> Ajouter un aliment
+    </a>
+{% endif %}
+
 <!-- Loader -->
 <div id="loader" class="text-center my-5">
     <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Chargement...</span>
     </div>
 </div>
+
 <!-- Tableau des aliments avec DataTables -->
 <table id="alimentsTable" class="table table-striped table-hover table-bordered" style="width:100%; display: none;">
     <thead class="table-dark">
@@ -35,6 +39,7 @@
     </thead>
     <tbody></tbody>  <!-- Vide : DataTables le remplira -->
 </table>
+
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -55,7 +60,14 @@
     </div>
   </div>
 </div>
+
+<script>
+    // Stocke les permissions dans des variables JavaScript
+    const canChange = {{ perms.aliments.change_aliment|lower }};
+    const canDelete = {{ perms.aliments.delete_aliment|lower }};
+</script>
 {% endblock %}
+
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -64,7 +76,7 @@
 <script>
     $(document).ready(function() {
         $('#alimentsTable').DataTable({
-					  "searching": false,
+            "searching": false,
             "ajax": {
                 "url": "{% url 'aliments:list_json' %}",
                 "dataSrc": "",
@@ -77,14 +89,23 @@
                 { "data": "nom" },
                 { "data": "fournisseur__nom" },
                 { "data": null, "render": function(data) {
-                    return `
-                        <a href="/aliments/${data.id}/update/" class="btn btn-sm btn-update" title="Modfiier">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <a href="#" class="btn btn-sm btn-delete" title="Supprimer" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="/aliments/${data.id}/delete/">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    `;
+                    let actions = '';
+                    // Utilise les variables JavaScript pour vérifier les permissions
+                    if (canChange) {
+                        actions += `
+                            <a href="/aliments/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        `;
+                    }
+                    if (canDelete) {
+                        actions += `
+                            <a href="#" class="btn btn-sm btn-delete" title="Supprimer" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="/aliments/${data.id}/delete/">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        `;
+                    }
+                    return actions;
                 }}
             ],
             "language": {
@@ -115,14 +136,14 @@
             "info": true,
             "autoWidth": false,
         });
+
+        // Gestion de la modale de suppression
+        $('#deleteModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var url = button.data('url');
+            var modal = $(this);
+            modal.find('#deleteForm').attr('action', url);
+        });
     });
-</script>
-<script>
-	$('#deleteModal').on('show.bs.modal', function(event) {
-    var button = $(event.relatedTarget); // Bouton qui déclenche la modale
-    var url = button.data('url'); // URL de suppression (ex: /aliments/1/delete/)
-    var modal = $(this);
-    modal.find('#deleteForm').attr('action', url); // Met à jour l'action du formulaire
-});
 </script>
 {% endblock %}

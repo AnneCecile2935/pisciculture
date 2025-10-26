@@ -1,5 +1,5 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from .models import Aliment
@@ -9,11 +9,10 @@ from django.shortcuts import redirect
 from django.http import JsonResponse
 
 
-class AlimentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class AlimentListView(LoginRequiredMixin, ListView):
     model = Aliment
     template_name = "aliments/alim_list.html"
     context_object_name = "aliments"
-    permission_required = "aliments.view_aliment"
     login_url = '/login/'
 
 class AlimentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -51,10 +50,11 @@ class AlimentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         messages.success(self.request, "L'aliment a été mis à jour avec succès")
         return super().form_valid(form)
 
-class AlimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, StandardDeleteMixin, DeleteView):
+class AlimentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, StandardDeleteMixin, DeleteView):
     model = Aliment
     list_url_name= "aliments:list"
     login_url = '/login/'
+    permission_required = "aliments: delete_aliment"
 
     def test_func(self):
         has_perm = self.request.user.has_perm('aliments.delete_aliment')
@@ -62,7 +62,7 @@ class AlimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, StandardDeleteM
         return has_perm and self.request.user.is_staff  # ⭐ Vérifie aussi is_staff
 
 
-class AlimentListJsonView(ListView):
+class AlimentListJsonView(LoginRequiredMixin,ListView):
     model = Aliment
     context_object_name = 'aliments'
 
