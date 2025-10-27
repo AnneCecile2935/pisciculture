@@ -85,21 +85,68 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
             if hasattr(self.object, 'site_prod'):
                 form.fields['bassin'].queryset = Bassin.objects.filter(site=self.object.site_prod)
         return form
-    
+
     def form_valid(self, form):
-        """Vérifie la cohérence bassin/site/lot."""
-        bassin = form.cleaned_data['bassin']
-        site_prod = form.cleaned_data['site_prod']
-        if bassin.site != site_prod:
-            messages.error(self.request, "Le bassin ne appartient pas au site sélectionné.")
+        nourrissage = form.save(commit=False)
+
+        # ✅ Récupère site_prod depuis l'objet existant
+        site_prod = nourrissage.site_prod
+
+        # Récupère date_repas et notes depuis POST si disponibles
+        date_repas = self.request.POST.get('date_repas') or nourrissage.date_repas or timezone.now().date()
+        notes = self.request.POST.get('notes') or nourrissage.notes
+
+        erreurs = False
+
+        # Validation de la quantité
+        qte_str = form.cleaned_data.get('qte')
+        try:
+            if qte_str:
+                qte_str = str(qte_str).replace(',', '.')
+                qte = float(qte_str)
+                if qte <= 0:
+                    form.add_error('qte', "La quantité doit être positive.")
+                    erreurs = True
+            else:
+                qte = None
+        except ValueError:
+            form.add_error('qte', "Saisissez un nombre valide.")
+            erreurs = True
+            qte = None
+
+        # Cohérence quantité/motif/aliment
+        motif = form.cleaned_data.get('motif_absence')
+        aliment = form.cleaned_data.get('aliment')
+
+        if qte is None or qte == 0:
+            if not motif:
+                form.add_error('motif_absence', "Un motif est requis si la quantité est vide ou nulle.")
+                erreurs = True
+        else:
+            if not aliment:
+                form.add_error('aliment', "Un aliment est requis si une quantité est saisie.")
+                erreurs = True
+
+        # Lot associé
+        bassin = form.cleaned_data.get('bassin')
+        lot = bassin.lots_poissons.first() if bassin else None
+        if not lot:
+            form.add_error(None, f"Aucun lot trouvé pour le bassin {bassin.nom if bassin else ''}.")
+            erreurs = True
+
+        if erreurs:
             return self.form_invalid(form)
 
-        crea_lot = form.cleaned_data['crea_lot']
-        if crea_lot.bassin != bassin:
-            messages.error(self.request, "Le lot ne appartient pas au bassin sélectionné.")
-            return self.form_invalid(form)
+        # Mise à jour de l'objet
+        nourrissage.qte = qte
+        nourrissage.motif_absence = motif if qte is None or qte == 0 else None
+        nourrissage.aliment = aliment
+        nourrissage.crea_lot = lot
+        nourrissage.date_repas = date_repas
+        nourrissage.notes = notes
+        nourrissage.save()
 
-        messages.success(self.request, "Le repas a été mis à jour avec succès!")
+        messages.success(self.request, "Le repas a été mis à jour avec succès !")
         return super().form_valid(form)
 
 class NourrissageDeleteView(LoginRequiredMixin,StandardDeleteMixin, DeleteView):
@@ -140,23 +187,21 @@ class NourrissageParSiteView(FormView):
     def get_initial_data(self):
         site = get_object_or_404(Site, id=self.kwargs['site_id'])
         bassins = Bassin.objects.filter(site=site).prefetch_related('lots_poissons')
-        return [
-            {
-                'site_prod': str(site.id),  # UUID du site
-                'bassin': str(bassin.id),   # UUID du bassin (pas le nom !)
-                'crea_lot': str(bassin.lots_poissons.first().id) if bassin.lots_poissons.exists() else None,
-                'aliment': str(Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas').first().aliment.id)
-                        if Nourrissage.objects.filter(bassin=bassin).exists() and Nourrissage.objects.filter(bassin=bassin).first().aliment
-                        else None,
-            }
-            for bassin in bassins
-        ]
+        initial_data = []
+
+        for bassin in bassins:
+            last_nourrissage = Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas').first()
+            aliment_id = str(last_nourrissage.aliment.id) if last_nourrissage and last_nourrissage.aliment else None
+            initial_data.append({
+                'bassin': bassin,
+                'aliment': aliment_id,
+            })
+        return initial_data
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        # Transmettre site_id à chaque sous-formulaire
         for subform in form:
-            subform.site_id = self.kwargs['site_id']  # Passe site_id à chaque sous-formulaire
+            subform.site_id = self.kwargs['site_id']
             subform.fields['bassin'].queryset = Bassin.objects.filter(site_id=self.kwargs['site_id'])
         return form
 
@@ -168,19 +213,17 @@ class NourrissageParSiteView(FormView):
         return context
 
     def form_valid(self, form):
-        self.formset = form  # Stocke le formset pour form_valid
-        date_repas = self.request.POST.get('date_repas')
+        self.formset = form
+        date_repas = self.request.POST.get('date_repas') or timezone.now().date()
         notes = self.request.POST.get('notes')
         nourrissages = []
         erreurs = False
 
         for subform in self.formset:
-            subform.site_id = self.kwargs['site_id']
-            bassin = subform.cleaned_data['bassin']
+            bassin = subform.cleaned_data.get('bassin')
             qte_str = subform.cleaned_data.get('qte')
+            aliment = subform.cleaned_data.get('aliment')
             motif = subform.cleaned_data.get('motif_absence')
-            aliment= subform.cleaned_data.get('aliment')
-            crea_lot = subform.cleaned_data.get('crea_lot')
 
             # Validation de la quantité
             try:
@@ -198,7 +241,7 @@ class NourrissageParSiteView(FormView):
                 erreurs = True
                 continue
 
-            # Vérifie la cohérence quantité/motif/aliment
+            # Cohérence quantité / motif / aliment
             if qte is None or qte == 0:
                 if not motif:
                     subform.add_error('motif_absence', "Un motif est requis si la quantité est vide ou nulle.")
@@ -210,14 +253,14 @@ class NourrissageParSiteView(FormView):
                     erreurs = True
                     continue
 
-            # Récupère le lot
-            lot = bassin.lots_poissons.first()
+            # Lot automatique
+            lot = bassin.lots_poissons.first() if bassin else None
             if not lot:
-                subform.add_error(None, f"Aucun lot trouvé pour le bassin {bassin.nom}.")
+                subform.add_error(None, f"Aucun lot trouvé pour le bassin {bassin.nom if bassin else ''}.")
                 erreurs = True
                 continue
 
-            # Crée le repas
+            # Création de l'objet Nourrissage
             nourrissage = Nourrissage(
                 site_prod=bassin.site,
                 bassin=bassin,
@@ -226,12 +269,12 @@ class NourrissageParSiteView(FormView):
                 qte=qte,
                 motif_absence=motif if qte is None or qte == 0 else None,
                 date_repas=date_repas,
-                cree_par=self.request.user,
                 notes=notes,
+                cree_par=self.request.user,
             )
             nourrissages.append(nourrissage)
 
-        # Enregistrement
+        # Enregistrement en base
         if nourrissages:
             Nourrissage.objects.bulk_create(nourrissages)
             messages.success(self.request, f"{len(nourrissages)} repas enregistrés !")
@@ -242,8 +285,6 @@ class NourrissageParSiteView(FormView):
             return self.form_invalid(form)
 
         return super().form_valid(form)
-
-
 
 class ChoixSiteEnregistrementRepasView(TemplateView):
     template_name = 'activite_quotidien/choix_site_enregistrement_repas.html'

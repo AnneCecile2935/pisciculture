@@ -8,10 +8,12 @@ class ReleveForm(forms.ModelForm):
         model = ReleveTempOxy
         fields = ['site', 'temperature', 'oxygene', 'moment_jour']
 
+
 class NourrissageForm(forms.ModelForm):
     bassin = forms.ModelChoiceField(
         queryset=Bassin.objects.none(),  # Sera défini dynamiquement dans __init__
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        widget=forms.HiddenInput(),
+        disabled=True,
         empty_label=None,
     )
 
@@ -24,9 +26,7 @@ class NourrissageForm(forms.ModelForm):
     class Meta:
         model = Nourrissage
         fields = [
-            'site_prod',
             'bassin',
-            'crea_lot',
             'aliment',
             'qte',
             'motif_absence',
