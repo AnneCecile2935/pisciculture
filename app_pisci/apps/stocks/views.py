@@ -26,6 +26,7 @@ class LotCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return super().handle_no_permission()
 
     def form_valid(self, form):
+        print(form.errors)
         self.object = form.save()
         messages.success(self.request, "Le lot a été créé avec succès")
         return super().form_valid(form)
@@ -72,7 +73,12 @@ class LotDeleteView(LoginRequiredMixin, UserPassesTestMixin, StandardDeleteMixin
 class LotListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         lots = list(LotDePoisson.objects.all().values(
-            'id', 'code_lot', 'espece__nom_commun', 'site_prod__nom', 'bassin__nom',
+            'id', 'code_lot', 'espece__nom_commun', 'site_prod__nom',
             'statut', 'quantite', 'quantite_actuelle', 'poids', 'poids_moyen', 'date_arrivee'
         ))
+        # Ajoutez les noms des bassins manuellement
+        for lot in lots:
+            lot_id = lot['id']
+            bassins = LotDePoisson.objects.get(id=lot_id).bassins.all()
+            lot['bassins'] = [bassin.nom for bassin in bassins]
         return JsonResponse(lots, safe=False)

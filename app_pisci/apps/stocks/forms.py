@@ -4,12 +4,12 @@ from .models import LotDePoisson
 class LotForm(forms.ModelForm):
     class Meta:
         model = LotDePoisson
-        fields = ['espece', 'site_prod', 'fournisseur', 'bassin', 'date_arrivee', 'quantite', 'statut', 'code_lot', 'poids']
+        fields = ['espece', 'site_prod', 'fournisseur', 'bassins', 'date_arrivee', 'quantite', 'statut', 'code_lot', 'poids']
         labels = {
             'espece': 'Espèce du lot',
             'site_prod': 'Site de production',
             'fournisseur': 'Fournisseur du lot',
-            'bassin': 'Bassin',
+            'bassins': 'Bassins',
             'date_arrivee': 'Date d’arrivée du lot',
             'quantite': 'Quantité initiale reçue',
             'poids': 'Poids total reçu (en kg)',
@@ -21,6 +21,7 @@ class LotForm(forms.ModelForm):
             'code_lot': forms.TextInput(attrs={'placeholder': 'Ex: LOT2025-001'}),
             'poids': forms.NumberInput(attrs={'step': '0.01'}),
             'quantite': forms.NumberInput(attrs={'min': '1'}),
+            'bassins': forms.SelectMultiple(attrs={'class': 'form-control'}),
         }
         help_texts = {
             'quantite': "Doit être supérieur à 0.",

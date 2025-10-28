@@ -13,7 +13,7 @@
 </style>
 <div class="container-fluid mt-4">
     <h1 class="mb-4">Liste des lots de poissons</h1>
-    
+
     <!-- Bouton pour créer un nouveau lot -->
     {% if perms.stocks.add_lotdepoisson %}
         <a href="{% url 'stocks:create' %}" class="btn btn-create mb-3">
@@ -57,7 +57,7 @@
 <script>
 $(document).ready(function() {
     $('#lotsTable').DataTable({
-			  "searching": false,
+        "searching": false,
         "processing": true,
         "ajax": {
             "url": "{% url 'stocks:list-json' %}",
@@ -71,20 +71,26 @@ $(document).ready(function() {
             { "data": "code_lot" },
             { "data": "espece__nom_commun", "defaultContent": "-" },
             { "data": "site_prod__nom", "defaultContent": "-" },
-            { "data": "bassin__nom", "defaultContent": "-" },
+            { "data": "bassins", "render": function(data) {
+                return data ? data.join(', ') : '-';
+            }},
             { "data": "statut", "render": function(data) {
                 var statutText = {
                     'OEUF': {text: 'Œuf', class: 'bg-secondary'},
                     'ALEVIN': {text: 'Alevin', class: 'bg-primary'},
                     'JUVENILE': {text: 'Juvenile', class: 'bg-info'},
-                    'ADULTE': {text: 'Adulte', class: 'bg-success'}
+                    'ADULTE': {text: 'Adulte', class: 'bg-success'},
+                    'TRUITELLE': {text: 'Truitelle', class: 'bg-warning'},
+                    'PORTION': {text: 'Portion', class: 'bg-light'},
+                    'GROSSE(G)': {text: 'Grosse', class: 'bg-dark'},
+                    'TRES GROSSE(TG)': {text: 'Très Grosse', class: 'bg-dark'}
                 };
                 var statut = statutText[data] || {text: data, class: 'bg-secondary'};
                 return `<span class="badge ${statut.class}">${statut.text}</span>`;
             }},
             { "data": "quantite" },
             { "data": "quantite_actuelle" },
-						{ "data": "poids" },
+            { "data": "poids" },
             { "data": "poids_moyen", "render": function(data) {
                 return data ? data.toFixed(1) : '-';
             }},
@@ -96,12 +102,10 @@ $(document).ready(function() {
                     <a href="/stocks/${data.id}/update/" class="btn btn-sm btn-warning" title="Modifier">
                         <i class="bi bi-pencil"></i>
                     </a>` : '';
-
                 var deleteBtn = data.id ? `
                     <a href="/stocks/${data.id}/delete/" class="btn btn-sm btn-danger" title="Supprimer">
                         <i class="bi bi-trash"></i>
                     </a>` : '';
-
                 return updateBtn + ' ' + deleteBtn;
             }}
         ],

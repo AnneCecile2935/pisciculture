@@ -32,11 +32,10 @@ class LotDePoisson(TimeStampedModel):
         related_name='lot_fournis',
         verbose_name="Fournisseur"
     )
-    bassin = models.ForeignKey(
+    bassins = models.ManyToManyField(
         'sites.Bassin',
-        on_delete=models.PROTECT,
         related_name='lots_poissons',
-        verbose_name="Bassin"
+        verbose_name="Bassins"
     )
     date_arrivee = models.DateField(
         verbose_name= "Date d'arrivée",
