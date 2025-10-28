@@ -59,7 +59,7 @@ class NourrissageListView(LoginRequiredMixin, ListView):
     model = Nourrissage
     template_name = 'activite_quotidien/nourrissage_list.html'
     context_object_name = 'nourrissages'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         """Tri par défaut : repas les plus récents en premier."""

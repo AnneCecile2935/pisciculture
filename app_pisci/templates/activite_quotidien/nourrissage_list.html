@@ -61,9 +61,12 @@ $(document).ready(function() {
     console.log("Initialisation de DataTables...");
 
     var table = $('#nourrissagesTable').DataTable({
+				pageLength: 50,
+    		lengthMenu: [10, 25, 50, 100],
 			 "searching": false,
         "processing": true,
         "serverSide": false,
+
         "ajax": {
             "url": "{% url 'activite_quotidien:nourrissage-list-json' %}",
             "dataType": "json",
