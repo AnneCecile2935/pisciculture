@@ -6,7 +6,9 @@
     {% csrf_token %}
     {% for field in form %}
 		<div class="mb-3">
-				<label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+				<label for="{{ field.id_for_label }}" class="form-label">
+						{{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+				</label>
 				{% if field.name == 'bassins' %}
 						<select name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" multiple>
 								{% for option in field %}
