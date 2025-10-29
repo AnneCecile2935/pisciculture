@@ -11,139 +11,97 @@
         justify-content: center;
     }
 </style>
-<h2 class="mb-4">Liste des aliments</h2>
-
-<!-- Bouton pour ajouter un aliment (visible uniquement pour les utilisateurs avec la permission) -->
-{% if perms.aliments.add_aliment %}
-    <a href="{% url 'aliments:create' %}" class="btn btn-create mb-3">
-        <i class="bi bi-plus"></i> Ajouter un aliment
-    </a>
-{% endif %}
-
-<!-- Loader -->
-<div id="loader" class="text-center my-5">
-    <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Chargement...</span>
+<div class="container-fluid mt-4">  <!-- Ajout du conteneur fluide -->
+    <h1 class="mb-4">Liste des aliments</h1>  <!-- Changement de h2 à h1 -->
+    <!-- Bouton pour ajouter un aliment -->
+    {% if perms.aliments.add_aliment %}
+        <a href="{% url 'aliments:create' %}" class="btn btn-create mb-3">
+            <i class="bi bi-plus"></i> Ajouter un aliment
+        </a>
+    {% endif %}
+    <!-- Loader -->
+    <div id="loader" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+    </div>
+    <!-- Tableau des aliments avec DataTables -->
+    <div class="table-responsive">  <!-- Ajout du conteneur responsive -->
+        <table id="alimentsTable" class="table table-striped table-hover table-bordered" style="width:100%; display: none;">
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Nom</th>
+                    <th>Fournisseur</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
-
-<!-- Tableau des aliments avec DataTables -->
-<table id="alimentsTable" class="table table-striped table-hover table-bordered" style="width:100%; display: none;">
-    <thead class="table-dark">
-        <tr>
-            <th>Code</th>
-            <th>Nom</th>
-            <th>Fournisseur</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody></tbody>  <!-- Vide : DataTables le remplira -->
-</table>
-
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
-      </div>
-      <div class="modal-body">
-        Êtes-vous sûr de vouloir supprimer cet aliment ? Cette action est irréversible.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-        <form id="deleteForm" method="post" action="">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger">Supprimer</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-    // Stocke les permissions dans des variables JavaScript
-    const canChange = {{ perms.aliments.change_aliment|lower }};
-    const canDelete = {{ perms.aliments.delete_aliment|lower }};
-</script>
 {% endblock %}
-
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#alimentsTable').DataTable({
-            "searching": false,
-            "ajax": {
-                "url": "{% url 'aliments:list_json' %}",
-                "dataSrc": "",
-                "error": function(xhr, error, thrown) {
-                    alert("Erreur lors du chargement des aliments.");
-                }
-            },
-            "columns": [
-                { "data": "code_alim" },
-                { "data": "nom" },
-                { "data": "fournisseur__nom" },
-                { "data": null, "render": function(data) {
-                    let actions = '';
-                    // Utilise les variables JavaScript pour vérifier les permissions
-                    if (canChange) {
-                        actions += `
-                            <a href="/aliments/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                        `;
-                    }
-                    if (canDelete) {
-                        actions += `
-                            <a href="#" class="btn btn-sm btn-delete" title="Supprimer" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="/aliments/${data.id}/delete/">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        `;
-                    }
-                    return actions;
-                }}
-            ],
-            "language": {
-                "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json"
-            },
-            "drawCallback": function() {
-                // Réapplique les styles aux boutons
-                $('a.btn-update').addClass('btn-update').css({
-                    'background-color': 'var(--color-warning)',
-                    'border-color': 'var(--color-warning)',
-                    'color': 'var(--color-text-dark)'
-                });
-                $('a.btn-delete').addClass('btn-delete').css({
-                    'background-color': 'var(--color-danger)',
-                    'border-color': 'var(--color-danger)',
-                    'color': 'var(--color-text-light)'
-                });
-            },
-            "initComplete": function() {
-                $('#loader').hide();
-                $('#alimentsTable').show();
-            },
-            "responsive": true,
-            "ordering": true,
-            "paging": true,
-            "searching": true,
-            "lengthChange": false,
-            "info": true,
-            "autoWidth": false,
-        });
-
-        // Gestion de la modale de suppression
-        $('#deleteModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var url = button.data('url');
-            var modal = $(this);
-            modal.find('#deleteForm').attr('action', url);
-        });
+$(document).ready(function() {
+    $('#alimentsTable').DataTable({
+        "searching": false,  // Désactive la recherche pour correspondre aux lots de poissons
+        "processing": true,
+        "ajax": {
+            "url": "{% url 'aliments:list_json' %}",
+            "dataSrc": "",
+            "error": function(xhr, error, thrown) {
+                console.error("Erreur AJAX :", xhr.responseText);
+                alert("Erreur lors du chargement des aliments.");
+            }
+        },
+        "columns": [
+            { "data": "code_alim" },
+            { "data": "nom" },
+            { "data": "fournisseur__nom", "defaultContent": "-" },
+            { "data": null, "render": function(data) {
+                let actions = '';
+                {% if perms.aliments.change_aliment %}  <!-- Gestion des permissions côté serveur -->
+                    actions += `
+                        <a href="/aliments/${data.id}/update/" class="btn btn-sm btn-warning" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    `;
+                {% endif %}
+                {% if perms.aliments.delete_aliment %}  <!-- Gestion des permissions côté serveur -->
+                    actions += `
+                        <a href="/aliments/${data.id}/delete/" class="btn btn-sm btn-danger" title="Supprimer">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    `;
+                {% endif %}
+                return actions;
+            }}
+        ],
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json"
+        },
+        "drawCallback": function() {
+            $('a.btn-warning').addClass('btn-warning').css({
+                'background-color': 'var(--color-warning)',
+                'border-color': 'var(--color-warning)',
+                'color': 'var(--color-text-dark)'
+            });
+            $('a.btn-danger').addClass('btn-danger').css({
+                'background-color': 'var(--color-danger)',
+                'border-color': 'var(--color-danger)',
+                'color': 'var(--color-text-light)'
+            });
+        },
+        "initComplete": function() {
+            $('#loader').hide();
+            $('#alimentsTable').show();
+        }
     });
+});
 </script>
 {% endblock %}
