@@ -69,14 +69,14 @@ $(document).ready(function() {
                 let actions = '';
                 {% if perms.users.change_user %}  <!-- Permission pour modifier -->
                     actions += `
-                        <a href="/users/${data.id}/update/" class="btn btn-sm btn-warning" title="Modifier">
+                        <a href="/users/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
                             <i class="bi bi-pencil"></i>
                         </a>
                     `;
                 {% endif %}
                 {% if perms.users.delete_user %}  <!-- Permission pour supprimer -->
                     actions += `
-                        <a href="/users/${data.id}/delete/" class="btn btn-sm btn-danger" title="Supprimer">
+                        <a href="/users/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
                             <i class="bi bi-trash"></i>
                         </a>
                     `;

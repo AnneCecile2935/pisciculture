@@ -99,11 +99,11 @@ $(document).ready(function() {
             }},
             { "data": null, "render": function(data) {
                 var updateBtn = data.id ? `
-                    <a href="/stocks/${data.id}/update/" class="btn btn-sm btn-warning" title="Modifier">
+                    <a href="/stocks/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
                         <i class="bi bi-pencil"></i>
                     </a>` : '';
                 var deleteBtn = data.id ? `
-                    <a href="/stocks/${data.id}/delete/" class="btn btn-sm btn-danger" title="Supprimer">
+                    <a href="/stocks/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
                         <i class="bi bi-trash"></i>
                     </a>` : '';
                 return updateBtn + ' ' + deleteBtn;
