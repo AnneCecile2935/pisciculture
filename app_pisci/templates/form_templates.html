@@ -13,19 +13,33 @@
     <!-- CSS personnalisé -->
     <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
     {% block extra_css %}{% endblock %}
+		<style>
+				.bg-gradient-custom {
+						background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%) !important;
+				}
+		</style>
+
 </head>
 <body>
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header text-white">
-                        <div class="d-flex align-items-center">
+                <div class="card form-container">
+                    <!-- En-tête avec titre stylisé -->
+                    <div class="card-header form-title-header bg-gradient-custom">
+                        <h3 class="mb-0 d-flex align-items-center text-white">
                             <i class="bi {% block form_icon %}bi-plus-circle-fill{% endblock %} me-2"></i>
-                            <h3 class="mb-0">{% block form_title %}Titre du formulaire{% endblock %}</h3>
-                        </div>
+                            {% block form_title %}
+                                {% if object %}
+                                    Modifier l'espèce : {{ object.nom_commun }}
+                                {% else %}
+                                    Ajouter une espèce
+                                {% endif %}
+                            {% endblock %}
+                        </h3>
                     </div>
-                    <div class="card-body p-4">
+                    <!-- Corps du formulaire -->
+                    <div class="card-body">
                         {% block form_content %}
                         <form method="post" novalidate>
                             {% csrf_token %}
@@ -34,14 +48,9 @@
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <i class="bi
-                                                {% if field.name == 'nom' or field.name == 'nom_commun' %}bi-tag-fill
+                                                {% if field.name == 'nom_commun' %}bi-tag-fill
                                                 {% elif field.name == 'nom_scientifique' %}bi-book-fill
                                                 {% elif field.name == 'est_actif' %}bi-toggle-on
-                                                {% elif field.name == 'quantite' %}bi-calculator
-                                                {% elif field.name == 'date' %}bi-calendar-date
-                                                {% elif field.name == 'temperature' %}bi-thermometer-half
-                                                {% elif field.name == 'email' %}bi-envelope-fill
-                                                {% elif field.name == 'password' %}bi-lock-fill
                                                 {% else %}bi-pencil-fill
                                                 {% endif %} text-muted"></i>
                                         </span>
@@ -104,7 +113,6 @@
             }
             localStorage.setItem('theme', html.getAttribute('data-bs-theme'));
         }
-        // Charger le thème sauvegardé
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);

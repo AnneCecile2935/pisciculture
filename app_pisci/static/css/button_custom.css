@@ -1,120 +1,108 @@
-/* static/css/custom_buttons.css */
-/* Couleurs principales */
+/* ============================================= */
+/* VARIABLES SPÉCIFIQUES AUX BOUTONS */
+/* ============================================= */
 :root {
-    --color-primary: #2563eb;       /* Bleu principal */
-    --color-success: #10b981;       /* Vert succès */
-    --color-danger: #ef4444;        /* Rouge danger */
-    --color-secondary: #6b7280;     /* Gris secondaire */
-    --color-outline: #d1d5db;       /* Gris outline */
-    --color-text-light: #f9fafb;    /* Texte clair pour boutons colorés */
-    --color-text-dark: #374151;     /* Texte foncé pour boutons outline */
-    --color-warning: #f59e0b;       /* Orange pour "Mettre à jour" */
-    --btn-hover-filter: brightness(90%);
+    --btn-create-color: #2563eb;       /* Bleu pour "Créer/Ajouter" */
+    --btn-update-color: #f59e0b;       /* Orange pour "Mettre à jour" */
+    --btn-delete-color: #ef4444;       /* Rouge pour "Supprimer" */
+    --btn-outline-color: #d1d5db;      /* Gris pour "Annuler" */
+    --btn-text-light: #f9fafb;         /* Texte clair */
+    --btn-text-dark: #374151;          /* Texte foncé */
 }
 
-/* Effet de transition pour tous les boutons */
+/* ============================================= */
+/* STYLES GLOBAUX POUR TOUS LES BOUTONS */
+/* ============================================= */
 .btn {
     transition: all 0.2s ease;
     font-weight: 500;
     border-radius: 0.375rem;
-    padding: 0.5rem 1rem;
 }
 
-/* Style pour les icônes dans les boutons */
+/* Icônes dans les boutons */
 .btn i {
     font-size: 0.95rem;
     vertical-align: middle;
+    margin-right: 0.25rem;
 }
 
-/* Bouton "Créer/Ajouter" */
+/* ============================================= */
+/* BOUTON "CRÉER/AJOUTER" */
+/* ============================================= */
 .btn-create {
-    --bs-btn-bg: var(--color-primary) !important;
-    --bs-btn-border-color: var(--color-primary) !important;
-    --bs-btn-hover-bg: #{shade-color(var(--color-primary), 10%)} !important;
-    --bs-btn-color: var(--color-text-light) !important;
-    background-color: var(--color-primary) !important;
-    border-color: var(--color-primary) !important;
-    color: var(--color-text-light) !important;
+    background-color: var(--btn-create-color) !important;
+    border-color: var(--btn-create-color) !important;
+    color: var(--btn-text-light) !important;
 }
 
-/* Bouton "Mettre à jour" */
+.btn-create:hover {
+    background-color: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+}
+
+/* ============================================= */
+/* BOUTON "METTRE À JOUR" */
+/* ============================================= */
 .btn-update {
-    --bs-btn-bg: var(--color-warning) !important;
-    --bs-btn-border-color: var(--color-warning) !important;
-    --bs-btn-hover-bg: #{shade-color(var(--color-warning), 10%)} !important;
-    --bs-btn-color: var(--color-text-dark) !important;
-    background-color: var(--color-warning) !important;
-    border-color: var(--color-warning) !important;
-    color: var(--color-text-dark) !important;
+    background-color: var(--btn-update-color) !important;
+    border-color: var(--btn-update-color) !important;
+    color: var(--btn-text-dark) !important;
 }
 
-/* Bouton "Supprimer" */
+.btn-update:hover {
+    background-color: #d97706 !important;
+}
+
+/* ============================================= */
+/* BOUTON "SUPPRIMER" */
+/* ============================================= */
 .btn-delete {
-    --bs-btn-bg: var(--color-danger) !important;
-    --bs-btn-border-color: var(--color-danger) !important;
-    --bs-btn-hover-bg: #{shade-color(var(--color-danger), 10%)} !important;
-    --bs-btn-color: var(--color-text-light) !important;
-    background-color: var(--color-danger) !important;
-    border-color: var(--color-danger) !important;
-    color: var(--color-text-light) !important;
+    background-color: var(--btn-delete-color) !important;
+    border-color: var(--btn-delete-color) !important;
+    color: var(--btn-text-light) !important;
 }
 
-/* Boutons dans les tableaux */
+.btn-delete:hover {
+    background-color: #dc2626 !important;
+}
+
+/* ============================================= */
+/* BOUTON "ANNULER" (outline) */
+/* ============================================= */
+.btn-outline-secondary {
+    background-color: var(--btn-outline-color) ;
+    color: var(--color-text-dark);
+    border: 1px solid var(--color-secondary) !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: var(--color-text-dark);
+}
+
+/* ============================================= */
+/* BOUTONS ARRONDIS (rounded-pill) */
+/* ============================================= */
+.btn.rounded-pill {
+    border-radius: 50rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+/* ============================================= */
+/* BOUTONS DANS LES TABLEAUX (DataTables) */
+/* ============================================= */
 table .btn-sm {
     margin-right: 0.25rem;
     margin-bottom: 0.25rem;
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
-}
-
-/* Boutons dans les tableaux (spécifique) */
-table .btn-update {
-    --bs-btn-bg: var(--color-warning) !important;
-    --bs-btn-border-color: var(--color-warning) !important;
-    --bs-btn-hover-bg: #{shade-color(var(--color-warning), 10%)} !important;
-    background-color: var(--color-warning) !important;
-    border-color: var(--color-warning) !important;
-    color: var(--color-text-dark) !important;
-}
-
-table .btn-delete {
-    --bs-btn-bg: var(--color-danger) !important;
-    --bs-btn-border-color: var(--color-danger) !important;
-    --bs-btn-hover-bg: #{shade-color(var(--color-danger), 10%)} !important;
-    background-color: var(--color-danger) !important;
-    border-color: var(--color-danger) !important;
-    color: var(--color-text-light) !important;
-}
-/* Boutons dans les tableaux DataTables */
-table.dataTable tbody td a.btn-update,
-table.dataTable tbody td a.btn-delete {
-    display: inline-block;
     padding: 0.25rem 0.5rem;
     font-weight: 500;
-    border-radius: 0.375rem;
-    text-align: center;
-    margin-right: 0.25rem;
-    margin-bottom: 0.25rem;
+    border-radius: 0.375rem !important;
 }
 
-/* Bouton "Mettre à jour" dans DataTables */
-table.dataTable tbody td a.btn-update {
-    background-color: var(--color-warning) !important;
-    border-color: var(--color-warning) !important;
-    color: var(--color-text-dark) !important;
-}
-
-/* Bouton "Supprimer" dans DataTables */
-table.dataTable tbody td a.btn-delete {
-    background-color: var(--color-danger) !important;
-    border-color: var(--color-danger) !important;
-    color: var(--color-text-light) !important;
-}
-
-/* Icônes dans les boutons DataTables */
-table.dataTable tbody td a.btn-update i,
-table.dataTable tbody td a.btn-delete i {
-    font-size: 0.95rem;
-    vertical-align: middle;
-    margin-right: 0.25rem;
+/* ============================================= */
+/* PADDING SPÉCIFIQUE POUR LES BOUTONS */
+/* ============================================= */
+.btn.px-4.py-2 {
+    padding: 0.5rem 1.5rem !important;
 }
