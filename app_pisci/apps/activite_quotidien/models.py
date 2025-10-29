@@ -5,6 +5,7 @@ from apps.sites.models import Site, Bassin
 from apps.stocks.models import LotDePoisson
 from apps.aliments.models import Aliment
 from apps.users.models import User
+from django.core.validators import MinValueValidator
 
 
 class Nourrissage(TimeStampedModel):
@@ -107,10 +108,31 @@ class ReleveTempOxy(TimeStampedModel):
         ('matin', 'Matin'),
         ('soir', 'Soir'),
     ]
-    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name='releves_temp_oxy')
-    temperature = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Température (°C)")
-    oxygene = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Oxygène (mg/L)")
-    moment_jour = models.CharField(max_length=5, choices=MOMENT_CHOICES, verbose_name="Moment de la journée")
+    site = models.ForeignKey('sites.Site', on_delete=models.CASCADE, related_name='releves_temp_oxy')
+    temperature = models.FloatField(
+        verbose_name="Température (°C)",
+        null=True,
+        blank=True,
+        help_text="Saisir la température en degré Celsius",
+    )
+    oxygene = models.FloatField(
+        verbose_name="Oxygène (mg/L)",
+        null=True,
+        blank=True,
+        help_text="Saisissez le taux d'oxygène en mg/L.",
+    )
+    debit = models.FloatField(
+        verbose_name="Débit (L/min)",
+        null=True,
+        blank=True,
+        help_text="Saisissez le débit en litres par minute."
+
+    )
+    moment_jour = models.CharField(
+        max_length=10,
+        choices=MOMENT_CHOICES,
+        verbose_name="Moment de la journée",
+    )
 
     def __str__(self):
-        return f"Relevé du {self.date_creation.strftime('%d/%m/%Y')} ({self.get_moment_jour_display()}) : {self.temperature}°C, {self.oxygene} mg/L ({self.site.nom})"
+        return f"Relevé du {self.date_creation.strftime('%d/%m/%Y')} ({self.get_moment_jour_display()}) : {self.temperature}°C, {self.oxygene or 'N/A'} mg/L, {self.debit or 'N/A'} L/min ({self.site.nom})"

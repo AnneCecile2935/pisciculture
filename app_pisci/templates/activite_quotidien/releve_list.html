@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Liste des relevés{% endblock %}
+{% block content %}
+<style>
+    #relevesTable td,
+    #relevesTable th {
+        text-align: center !important;
+    }
+    #relevesTable td a.btn {
+        display: inline-flex;
+        justify-content: center;
+    }
+    #relevesTable td:nth-child(7) {
+        text-align: center !important;
+    }
+</style>
+<div class="container-fluid p-0 m-0">
+    <h1 class="mb-4">Liste des relevés</h1>
+    <!-- Bouton pour créer un nouveau relevé -->
+    <a href="{% url 'activite_quotidien:releve-create' %}" class="btn btn-create mb-3">
+        <i class="bi bi-plus-circle"></i> Ajouter un relevé
+    </a>
+    <!-- Loader -->
+    <div id="loader" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+    </div>
+    <!-- Tableau des relevés avec DataTables -->
+    <div class="table-responsive">
+        <table id="relevesTable" class="table table-striped table-hover table-bordered" style="width:100%; display: none;">
+            <thead class="table-dark">
+                <tr>
+                    <th>Site</th>
+                    <th>Température (°C)</th>
+                    <th>Oxygène (mg/L)</th>
+                    <th>Débit (L/min)</th>
+                    <th>Moment de la journée</th>
+                    <th>Date du relevé</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>  <!-- Le contenu sera chargé via AJAX -->
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script>
+$(document).ready(function() {
+    console.log("Initialisation de DataTables pour les relevés...");
+    var table = $('#relevesTable').DataTable({
+        "pageLength": 50,
+        "lengthMenu": [10, 25, 50, 100],
+        "searching": false,
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": "{% url 'activite_quotidien:releve-list-json' %}",
+            "dataType": "json",
+            "dataSrc": "",
+            "error": function(xhr, error, thrown) {
+                console.error("Erreur AJAX :", xhr.responseText);
+                alert("Erreur lors du chargement des relevés : " + xhr.responseText);
+            }
+        },
+        "columns": [
+            { "data": "site" },
+            { "data": "temperature", "render": function(data) {
+                return data !== null ? data.toFixed(1) : '-';
+            }},
+            { "data": "oxygene", "render": function(data) {
+                return data !== null ? data.toFixed(1) : '-';
+            }},
+            { "data": "debit", "render": function(data) {
+                return data !== null ? data.toFixed(1) : '-';
+            }},
+            { "data": "moment_jour" },
+            { "data": "date_creation", "render": function(data) {
+                return data ? new Date(data).toLocaleString('fr-FR') : '-';
+            }},
+            {
+                "data": null,
+                "render": function(data) {
+                    var updateUrl = "{% url 'activite_quotidien:releve-update' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', data.id);
+                    var deleteUrl = "{% url 'activite_quotidien:releve-delete' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', data.id);
+                    return `
+                        <a href="${updateUrl}" class="btn btn-sm btn-update" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="${deleteUrl}" class="btn btn-sm btn-delete" title="Supprimer">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    `;
+                }
+            }
+        ],
+        "order": [[5, "desc"]],
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json"
+        },
+        "drawCallback": function(settings) {
+            console.log("DataTables redessiné");
+            $('a.btn-update').addClass('btn-warning').css({
+                'background-color': 'var(--color-warning)',
+                'border-color': 'var(--color-warning)',
+                'color': 'var(--color-text-dark)'
+            });
+            $('a.btn-delete').addClass('btn-danger').css({
+                'background-color': 'var(--color-danger)',
+                'border-color': 'var(--color-danger)',
+                'color': 'var(--color-text-light)'
+            });
+        },
+        "initComplete": function(settings, json) {
+            console.log("DataTables initialisé");
+            $('#loader').hide();
+            $('#relevesTable').show();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -109,6 +109,25 @@
 																				<i class="bi bi-plus-circle me-2"></i> Enregistrer repas par site
 																		</a>
 																</li>
+																<li class="nav-item ps-3">
+																		<a class="nav-link d-flex justify-content-between align-items-center {% if request.resolver_match.url_name == 'activite_quotidien:releve-list' or request.resolver_match.url_name == 'activite_quotidien:releve-manquants' %}active{% endif %}"
+																				href="#relevesSubmenu"
+																				data-bs-toggle="collapse"
+																				aria-expanded="{% if request.resolver_match.url_name == 'activite_quotidien:releve-list' or request.resolver_match.url_name == 'activite_quotidien:releve-manquants' %}true{% else %}false{% endif %}">
+																				Relevés
+																				<i class="bi bi-chevron-down ms-2"></i>
+																		</a>
+																		<ul class="nav flex-column collapse {% if request.resolver_match.url_name == 'activite_quotidien:releve-list' or request.resolver_match.url_name == 'activite_quotidien:releve-manquants' %}show{% endif %}"
+																				id="relevesSubmenu">
+																				<li class="nav-item ps-3">
+																						<a class="nav-link {% if request.resolver_match.url_name == 'activite_quotidien:releve-list' %}active{% endif %}"
+																								href="{% url 'activite_quotidien:releve-list' %}">
+																								<i class="bi bi-thermometer me-2"></i> Liste des relevés
+																						</a>
+																				</li>
+																				
+																		</ul>
+																</li>
 														</ul>
 													</li>
                             {% if user.is_admin %}

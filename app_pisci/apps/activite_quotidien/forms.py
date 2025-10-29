@@ -1,13 +1,7 @@
 from django import forms
-from .models import ReleveTempOxy, Nourrissage, Bassin, Aliment, LotDePoisson
+from .models import ReleveTempOxy, Nourrissage, Bassin, Aliment
 from django.utils import timezone
 from django.forms import formset_factory
-
-class ReleveForm(forms.ModelForm):
-    class Meta:
-        model = ReleveTempOxy
-        fields = ['site', 'temperature', 'oxygene', 'moment_jour']
-
 
 class NourrissageForm(forms.ModelForm):
     bassin = forms.ModelChoiceField(
@@ -43,3 +37,44 @@ class NourrissageForm(forms.ModelForm):
             self.fields['bassin'].queryset = Bassin.objects.filter(site_id=self.site_id)
 
 NourrissageFormSet = formset_factory(NourrissageForm, extra=0)
+
+class ReleveTempOxyForm(forms.ModelForm):
+    class Meta:
+        model = ReleveTempOxy
+        fields = ['moment_jour', 'site', 'temperature', 'oxygene', 'debit']
+        widgets = {
+            'moment_jour': forms.Select(choices=ReleveTempOxy.MOMENT_CHOICES, attrs={'class':'form-control'}),
+            'site': forms.Select(attrs={'class': 'form-control'}),
+            'temperature': forms.NumberInput(attrs={
+                'step': '0.1',
+                'class': 'form-control',
+            }),
+            'oxygene': forms.NumberInput(attrs={
+                'step': '0.1',
+                'class': 'form-control',
+            }),
+            'debit': forms.NumberInput(attrs={
+                'step': '0.1',
+                'class': 'form-control',
+            }),
+        }
+        labels = {
+            'site': 'Site',
+            'temperature': 'Température (°C)',
+            'oxygene': 'Oxygène (mg/L)',
+            'debit': 'Débit (L/min)',
+            'moment_jour': 'Moment de la journée',
+        }
+        help_texts = {
+            'temperature': 'Saisissez la température en degrés Celsius (positif ou négatif).',
+            'oxygene': 'Saisissez le taux d\'oxygène en mg/L.',
+            'debit': 'Saisissez le débit en litres par minute.',
+        }
+
+    def clean_temperature(self):
+        temperature = self.cleaned_data.get('temperature')
+        if temperature is not None:
+            # Vérifie que la température est un nombre valide (positif ou négatif)
+            if not isinstance(temperature, (int, float)):
+                raise forms.ValidationError("La température doit être un nombre valide.")
+        return temperature

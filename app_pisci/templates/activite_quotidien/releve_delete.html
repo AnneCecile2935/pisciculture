@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer un relevé{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0 m-0">
+    <h1 class="mb-4">Supprimer un relevé</h1>
+    <p>Êtes-vous sûr de vouloir supprimer ce relevé ?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <a href="{% url 'activite_quotidien:releve-list' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

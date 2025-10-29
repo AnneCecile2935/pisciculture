@@ -4,7 +4,7 @@ from django.db.models import Case, When, Value, CharField
 from datetime import date
 from apps.sites.models import Site, Bassin
 from apps.activite_quotidien.models import ReleveTempOxy
-from apps.activite_quotidien.forms import ReleveForm
+from apps.activite_quotidien.forms import ReleveTempOxyForm
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, View, FormView, TemplateView
 from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
@@ -294,43 +294,60 @@ class ChoixSiteEnregistrementRepasView(TemplateView):
         context['sites'] = Site.objects.all()
         return context
 
+class ListRelevesView(LoginRequiredMixin, ListView):
+    model = ReleveTempOxy
+    template_name = 'activite_quotidien/releve_list.html'
+    context_object_name = 'releves'
 
-def index(request):
-    return HttpResponse("Bienvenue!")
+    def get_queryset(self):
+        today = timezone.now().date()
+        site_id = self.request.GET.get('site')
+        releves = ReleveTempOxy.objects.filter(date_creation__date=today).order_by('site__nom', 'moment_jour')
+        if site_id:
+            releves = releves.filter(site_id=site_id)
+        return releves
 
-def liste_releves(request):
-    today = date.today()
-    site_id = request.GET.get('site')
-    releves = ReleveTempOxy.objects.filter(date_creation__date=today).order_by('site__nom', 'moment_jour')
-    if site_id:
-        releves = releves.filter(site_id=site_id)
-    sites = Site.objects.all()
-    return render(request, 'activite_quotidien/liste_releves.html', {
-        'releves': releves,
-        'sites': sites,
-        'today': today,
-    })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sites'] = Site.objects.all()
+        context['today'] = timezone.now().date()
+        return context
 
-def ajouter_releve(request):
-    if request.method == 'POST':
-        form = ReleveForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('liste_releves')
-    else:
-        form = ReleveForm()
-    return render(request, 'activite_quotidien/ajouter_releve.html', {'form': form})
+class CreateReleveView(LoginRequiredMixin, CreateView):
+    model = ReleveTempOxy
+    form_class = ReleveTempOxyForm
+    template_name = 'activite_quotidien/releve_form.html'
+    success_url = reverse_lazy('activite_quotidien:releve-list')
 
-def releves_manquants(request):
-    today = date.today()
-    manquants = []
-    for site in Site.objects.all():
-        matin = ReleveTempOxy.objects.filter(site=site, moment_jour='matin', date_creation__date=today).exists()
-        soir = ReleveTempOxy.objects.filter(site=site, moment_jour='soir', date_creation__date=today).exists()
-        if not matin or not soir:
-            manquants.append({
-                'site': site,
-                'matin_manquant': not matin,
-                'soir_manquant': not soir,
-            })
-    return render(request, 'activite_quotidien/releves_manquants.html', {'manquants': manquants, 'today': today})
+
+class UpdateReleveView(LoginRequiredMixin, UpdateView):
+    model = ReleveTempOxy
+    form_class = ReleveTempOxyForm
+    template_name = 'activite_quotidien/releve_form.html'
+    success_url = reverse_lazy('activite_quotidien:releve-list')
+
+class DeleteReleveView(LoginRequiredMixin, DeleteView):
+    model = ReleveTempOxy
+    template_name = 'activite_quotidien/releve_delete.html'
+    success_url = reverse_lazy('activite_quotidien:releve-list')
+
+class RelevesListJsonView(View):
+    def get(self, request, *args, **kwargs):
+        today = timezone.now().date()
+        site_id = request.GET.get('site')
+        releves = ReleveTempOxy.objects.filter(date_creation__date=today).order_by('site__nom', 'moment_jour')
+        if site_id:
+            releves = releves.filter(site_id=site_id)
+        data = [
+            {
+                'id': str(releve.id),
+                'site': releve.site.nom,
+                'temperature': float(releve.temperature) if releve.temperature else None,
+                'oxygene': float(releve.oxygene) if releve.oxygene else None,
+                'debit': float(releve.debit) if releve.debit else None,
+                'moment_jour': releve.get_moment_jour_display(),
+                'date_creation': releve.date_creation.strftime("%Y-%m-%d %H:%M:%S")
+            }
+            for releve in releves
+        ]
+        return JsonResponse(data, safe=False)
