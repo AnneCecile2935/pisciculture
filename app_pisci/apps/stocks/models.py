@@ -53,7 +53,6 @@ class LotDePoisson(TimeStampedModel):
     )
     code_lot = models.CharField(
         max_length=20,
-        unique=True,
         verbose_name="Code lot",
         help_text="Code unique identifiant d'un lot"
     )
@@ -92,9 +91,20 @@ class LotDePoisson(TimeStampedModel):
         super().save(*args, **kwargs)
 
     def clean(self):
+        super().clean()
+        # Vérifie que les bassins sélectionnés ne contiennent pas déjà un lot
+        for bassin in self.bassins.all():
+            # Exclut le lot actuel si c'est une mise à jour
+            if LotDePoisson.objects.filter(bassins=bassin).exclude(pk=self.pk).exists():
+                raise ValidationError({
+                    'bassins': f"Le bassin {bassin.nom} contient déjà un lot."
+                })
         if self.quantite == 0:
             raise ValidationError({"quantite": "La quantité ne peut pas être 0"})
 
-
     def __str__(self):
         return f"{self.code_lot} - {self.espece.nom_commun} ({self.quantite_actuelle}/{self.quantite})"
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Appelle clean() avant de sauvegarder
+        super().save(*args, **kwargs)

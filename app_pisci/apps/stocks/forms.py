@@ -33,3 +33,20 @@ class LotForm(forms.ModelForm):
         if quantite <= 0:
             raise forms.ValidationError("La quantité doit être supérieure à 0.")
         return quantite
+
+    def clean_bassins(self):
+        bassins = self.cleaned_data.get('bassins')
+        if not bassins:
+            return bassins  # Si aucun bassin n'est sélectionné, pas besoin de valider
+
+        # Si c'est une création (pas d'instance existante)
+        if not self.instance or not self.instance.pk:
+            for bassin in bassins:
+                if LotDePoisson.objects.filter(bassins=bassin).exists():
+                    raise forms.ValidationError(f"Le bassin {bassin.nom} contient déjà un lot.")
+        # Si c'est une mise à jour, exclure l'instance actuelle
+        else:
+            for bassin in bassins:
+                if LotDePoisson.objects.filter(bassins=bassin).exclude(pk=self.instance.pk).exists():
+                    raise forms.ValidationError(f"Le bassin {bassin.nom} contient déjà un lot.")
+        return bassins

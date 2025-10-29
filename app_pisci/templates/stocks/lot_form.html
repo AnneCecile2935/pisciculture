@@ -1,35 +1,61 @@
 {% extends "form_templates.html" %}
+{% load stocks_filters %}
+
 {% block title %}Ajouter un lot{% endblock %}
 {% block form_title %}Ajouter un lot{% endblock %}
 {% block form_content %}
+<!-- Messages globaux (succès/erreur) -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-3">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <form method="post">
     {% csrf_token %}
     {% for field in form %}
-		<div class="mb-3">
-				<label for="{{ field.id_for_label }}" class="form-label">
-						{{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-				</label>
-				{% if field.name == 'bassins' %}
-						<select name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" multiple>
-								{% for option in field %}
-										{{ option.tag }}
-								{% endfor %}
-						</select>
-				{% else %}
-						{{ field }}
-				{% endif %}
-				{% if field.help_text %}
-						<small class="form-text text-muted">{{ field.help_text }}</small>
-				{% endif %}
-		</div>
-		{% endfor %}
+    <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label">
+            {{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+        {% if field.name == 'bassins' %}
+            <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" multiple>
+                {% for option in field %}
+                    {{ option.tag }}
+                {% endfor %}
+            </select>
+        {% else %}
+            {% if field|widget_type == 'CheckboxInput' %}
+                <div class="form-check form-switch ps-2">
+                    {{ field }}
+                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                        {{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                </div>
+            {% else %}
+                {{ field|add_class:"form-control" }}
+            {% endif %}
+        {% endif %}
+        <!-- Affichage des erreurs pour chaque champ -->
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+    </div>
+    {% endfor %}
     <div class="d-flex justify-content-between mt-4">
         <button type="submit" class="btn px-4 py-2 rounded-pill"
-								style="background-color: #2563eb !important; border-color: #2563eb !important; color: white !important;">Enregistrer
-				</button>
+                style="background-color: #2563eb !important; border-color: #2563eb !important; color: white !important;">Enregistrer
+        </button>
         {% block cancel_button %}
-    			<a href="{% url 'stocks:list' %}" class="btn btn-outline-secondary">Annuler</a>
-				{% endblock %}
+            <a href="{% url 'stocks:list' %}" class="btn btn-outline-secondary">Annuler</a>
+        {% endblock %}
     </div>
 </form>
 {% endblock %}
