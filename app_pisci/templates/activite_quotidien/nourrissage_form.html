@@ -20,7 +20,12 @@
         {% endif %}
     </div>
     {% endfor %}
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
-    <a href="{% url 'activite_quotidien:nourrissage-list' %}" class="btn btn-secondary">Annuler</a>
-</form>
+		<div class="d-flex justify-content-between mt-4">
+			<button type="submit" class="btn btn-primary px-4 py-2 rounded-pill"> Enregistrer
+			</button>
+			{% block cancel_button %}
+				<a href="{% url 'activite_quotidien:nourrissage-list' %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill">Annuler</a>
+			{% endblock %}
+    </div>
+	</form>
 {% endblock %}

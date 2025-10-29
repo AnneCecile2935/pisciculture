@@ -20,7 +20,13 @@
         {% endif %}
     </div>
     {% endfor %}
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
-    <a href="{% url 'fournisseurs:fournisseur-list' %}" class="btn btn-secondary">Annuler</a>
+    <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn px-4 py-2 rounded-pill"
+								style="background-color: #2563eb !important; border-color: #2563eb !important; color: white !important;">Enregistrer
+				</button>
+        {% block cancel_button %}
+    		<a href="{% url 'fournisseurs:fournisseur-list' %}" class="btn btn-outline-secondary">Annuler</a>
+				{% endblock %}
+    </div>
 </form>
 {% endblock %}
