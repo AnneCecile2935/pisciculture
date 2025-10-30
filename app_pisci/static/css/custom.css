@@ -80,3 +80,45 @@ body {
         margin-left: 0;
     }
 }
+.icon-bi {
+  font-family: "bootstrap-icons" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  line-height: 1;
+  speak: none;
+  display: inline-block;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  vertical-align: middle;
+}
+
+/* Force la couleur et la taille pour vérifier */
+.icon-bi.bi-leaf {
+  color: red !important;
+  font-size: 1.2rem !important;
+}
+
+/* Alignement des liens de la sidebar */
+.sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+}
+
+/* Alignement spécifique pour les liens avec sous-menu */
+.sidebar .nav-link[aria-expanded] {
+  justify-content: space-between;
+}
+
+/* Assure que les icônes et le texte sont toujours alignés */
+.sidebar .nav-link i.bi {
+  min-width: 1.5rem; /* Espace réservé pour les icônes */
+  text-align: center;
+}
+
+/* Style pour les chevrons */
+.sidebar .nav-link .bi-chevron-down {
+  margin-left: auto; /* Pousse le chevron à droite */
+}

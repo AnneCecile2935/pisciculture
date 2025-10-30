@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views  # Import depuis le dossier courant (activité_quotidien)
-from apps.activite_quotidien.views import NourrissageCreateView, NourrissageDeleteView, RelevesListJsonView, NourrissageListJsonView, NourrissageDetailView, ChoixSiteEnregistrementRepasView, NourrissageUpdateView, NourrissageListView, NourrissageParSiteView, ListRelevesView, CreateReleveView, DeleteReleveView, UpdateReleveView
+from apps.activite_quotidien.views import NourrissageCreateView, NourrissageDeleteView, RelevesListJsonView, NourrissageListJsonView, NourrissageDetailView, ChoixSiteEnregistrementRepasView, NourrissageUpdateView, NourrissageListView, NourrissageParSiteView, ListRelevesView, CreateReleveView, DeleteReleveView, UpdateReleveView, TempChartDataView, DashboardTemperatureView
 
 app_name = 'activite_quotidien'  # Namespace pour éviter les conflits
 urlpatterns = [
@@ -19,4 +19,7 @@ urlpatterns = [
     path('releves/<uuid:pk>/update/', UpdateReleveView.as_view(), name='releve-update'),
     path('releves/<uuid:pk>/delete/', DeleteReleveView.as_view(), name='releve-delete'),
     path('releves/list/json/', RelevesListJsonView.as_view(), name='releve-list-json'),
+    path('dashboard/temperature-data/', TempChartDataView.as_view(), name='temperature-chart-data'),
+    path('dashboard/temperature/', DashboardTemperatureView.as_view(), name='temperature-dashboard'),
+
 ]

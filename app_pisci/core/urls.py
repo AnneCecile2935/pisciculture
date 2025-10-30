@@ -20,6 +20,7 @@ from apps.users.forms import CustomAuthenticationForm
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from apps.users.views import CustomLoginView, CustomLogoutView
+from .views import DashboardView
 #from .views import dashboard
 
 urlpatterns = [
@@ -40,7 +41,7 @@ urlpatterns = [
     path('especes/', include('apps.especes.urls')),
     path('stocks/', include('apps.stocks.urls')),
     path('aliments/', include('apps.aliments.urls')),
-    path('dashboard/', TemplateView.as_view(template_name='dashboard.html'), name='dashboard'),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
 
 
     # Utilisateurs

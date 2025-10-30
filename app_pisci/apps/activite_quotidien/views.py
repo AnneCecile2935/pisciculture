@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db.models import Case, When, Value, CharField
-from datetime import date
+from datetime import timedelta
 from apps.sites.models import Site, Bassin
 from apps.activite_quotidien.models import ReleveTempOxy
 from apps.activite_quotidien.forms import ReleveTempOxyForm
@@ -23,6 +23,7 @@ import json
 from django.http import JsonResponse
 from apps.aliments.models import Aliment
 from django.forms import formset_factory
+import hashlib
 
 
 class NourrissageCreateView(LoginRequiredMixin, CreateView):
@@ -356,3 +357,40 @@ class RelevesListJsonView(View):
             for releve in releves
         ]
         return JsonResponse(data, safe=False)
+
+class TempChartDataView(View):
+    def get(self, request, *args, **kwargs):
+        start_date = timezone.now().date() - timedelta(days=14)
+        releves = ReleveTempOxy.objects.filter(
+            date_releve__gte=start_date,
+            temperature__isnull=False
+        ).select_related('site').order_by('site__nom', 'date_releve')
+
+        all_dates = sorted(set(releve.date_releve for releve in releves))
+        labels = [date.strftime("%Y-%m-%d") for date in all_dates]
+        sites = set(releve.site for releve in releves)
+
+        datasets = []
+        for site in sites:
+            # Génère une couleur à partir de l'UUID du site
+            uuid_str = str(site.id).encode('utf-8')
+            hash_object = hashlib.md5(uuid_str)
+            color = hash_object.hexdigest()[:6]  # Prend les 6 premiers caractères du hash
+
+            site_data = []
+            for date in all_dates:
+                releve = releves.filter(site=site, date_releve=date).first()
+                site_data.append(releve.temperature if releve else None)
+
+            datasets.append({
+                'label': site.nom,
+                'data': site_data,
+                'borderColor': f'#{color}',
+                'tension': 0.1,
+                'fill': False
+            })
+
+        return JsonResponse({'labels': labels, 'datasets': datasets})
+
+class DashboardTemperatureView(TemplateView):
+    template_name = 'dashboard.html'
