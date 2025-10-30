@@ -302,7 +302,7 @@ class ListRelevesView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         today = timezone.now().date()
         site_id = self.request.GET.get('site')
-        releves = ReleveTempOxy.objects.filter(date_creation__date=today).order_by('site__nom', 'moment_jour')
+        releves = ReleveTempOxy.objects.filter(date_releve=today).order_by('site__nom', 'moment_jour')
         if site_id:
             releves = releves.filter(site_id=site_id)
         return releves
@@ -318,6 +318,11 @@ class CreateReleveView(LoginRequiredMixin, CreateView):
     form_class = ReleveTempOxyForm
     template_name = 'activite_quotidien/releve_form.html'
     success_url = reverse_lazy('activite_quotidien:releve-list')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['date_releve'] = timezone.now().date()
+        return initial
 
 
 class UpdateReleveView(LoginRequiredMixin, UpdateView):
@@ -346,7 +351,7 @@ class RelevesListJsonView(View):
                 'oxygene': float(releve.oxygene) if releve.oxygene else None,
                 'debit': float(releve.debit) if releve.debit else None,
                 'moment_jour': releve.get_moment_jour_display(),
-                'date_creation': releve.date_creation.strftime("%Y-%m-%d %H:%M:%S")
+                'date_releve': releve.date_releve.strftime("%Y-%m-%d %H:%M:%S")
             }
             for releve in releves
         ]

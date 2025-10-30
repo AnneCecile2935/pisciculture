@@ -133,6 +133,11 @@ class ReleveTempOxy(TimeStampedModel):
         choices=MOMENT_CHOICES,
         verbose_name="Moment de la journée",
     )
+    date_releve = models.DateField(
+        verbose_name="Date du repas",
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"Relevé du {self.date_creation.strftime('%d/%m/%Y')} ({self.get_moment_jour_display()}) : {self.temperature}°C, {self.oxygene or 'N/A'} mg/L, {self.debit or 'N/A'} L/min ({self.site.nom})"

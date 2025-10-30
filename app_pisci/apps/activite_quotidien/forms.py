@@ -41,7 +41,7 @@ NourrissageFormSet = formset_factory(NourrissageForm, extra=0)
 class ReleveTempOxyForm(forms.ModelForm):
     class Meta:
         model = ReleveTempOxy
-        fields = ['moment_jour', 'site', 'temperature', 'oxygene', 'debit']
+        fields = ['date_releve', 'moment_jour', 'site', 'temperature', 'oxygene', 'debit']
         widgets = {
             'moment_jour': forms.Select(choices=ReleveTempOxy.MOMENT_CHOICES, attrs={'class':'form-control'}),
             'site': forms.Select(attrs={'class': 'form-control'}),
@@ -56,6 +56,9 @@ class ReleveTempOxyForm(forms.ModelForm):
             'debit': forms.NumberInput(attrs={
                 'step': '0.1',
                 'class': 'form-control',
+            }),
+            'date_releve': forms.DateInput(attrs={
+                'type':'date'
             }),
         }
         labels = {
