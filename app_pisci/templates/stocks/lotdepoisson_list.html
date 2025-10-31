@@ -15,7 +15,7 @@
     <h1 class="mb-4">Liste des lots de poissons</h1>
 
     <!-- Bouton pour créer un nouveau lot -->
-    {% if perms.stocks.add_lotdepoisson %}
+    {% if user.is_authenticated %}
         <a href="{% url 'stocks:create' %}" class="btn btn-create mb-3">
             <i class="bi bi-plus-circle"></i> Créer un nouveau lot
         </a>
@@ -98,14 +98,12 @@ $(document).ready(function() {
                 return data ? new Date(data).toLocaleDateString('fr-FR') : '-';
             }},
             { "data": null, "render": function(data) {
-                var updateBtn = data.id ? `
-                    <a href="/stocks/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier">
-                        <i class="bi bi-pencil"></i>
-                    </a>` : '';
-                var deleteBtn = data.id ? `
-                    <a href="/stocks/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer">
-                        <i class="bi bi-trash"></i>
-                    </a>` : '';
+                var updateBtn = data.id && {% if user.is_authenticated %}true{% else %}false{% endif %}
+										? `<a href="/stocks/${data.id}/update/" class="btn btn-sm btn-update" title="Modifier"><i class="bi bi-pencil"></i></a>`
+										: '';
+								var deleteBtn = data.id && {% if user.is_admin %}true{% else %}false{% endif %}
+										? `<a href="/stocks/${data.id}/delete/" class="btn btn-sm btn-delete" title="Supprimer"><i class="bi bi-trash"></i></a>`
+										: '';
                 return updateBtn + ' ' + deleteBtn;
             }}
         ],

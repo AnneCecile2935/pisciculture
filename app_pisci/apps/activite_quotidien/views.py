@@ -175,7 +175,7 @@ class NourrissageListJsonView(LoginRequiredMixin, View):
 
 import json
 
-class NourrissageParSiteView(FormView):
+class NourrissageParSiteView(LoginRequiredMixin, FormView):
     template_name = 'activite_quotidien/nourrissage_par_site_form.html'
     success_url = reverse_lazy('activite_quotidien:nourrissage-list')
     form_class = NourrissageFormSet
@@ -287,7 +287,7 @@ class NourrissageParSiteView(FormView):
 
         return super().form_valid(form)
 
-class ChoixSiteEnregistrementRepasView(TemplateView):
+class ChoixSiteEnregistrementRepasView(LoginRequiredMixin, TemplateView):
     template_name = 'activite_quotidien/choix_site_enregistrement_repas.html'
 
     def get_context_data(self, **kwargs):
@@ -360,7 +360,7 @@ class RelevesListJsonView(LoginRequiredMixin, View):
         ]
         return JsonResponse(data, safe=False)
 
-class TempChartDataView(View):
+class TempChartDataView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         start_date = timezone.now().date() - timedelta(days=7)
         releves = ReleveTempOxy.objects.filter(
@@ -450,5 +450,5 @@ class FlowChartDataView(LoginRequiredMixin, View):
             })
         return JsonResponse({'labels': labels, 'datasets': datasets})
 
-class DashboardTemperatureView(TemplateView):
+class DashboardTemperatureView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard.html'
