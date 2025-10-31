@@ -1,3 +1,17 @@
+## **Rapport de Sprints – Projet Pisciculture (MVP)**
+**Contexte** : Développement d’une application de gestion piscicole avec Django, PostgreSQL et Bootstrap.
+**Méthodologie** : Approche agile en sprints de 1 à 2 semaines, avec priorisation P0/P1/P2 et traçabilité via GitHub.
+**Objectif global** : Livrer un MVP fonctionnel pour enregistrer les nourrissages, gérer les sites/bassins, et fournir une interface utilisateur intuitive.
+
+**Livrables clés** :
+- Modèles Django pour Site, Bassin, Espèce, Aliment, Nourrissage, LotDePoisson.
+- Interface utilisateur dynamique (DataTables, formulaires, sidebar).
+- Tests unitaires et d’intégration (pytest, factory_boy).
+- Documentation technique et utilisateur.
+
+**Lien vers le dépôt** : [GitHub – Pisciculture](https://github.com/AnneCecile2935/pisciculture)
+**Lien vers le GitHub Project** : [Tableau des sprints](https://github.com/users/AnneCecile2935/projects/3)
+
 ## **Sprint 1 : Core Functionality (Nourrissage, Sites, Bassins, Espèces)**
 
 **Durée** : 2 semaines (ex : 2025-09-01 → 2025-09-14) **Objectif** : Mettre en place les modèles de base, les formulaires et les vues pour les fonctionnalités principales.
@@ -104,3 +118,14 @@
 - Refaire les tests pour activité quotidien (depuis formulaire de saisie de repas par site fonctionnel)
 - Corriger la DB de test
 ------
+
+## **Rétrospective Globale**
+**Ce qui a bien fonctionné** :
+- Découpage des tâches en sous-tâches techniques (ex: modèle → vue → tests).
+- Utilisation de DataTables pour dynamiser l’interface sans surcharge de développement.
+
+
+**Axes d’amélioration** :
+- **Estimation des durées** : Certaines tâches front-end (ex: styles) ont été sous-estimées. Pour le Sprint 5, j’ajouterai une marge de 20% sur les tâches UI.
+- **Tests** : Automatiser davantage les tests d’intégration avec GitHub Actions.
+- **Revue de code** : Intégrer des revues systématiques avant merge (même en solo, via des checklists).
