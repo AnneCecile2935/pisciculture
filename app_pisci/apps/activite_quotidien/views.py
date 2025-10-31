@@ -337,13 +337,15 @@ class DeleteReleveView(LoginRequiredMixin, DeleteView):
     template_name = 'activite_quotidien/releve_delete.html'
     success_url = reverse_lazy('activite_quotidien:releve-list')
 
-class RelevesListJsonView(View):
+class RelevesListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        today = timezone.now().date()
         site_id = request.GET.get('site')
-        releves = ReleveTempOxy.objects.filter(date_creation__date=today).order_by('site__nom', 'moment_jour')
+        date_releve = request.GET.get('date')  # Optionnel : filtre par date si fourni
+        releves = ReleveTempOxy.objects.all().order_by('-date_releve', 'site__nom', 'moment_jour')
         if site_id:
             releves = releves.filter(site_id=site_id)
+        if date_releve:
+            releves = releves.filter(date_releve__date=date_releve)
         data = [
             {
                 'id': str(releve.id),
@@ -352,7 +354,7 @@ class RelevesListJsonView(View):
                 'oxygene': float(releve.oxygene) if releve.oxygene else None,
                 'debit': float(releve.debit) if releve.debit else None,
                 'moment_jour': releve.get_moment_jour_display(),
-                'date_releve': releve.date_releve.strftime("%Y-%m-%d %H:%M:%S")
+                'date_releve': releve.date_releve.strftime("%Y-%m-%d %H:%M:%S") if releve.date_releve else None
             }
             for releve in releves
         ]
@@ -392,7 +394,7 @@ class TempChartDataView(View):
 
         return JsonResponse({'labels': labels, 'datasets': datasets})
 
-class OxygenChartDataView(LoginRequiredMixin, View):
+class OxygenChartDataView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         start_date = timezone.now().date() - timedelta(days=14)
         releves = ReleveTempOxy.objects.filter(
