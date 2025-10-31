@@ -2,38 +2,54 @@
 {% block title %}Tableau de bord - Température{% endblock %}
 {% block content %}
 <div class="container-fluid my-4">
-    <!-- Température -->
-    <div class="card shadow mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Température (°C) par site (2 dernières semaines)</h5>
+    <!-- Rangée pour les 3 graphiques -->
+    <div class="row g-4">
+        <!-- Graphique Température -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Température (°C)</h5>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height:300px;">
+                        <canvas id="temperatureChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="chart-container" style="position: relative; height:400px;">
-                <canvas id="temperatureChart"></canvas>
+
+        <!-- Graphique Oxygène -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Oxygène (mg/L)</h5>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height:300px;">
+                        <canvas id="oxygenChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique Débit -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Débit (L/min)</h5>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height:300px;">
+                        <canvas id="flowChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- Oxygène -->
-    <div class="card shadow mb-4">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">Oxygène (mg/L) par site (2 dernières semaines)</h5>
-        </div>
-        <div class="card-body">
-            <div class="chart-container" style="position: relative; height:400px;">
-                <canvas id="oxygenChart"></canvas>
-            </div>
-        </div>
-    </div>
-    <!-- Débit -->
-    <div class="card shadow mb-4">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0">Débit (L/min) par site (2 dernières semaines)</h5>
-        </div>
-        <div class="card-body">
-            <div class="chart-container" style="position: relative; height:400px;">
-                <canvas id="flowChart"></canvas>
-            </div>
-        </div>
+
+    <!-- Espace pour d'autres éléments -->
+    <div class="row mt-4">
+        <!-- Futurs graphiques ici -->
     </div>
 </div>
 {% endblock %}
@@ -42,12 +58,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Détection du thème
+    // 1. Détection du thème (inchangé)
     const isDarkMode = document.body.hasAttribute('data-theme');
-    // Couleurs des lignes (identiques pour les deux modes)
+    // Couleurs des lignes (inchangé)
     const lineColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
-    // 2. Options communes pour les graphiques
+    // 2. Options communes pour les graphiques (inchangé)
     function getChartOptions(isDark, chartId) {
         return {
             responsive: true,
@@ -90,7 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // 3. Graphique Température
+    // 3. Création des graphiques (inchangé sauf la hauteur)
+    // Graphique Température
     fetch("{% url 'activite_quotidien:temperature-chart-data' %}")
         .then(response => response.json())
         .then(data => {
@@ -111,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Erreur température:', error));
 
-    // 4. Graphique Oxygène
+    // Graphique Oxygène
     fetch("{% url 'activite_quotidien:oxygen-chart-data' %}")
         .then(response => response.json())
         .then(data => {
@@ -132,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Erreur oxygène:', error));
 
-    // 5. Graphique Débit
+    // Graphique Débit
     fetch("{% url 'activite_quotidien:flow-chart-data' %}")
         .then(response => response.json())
         .then(data => {
@@ -153,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Erreur débit:', error));
 
-    // 6. Écouteur pour le changement de thème
+    // Écouteur pour le changement de thème (inchangé)
     document.getElementById('theme-toggle').addEventListener('click', function() {
         setTimeout(function() {
             const newIsDarkMode = document.body.hasAttribute('data-theme');
@@ -172,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.flowChart.options.backgroundColor = newIsDarkMode ? 'rgba(30, 30, 30, 1)' : 'white';
                 window.flowChart.update();
             }
-        }, 100); // Petit délai pour laisser le temps au DOM de se mettre à jour
+        }, 100);
     });
 });
 </script>
