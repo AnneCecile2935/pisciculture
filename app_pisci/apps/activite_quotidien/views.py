@@ -392,5 +392,61 @@ class TempChartDataView(View):
 
         return JsonResponse({'labels': labels, 'datasets': datasets})
 
+class OxygenChartDataView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        start_date = timezone.now().date() - timedelta(days=14)
+        releves = ReleveTempOxy.objects.filter(
+            date_releve__gte=start_date,
+            oxygene__isnull=False
+        ).select_related('site').order_by('site__nom', 'date_releve')
+        all_dates = sorted(set(releve.date_releve for releve in releves))
+        labels = [date.strftime("%Y-%m-%d") for date in all_dates]
+        sites = set(releve.site for releve in releves)
+        datasets = []
+        for site in sites:
+            uuid_str = str(site.id).encode('utf-8')
+            hash_object = hashlib.md5(uuid_str)
+            color = hash_object.hexdigest()[:6]
+            site_data = []
+            for date in all_dates:
+                releve = releves.filter(site=site, date_releve=date).first()
+                site_data.append(releve.oxygene if releve else None)
+            datasets.append({
+                'label': site.nom,
+                'data': site_data,
+                'borderColor': f'#{color}',
+                'tension': 0.1,
+                'fill': False
+            })
+        return JsonResponse({'labels': labels, 'datasets': datasets})
+
+class FlowChartDataView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        start_date = timezone.now().date() - timedelta(days=14)
+        releves = ReleveTempOxy.objects.filter(
+            date_releve__gte=start_date,
+            debit__isnull=False
+        ).select_related('site').order_by('site__nom', 'date_releve')
+        all_dates = sorted(set(releve.date_releve for releve in releves))
+        labels = [date.strftime("%Y-%m-%d") for date in all_dates]
+        sites = set(releve.site for releve in releves)
+        datasets = []
+        for site in sites:
+            uuid_str = str(site.id).encode('utf-8')
+            hash_object = hashlib.md5(uuid_str)
+            color = hash_object.hexdigest()[:6]
+            site_data = []
+            for date in all_dates:
+                releve = releves.filter(site=site, date_releve=date).first()
+                site_data.append(releve.debit if releve else None)
+            datasets.append({
+                'label': site.nom,
+                'data': site_data,
+                'borderColor': f'#{color}',
+                'tension': 0.1,
+                'fill': False
+            })
+        return JsonResponse({'labels': labels, 'datasets': datasets})
+
 class DashboardTemperatureView(TemplateView):
     template_name = 'dashboard.html'

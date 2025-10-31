@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views  # Import depuis le dossier courant (activité_quotidien)
-from apps.activite_quotidien.views import NourrissageCreateView, NourrissageDeleteView, RelevesListJsonView, NourrissageListJsonView, NourrissageDetailView, ChoixSiteEnregistrementRepasView, NourrissageUpdateView, NourrissageListView, NourrissageParSiteView, ListRelevesView, CreateReleveView, DeleteReleveView, UpdateReleveView, TempChartDataView, DashboardTemperatureView
+from apps.activite_quotidien.views import NourrissageCreateView, NourrissageDeleteView,OxygenChartDataView, FlowChartDataView, RelevesListJsonView, NourrissageListJsonView, NourrissageDetailView, ChoixSiteEnregistrementRepasView, NourrissageUpdateView, NourrissageListView, NourrissageParSiteView, ListRelevesView, CreateReleveView, DeleteReleveView, UpdateReleveView, TempChartDataView, DashboardTemperatureView
 
 app_name = 'activite_quotidien'  # Namespace pour éviter les conflits
 urlpatterns = [
@@ -21,5 +21,7 @@ urlpatterns = [
     path('releves/list/json/', RelevesListJsonView.as_view(), name='releve-list-json'),
     path('dashboard/temperature-data/', TempChartDataView.as_view(), name='temperature-chart-data'),
     path('dashboard/temperature/', DashboardTemperatureView.as_view(), name='temperature-dashboard'),
+    path('oxygen-chart-data/', OxygenChartDataView.as_view(), name='oxygen-chart-data'),
+    path('flow-chart-data/', FlowChartDataView.as_view(), name='flow-chart-data'),
 
 ]
