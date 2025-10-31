@@ -424,7 +424,7 @@ class OxygenChartDataView(LoginRequiredMixin,View):
 
 class FlowChartDataView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        start_date = timezone.now().date() - timedelta(days=14)
+        start_date = timezone.now().date() - timedelta(days=28)
         releves = ReleveTempOxy.objects.filter(
             date_releve__gte=start_date,
             debit__isnull=False

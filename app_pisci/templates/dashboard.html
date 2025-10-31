@@ -2,8 +2,8 @@
 {% block title %}Tableau de bord - Température{% endblock %}
 {% block content %}
 <div class="container-fluid my-4">
-	<!-- Temperature -->
-    <div class="card shadow">
+    <!-- Température -->
+    <div class="card shadow mb-4">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Température (°C) par site (2 dernières semaines)</h5>
         </div>
@@ -13,7 +13,7 @@
             </div>
         </div>
     </div>
-		<!-- Oxygène -->
+    <!-- Oxygène -->
     <div class="card shadow mb-4">
         <div class="card-header bg-success text-white">
             <h5 class="mb-0">Oxygène (mg/L) par site (2 dernières semaines)</h5>
@@ -24,180 +24,155 @@
             </div>
         </div>
     </div>
-		<!-- Débit -->
+    <!-- Débit -->
     <div class="card shadow mb-4">
         <div class="card-header bg-info text-white">
             <h5 class="mb-0">Débit (L/min) par site (2 dernières semaines)</h5>
         </div>
         <div class="card-body">
             <div class="chart-container" style="position: relative; height:400px;">
-                <canvas id="oxygenChart"></canvas>
+                <canvas id="flowChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Détection du thème et couleurs (inchangé)
-    const isDarkMode = document.body.hasAttribute('data-theme') &&
-                       document.body.getAttribute('data-theme') === 'dark';
-    const lightColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8AC24A', '#607D8B'];
-    const darkColors = ['#FF8A80', '#82B1FF', '#FFD740', '#64FFDA', '#E57373', '#FFB74D', '#AED581', '#90A4AE'];
-    // 2. Variables pour les graphiques (ajout de flowChart)
-    let tempChart, oxyChart, flowChart;
+    // 1. Détection du thème
+    const isDarkMode = document.body.hasAttribute('data-theme');
+    // Couleurs des lignes (identiques pour les deux modes)
+    const lineColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
-    // 3. Code pour la température (inchangé)
+    // 2. Options communes pour les graphiques
+    function getChartOptions(isDark, chartId) {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { color: isDark ? 'white' : 'black' }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const unit = chartId.includes('temperature') ? '°C' :
+                                         chartId.includes('oxygen') ? 'mg/L' : 'L/min';
+                            return context.dataset.label + ': ' + context.raw + ' ' + unit;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Date', color: isDark ? 'white' : 'black' },
+                    grid: { color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
+                    ticks: { color: isDark ? 'white' : 'black' }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: chartId.includes('temperature') ? 'Température (°C)' :
+                              chartId.includes('oxygen') ? 'Oxygène (mg/L)' : 'Débit (L/min)',
+                        color: isDark ? 'white' : 'black'
+                    },
+                    grid: { color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
+                    ticks: { color: isDark ? 'white' : 'black' },
+                    suggestedMin: chartId.includes('temperature') ? 10 : 0,
+                    suggestedMax: chartId.includes('temperature') ? 30 :
+                                  chartId.includes('oxygen') ? 15 : 100
+                }
+            }
+        };
+    }
+
+    // 3. Graphique Température
     fetch("{% url 'activite_quotidien:temperature-chart-data' %}")
         .then(response => response.json())
         .then(data => {
             const ctx = document.getElementById('temperatureChart').getContext('2d');
             data.datasets.forEach((dataset, index) => {
-                dataset.borderColor = isDarkMode ? darkColors[index % darkColors.length] : lightColors[index % lightColors.length];
+                dataset.borderColor = lineColors[index % lineColors.length];
+                dataset.borderWidth = 2;
+                dataset.pointBackgroundColor = lineColors[index % lineColors.length];
             });
-            tempChart = new Chart(ctx, {
+            window.tempChart = new Chart(ctx, {
                 type: 'line',
                 data: data,
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + context.raw + ' °C';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Date' },
-                            grid: { color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                            ticks: { color: isDarkMode ? 'white' : 'black' }
-                        },
-                        y: {
-                            title: { display: true, text: 'Température (°C)' },
-                            suggestedMin: 10,
-                            suggestedMax: 30,
-                            grid: { color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                            ticks: { color: isDarkMode ? 'white' : 'black' }
-                        }
-                    }
+                    ...getChartOptions(isDarkMode, 'temperatureChart'),
+                    backgroundColor: isDarkMode ? 'rgba(30, 30, 30, 1)' : 'white'
                 }
             });
         })
         .catch(error => console.error('Erreur température:', error));
 
-    // 4. Code pour l'oxygène (inchangé)
+    // 4. Graphique Oxygène
     fetch("{% url 'activite_quotidien:oxygen-chart-data' %}")
         .then(response => response.json())
         .then(data => {
             const ctxOxy = document.getElementById('oxygenChart').getContext('2d');
             data.datasets.forEach((dataset, index) => {
-                dataset.borderColor = isDarkMode ? darkColors[index % darkColors.length] : lightColors[index % lightColors.length];
+                dataset.borderColor = lineColors[index % lineColors.length];
+                dataset.borderWidth = 2;
+                dataset.pointBackgroundColor = lineColors[index % lineColors.length];
             });
-            oxyChart = new Chart(ctxOxy, {
+            window.oxyChart = new Chart(ctxOxy, {
                 type: 'line',
                 data: data,
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + context.raw + ' mg/L';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Date' },
-                            grid: { color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                            ticks: { color: isDarkMode ? 'white' : 'black' }
-                        },
-                        y: {
-                            title: { display: true, text: 'Oxygène (mg/L)' },
-                            suggestedMin: 0,
-                            suggestedMax: 15,
-                            grid: { color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                            ticks: { color: isDarkMode ? 'white' : 'black' }
-                        }
-                    }
+                    ...getChartOptions(isDarkMode, 'oxygenChart'),
+                    backgroundColor: isDarkMode ? 'rgba(30, 30, 30, 1)' : 'white'
                 }
             });
         })
         .catch(error => console.error('Erreur oxygène:', error));
 
-    // 5. NOUVEAU : Code pour le débit
+    // 5. Graphique Débit
     fetch("{% url 'activite_quotidien:flow-chart-data' %}")
         .then(response => response.json())
         .then(data => {
             const ctxFlow = document.getElementById('flowChart').getContext('2d');
             data.datasets.forEach((dataset, index) => {
-                dataset.borderColor = isDarkMode ? darkColors[index % darkColors.length] : lightColors[index % lightColors.length];
+                dataset.borderColor = lineColors[index % lineColors.length];
+                dataset.borderWidth = 2;
+                dataset.pointBackgroundColor = lineColors[index % lineColors.length];
             });
-            flowChart = new Chart(ctxFlow, {
+            window.flowChart = new Chart(ctxFlow, {
                 type: 'line',
                 data: data,
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + context.raw + ' L/min';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Date' },
-                            grid: { color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                            ticks: { color: isDarkMode ? 'white' : 'black' }
-                        },
-                        y: {
-                            title: { display: true, text: 'Débit (L/min)' },
-                            suggestedMin: 0,
-                            suggestedMax: 100,  // Adapté pour un débit en L/min
-                            grid: { color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                            ticks: { color: isDarkMode ? 'white' : 'black' }
-                        }
-                    }
+                    ...getChartOptions(isDarkMode, 'flowChart'),
+                    backgroundColor: isDarkMode ? 'rgba(30, 30, 30, 1)' : 'white'
                 }
             });
         })
         .catch(error => console.error('Erreur débit:', error));
 
-    // 6. Écouteur pour le changement de thème (mis à jour pour 3 graphiques)
+    // 6. Écouteur pour le changement de thème
     document.getElementById('theme-toggle').addEventListener('click', function() {
-        const newIsDarkMode = document.body.getAttribute('data-theme') === 'dark';
-        // Fonction pour appliquer le thème à un graphique (évite la répétition)
-        function applyThemeToChart(chart) {
-            if (chart) {
-                chart.data.datasets.forEach((dataset, index) => {
-                    dataset.borderColor = newIsDarkMode ? darkColors[index % darkColors.length] : lightColors[index % darkColors.length];
-                });
-                chart.options.scales.x.grid.color = newIsDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-                chart.options.scales.x.ticks.color = newIsDarkMode ? 'white' : 'black';
-                chart.options.scales.y.grid.color = newIsDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-                chart.options.scales.y.ticks.color = newIsDarkMode ? 'white' : 'black';
-                chart.update();
+        setTimeout(function() {
+            const newIsDarkMode = document.body.hasAttribute('data-theme');
+            if (window.tempChart) {
+                window.tempChart.options = getChartOptions(newIsDarkMode, 'temperatureChart');
+                window.tempChart.options.backgroundColor = newIsDarkMode ? 'rgba(30, 30, 30, 1)' : 'white';
+                window.tempChart.update();
             }
-        }
-        // Applique le thème aux 3 graphiques
-        applyThemeToChart(tempChart);
-        applyThemeToChart(oxyChart);
-        applyThemeToChart(flowChart);
+            if (window.oxyChart) {
+                window.oxyChart.options = getChartOptions(newIsDarkMode, 'oxygenChart');
+                window.oxyChart.options.backgroundColor = newIsDarkMode ? 'rgba(30, 30, 30, 1)' : 'white';
+                window.oxyChart.update();
+            }
+            if (window.flowChart) {
+                window.flowChart.options = getChartOptions(newIsDarkMode, 'flowChart');
+                window.flowChart.options.backgroundColor = newIsDarkMode ? 'rgba(30, 30, 30, 1)' : 'white';
+                window.flowChart.update();
+            }
+        }, 100); // Petit délai pour laisser le temps au DOM de se mettre à jour
     });
 });
 </script>
