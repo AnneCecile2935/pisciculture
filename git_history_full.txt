@@ -1,0 +1,119 @@
+93a9eb9 feat(nourrissage) : create global forms by sites to register the dish
+626780e feat(templates): standardize deletion confirmation messages
+d4f2de2 feat(layout): enhance sidebar with submenu & logo styling
+f9fc1f4 feat(styles): add form_style.css for consistent form styling
+eb2d5d4 feat(ui): add DataTables and jQuery for interactive lists
+5fd6ff2 Fix form widgets, error messages, and URL reversals to ensure all tests pass
+12b6308 style: centre le contenu des cellules dans toutes les DataTables
+7f5424f feat(templates): ajoute un template générique pour tous les formulaires (form_template)
+868d3af feat(activité_quotidien): migre et améliore la liste des nourrissages avec DataTables
+260e0cf feat(stocks): migration de la liste des lots de poissons vers DataTables avec chargement dynamique
+09aba1f feat(bassins): migre la liste des bassins vers un format DataTables dynamique
+6a6b9bc feat(sites): migre vers un rendu DataTables dynamique avec une vue JSON dédiée
+c8956b9 feat(aliments): migre vers un rendu DataTables dynamique avec AJAX et drawCallback
+ae2b4ca fix(settings): configure STATICFILES_DIRS pour le chargement des fichiers statiques
+7cfb8f7 style: ajout boutond dans le tableau Datable
+cc95a1d style: ajoute Bootstrap Icons pour les boutons et éléments d'interface
+f5ae6f4 feat(especes): migre vers un rendu dynamique avec DataTables
+f1b3101 feat(fournisseurs): migre vers un rendu dynamique avec DataTables
+9e5a516 fix(especes): corrige les icônes et classes des boutons Éditer/Supprimer
+77e1c11 feat(especes): harmonise template, vues et URLs avec le modèle commun
+efa6c91 feat(activite_quotidien): améliore template nourrissage_list avec DataTables et messages utilisateur
+53f7df5 feat(ui): refactorise le template base.html avec mode sombre/clair et intégration de DataTables
+39f28f2 feat(ui): modification du titre de la page dashboard
+ff0ed04 feat(ui): ajoute des templates de boutons personnalisés réutilisables
+48abdd4 feat(aliments): implémente un template spécifique pour la liste des aliments
+06c655d feat(login): implémente une page de connexion responsive avec thème vert clair
+430cd3c  "feat(nourrissage): ajout de la configuration des URLs pour le module de nourrissage
+d620299 "refactor(config): standardisation des classes AppConfig
+f136922 "refactor(config): standardisation des classes AppConfig
+0344d66 "chore(deps): mise à jour de Django de 4.2.x vers 4.2.14 pour corriger les vulnérabilités de sécurité
+7746576 feat(templates): add and update nourrissage templates
+0f2fa07 feat(nourrissage): complete implementation and bug fixes
+3eaa3a8 chore(factories): add skip_postgeneration_save to all factories
+8cc09f9 chore(factories): add skip_postgeneration_save to all factories
+edd4f21 feat(auth): ajoute des tests complets pour CustomLoginView et CustomLogoutView
+11a95b1 "feat(auth): ajoute les vues de connexion/déconnexion personnalisées
+093a0d7 Voici un message de commit clair et concis pour cette modification :
+71e7e9f test(fournisseurs): complete Admin tests by adding missing model fields
+ad02410 test(stocks): add comprehensive tests for LotDePoisson (model, form, view, urls, admin)
+417a8e3 fix(users, stocks): correct is_staff handling in UserFactory and update related tests
+d5b2a7e chore(aliment/fournisseurs/stock/users) update migrations for Aliment model changes
+2ce3dd1 test(aliment): Aliment tests for model and view changes
+3a3a5de refactor(stocks): use UserPassesTestMixin instead of PermissionRequiredMixin for Aliment views
+5ea51d6 feat(users): add is_staff field to User model with default=False
+9801822 chore(users): remove unused conftest.py file
+bac7f1b refactor(test): move conftest.py to app_pisci/ and update test fixtures
+4e29dde chore(users): remove unused conftest.py file
+e8df68f refactor(auth): résout #XX - Suppression des permissions personnalisées
+bbd0605 feat(suppresion) fichier inutiles
+f4849cc ix(migrations): réinitialise les migrations pour corriger les conflits de base de données
+6af18be feat(tests): complète la couverture de tests pour Espece
+42b29d9 feat(tests): v2 complète la couverture de tests pourAliment
+922b33e feat(tests): complète la couverture de tests pour Aliment
+6ee50ec feat(tests): complète la couverture de tests pour Fournisseurs
+617edf4 feat(tests): complète la couverture de tests pour Site et Bassin
+8ef2803 feat(admin): ajouter configuration pour EspèceAdmin - Affichage des champs : nom_scientifique, nom_commun, temperature_ideale - Tri par défaut sur nom_commun - Filtres par famille - Recherche par nom_scientifique et nom_commun
+68f8c0b feat(admin): configurer StockAdmin pour le backoffice - Affichage des champs dans list_display : type_aliment, quantité_kg, fournisseur - Filtres par fournisseur et type_aliment - Recherche par nom d'aliment et référence - Permissions personnalisées (seuls les admins peuvent supprimer)
+c693e75 feat(Stock): mettre à jour modèle pour gérer les aliments - Ajout des champs : type_aliment, quantité_kg, date_expiration - Relation vers Fournisseur et Espèce - Validation des quantités (positives) et dates - Méthode custom pour calculer stock_restant() - Migration : 0003_update_stock_model.py"
+f71db1d feat(LotPoisson): ajouter modèle et migration initiale - Modèle LotPoisson avec champs : bassin, espèce, quantité, date_creation - Relation ForeignKey vers Bassin et Espèce - Ajout de contraintes de validation (quantité > 0) - Migration générée : 0002_add_lotpoisson.py"
+c68d49b feat(docs): ajouter documentation des tests - Guide pour lancer les tests (par composant) - Explications sur la structure et les bonnes pratiques - Tableaux récapitulatifs des commandes et problèmes courants - Configuration pour le coverage et CI/CD"
+b2ede21 feat(test): ajouter tests pour EmailAuthBackend - Authentification par email (pas par username) - Gestion des mots de passe incorrects - Blocage des utilisateurs inactifs (is_active=False) - Intégration avec Django AUTHENTICATION_BACKENDS"
+bc682c9 feat(test): ajouter tests pour UserSerializer - Création et mise à jour d'utilisateurs via API - Hachage automatique des mots de passe (make_password) - Validation des champs read_only (is_admin, is_staff) - Tests des messages d'erreur personnalisés (longueur min, email valide)"
+dd15fcd feat(test):  ajouter tests pour les formulaires utilisateur - Validation de CustomAuthenticationForm (auth par email) - Tests de CustomUserCreationForm (mots de passe, champs obligatoires) - Vérification des messages d'erreur personnalisés - Tests des classes CSS (form-control) et labels"
+7813942 feat(test):  ajouter tests pour les vues utilisateur - Tests des endpoints d'authentification (login, logout) - Création d'utilisateur via UserCreateView - Vérification des permissions (accès admin vs utilisateur standard) - Tests des réponses HTTP (200, 403, 302)"
+2545275 test(users): ajoute des tests unitaires complets pour le modèle User V2
+bf95880 test(users): ajoute des tests unitaires complets pour le modèle User
+7a23d96 feat(test): configure pytest et factory_boy pour les tests unitaires
+d0bfb82 feat(admin): configurer l'interface d'administration pour Repas Journalier
+5592315 feat(migrations): générer migration pour le modèle Repas Journalier (Nourrissage)
+8b4678e feat(models): ajouter modèle Repas Journalier (Nourrissage)
+7d2017b feat(aliments): implémente le CRUD complet pour les aliments
+83a8ba7 fix(fournisseurs): corrige les conflits de permissions et nettoie le modèle
+b5c8cc2 feat(stocks): implémente le modèle LotDePoisson avec calcul automatique du poids moyen
+9c66b62 ix(especes): corrige les erreurs de migration et d'admin pour Espece
+5ac8473 feat(especes): ajout du modèle Espece et intégration complète
+3ff890c fix(sites):
+d4ce86a feat(fournisseurs): implémentation complète du module de gestion
+8a1b3ae feat(flake8): ajout de flake8 pour faciliter developpement
+a389c31 feat(fournisseurs): ajoute le modèle Fournisseur avec catégories
+a0cb881 fix(sites): corrige les erreurs de syntaxe dans les modèles et URLs
+387b30f Voici un message de commit clair, concis et informatif pour ton travail :
+32b6c09 feat(sites): ajoute modèles, routes et templates pour Site et Bassin
+608195d WIP:Sauvegarde de toutes les modifications en cours
+6787dea "test(users): ajoute une suite complète de tests pour l'app users
+af54b99 feat(users): personnalisation du modèle User et de l'admin
+532540e docs(settings): ajoute des docstrings détaillées pour chaque paramètre
+32a182a feat(users): implémente la gestion complète des utilisateurs par l'admin
+084fdea feat(pisciculture): configuration complète de l'environnement Django et PostgreSQL
+8edb942 technical justification documentation part3
+994fec5 add seq diag register feeding
+839eaf9 add SCM and QA processes for documentation part 3
+ffe794c add documentation about API specidfications part 3
+f7c4773 sequence diagram documentation part3
+8977e28 er diagramm documentation part 3
+7d86055 add class diagram part 3 documentation
+14b35e7 add components documentation part 3
+515e85d add architecture diagram for documentation
+bfb4845 add mockup for documentation part 3
+d2373e3 add user stories documentation
+3fa2a01 add images for documentation part3
+be24b6c update documentation
+1ab573f update stage2 to display gantt diagram
+7e17e50 update modif stage 2
+396eb01 add gantt diagram
+949925c create projects charter developpement
+03b9e73 "feat: refactorise templates, URLs et vues pour l'app activite_quotidien"
+4830a71 feat: refactorise les URLs et l'administration Django
+fa08e96 feat: initialise l'architecture du projet et redispatche modèles/vues
+81c7a53 update modifications for devcontainer
+fba60a9 add autorisation to admin to bassin, site ans relevetempeoxy
+30b8c63 feat(models): add Site, Bassin, and ReleveTempOxy models
+dbda125 feat: add Dev Container configuration for VS Code
+497781c fix: resolve Docker and Django configuration issues
+1ce498d feat: initial project setup and app renaming
+e9339ff add mind map
+4232016 update documentation task 1 of porject portfolio
+efe25fb create folder documentation
+48cc3f0 stage1report documentation for the portfolio
+c9e5926 Initial commit

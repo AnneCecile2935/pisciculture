@@ -1,0 +1,119 @@
+93a9eb9 - Annece2935, 48 minutes ago : feat(nourrissage) : create global forms by sites to register the dish
+626780e - Annece2935, 23 hours ago : feat(templates): standardize deletion confirmation messages
+d4f2de2 - Annece2935, 25 hours ago : feat(layout): enhance sidebar with submenu & logo styling
+f9fc1f4 - Annece2935, 25 hours ago : feat(styles): add form_style.css for consistent form styling
+eb2d5d4 - Annece2935, 25 hours ago : feat(ui): add DataTables and jQuery for interactive lists
+5fd6ff2 - Annece2935, 31 hours ago : Fix form widgets, error messages, and URL reversals to ensure all tests pass
+12b6308 - Annece2935, 2 days ago : style: centre le contenu des cellules dans toutes les DataTables
+7f5424f - Annece2935, 3 days ago : feat(templates): ajoute un template générique pour tous les formulaires (form_template)
+868d3af - Annece2935, 3 days ago : feat(activité_quotidien): migre et améliore la liste des nourrissages avec DataTables
+260e0cf - Annece2935, 3 days ago : feat(stocks): migration de la liste des lots de poissons vers DataTables avec chargement dynamique
+09aba1f - Annece2935, 3 days ago : feat(bassins): migre la liste des bassins vers un format DataTables dynamique
+6a6b9bc - Annece2935, 3 days ago : feat(sites): migre vers un rendu DataTables dynamique avec une vue JSON dédiée
+c8956b9 - Annece2935, 3 days ago : feat(aliments): migre vers un rendu DataTables dynamique avec AJAX et drawCallback
+ae2b4ca - Annece2935, 3 days ago : fix(settings): configure STATICFILES_DIRS pour le chargement des fichiers statiques
+7cfb8f7 - Annece2935, 3 days ago : style: ajout boutond dans le tableau Datable
+cc95a1d - Annece2935, 3 days ago : style: ajoute Bootstrap Icons pour les boutons et éléments d'interface
+f5ae6f4 - Annece2935, 3 days ago : feat(especes): migre vers un rendu dynamique avec DataTables
+f1b3101 - Annece2935, 3 days ago : feat(fournisseurs): migre vers un rendu dynamique avec DataTables
+9e5a516 - Annece2935, 6 days ago : fix(especes): corrige les icônes et classes des boutons Éditer/Supprimer
+77e1c11 - Annece2935, 6 days ago : feat(especes): harmonise template, vues et URLs avec le modèle commun
+efa6c91 - Annece2935, 6 days ago : feat(activite_quotidien): améliore template nourrissage_list avec DataTables et messages utilisateur
+53f7df5 - Annece2935, 6 days ago : feat(ui): refactorise le template base.html avec mode sombre/clair et intégration de DataTables
+39f28f2 - Annece2935, 6 days ago : feat(ui): modification du titre de la page dashboard
+ff0ed04 - Annece2935, 6 days ago : feat(ui): ajoute des templates de boutons personnalisés réutilisables
+48abdd4 - Annece2935, 6 days ago : feat(aliments): implémente un template spécifique pour la liste des aliments
+06c655d - Annece2935, 7 days ago : feat(login): implémente une page de connexion responsive avec thème vert clair
+430cd3c - Annece2935, 7 days ago :  "feat(nourrissage): ajout de la configuration des URLs pour le module de nourrissage
+d620299 - Annece2935, 7 days ago : "refactor(config): standardisation des classes AppConfig
+f136922 - Annece2935, 7 days ago : "refactor(config): standardisation des classes AppConfig
+0344d66 - Annece2935, 7 days ago : "chore(deps): mise à jour de Django de 4.2.x vers 4.2.14 pour corriger les vulnérabilités de sécurité
+7746576 - Annece2935, 8 days ago : feat(templates): add and update nourrissage templates
+0f2fa07 - Annece2935, 8 days ago : feat(nourrissage): complete implementation and bug fixes
+3eaa3a8 - Annece2935, 8 days ago : chore(factories): add skip_postgeneration_save to all factories
+8cc09f9 - Annece2935, 8 days ago : chore(factories): add skip_postgeneration_save to all factories
+edd4f21 - Annece2935, 8 days ago : feat(auth): ajoute des tests complets pour CustomLoginView et CustomLogoutView
+11a95b1 - Annece2935, 9 days ago : "feat(auth): ajoute les vues de connexion/déconnexion personnalisées
+093a0d7 - Annece2935, 9 days ago : Voici un message de commit clair et concis pour cette modification :
+71e7e9f - Annece2935, 9 days ago : test(fournisseurs): complete Admin tests by adding missing model fields
+ad02410 - Annece2935, 9 days ago : test(stocks): add comprehensive tests for LotDePoisson (model, form, view, urls, admin)
+417a8e3 - Annece2935, 9 days ago : fix(users, stocks): correct is_staff handling in UserFactory and update related tests
+d5b2a7e - Annece2935, 9 days ago : chore(aliment/fournisseurs/stock/users) update migrations for Aliment model changes
+2ce3dd1 - Annece2935, 9 days ago : test(aliment): Aliment tests for model and view changes
+3a3a5de - Annece2935, 9 days ago : refactor(stocks): use UserPassesTestMixin instead of PermissionRequiredMixin for Aliment views
+5ea51d6 - Annece2935, 9 days ago : feat(users): add is_staff field to User model with default=False
+9801822 - Annece2935, 9 days ago : chore(users): remove unused conftest.py file
+bac7f1b - Annece2935, 9 days ago : refactor(test): move conftest.py to app_pisci/ and update test fixtures
+4e29dde - Annece2935, 9 days ago : chore(users): remove unused conftest.py file
+e8df68f - Annece2935, 10 days ago : refactor(auth): résout #XX - Suppression des permissions personnalisées
+bbd0605 - Annece2935, 10 days ago : feat(suppresion) fichier inutiles
+f4849cc - Annece2935, 10 days ago : ix(migrations): réinitialise les migrations pour corriger les conflits de base de données
+6af18be - Annece2935, 10 days ago : feat(tests): complète la couverture de tests pour Espece
+42b29d9 - Annece2935, 10 days ago : feat(tests): v2 complète la couverture de tests pourAliment
+922b33e - Annece2935, 10 days ago : feat(tests): complète la couverture de tests pour Aliment
+6ee50ec - Annece2935, 10 days ago : feat(tests): complète la couverture de tests pour Fournisseurs
+617edf4 - Annece2935, 10 days ago : feat(tests): complète la couverture de tests pour Site et Bassin
+8ef2803 - Annece2935, 11 days ago : feat(admin): ajouter configuration pour EspèceAdmin - Affichage des champs : nom_scientifique, nom_commun, temperature_ideale - Tri par défaut sur nom_commun - Filtres par famille - Recherche par nom_scientifique et nom_commun
+68f8c0b - Annece2935, 11 days ago : feat(admin): configurer StockAdmin pour le backoffice - Affichage des champs dans list_display : type_aliment, quantité_kg, fournisseur - Filtres par fournisseur et type_aliment - Recherche par nom d'aliment et référence - Permissions personnalisées (seuls les admins peuvent supprimer)
+c693e75 - Annece2935, 11 days ago : feat(Stock): mettre à jour modèle pour gérer les aliments - Ajout des champs : type_aliment, quantité_kg, date_expiration - Relation vers Fournisseur et Espèce - Validation des quantités (positives) et dates - Méthode custom pour calculer stock_restant() - Migration : 0003_update_stock_model.py"
+f71db1d - Annece2935, 11 days ago : feat(LotPoisson): ajouter modèle et migration initiale - Modèle LotPoisson avec champs : bassin, espèce, quantité, date_creation - Relation ForeignKey vers Bassin et Espèce - Ajout de contraintes de validation (quantité > 0) - Migration générée : 0002_add_lotpoisson.py"
+c68d49b - Annece2935, 11 days ago : feat(docs): ajouter documentation des tests - Guide pour lancer les tests (par composant) - Explications sur la structure et les bonnes pratiques - Tableaux récapitulatifs des commandes et problèmes courants - Configuration pour le coverage et CI/CD"
+b2ede21 - Annece2935, 11 days ago : feat(test): ajouter tests pour EmailAuthBackend - Authentification par email (pas par username) - Gestion des mots de passe incorrects - Blocage des utilisateurs inactifs (is_active=False) - Intégration avec Django AUTHENTICATION_BACKENDS"
+bc682c9 - Annece2935, 11 days ago : feat(test): ajouter tests pour UserSerializer - Création et mise à jour d'utilisateurs via API - Hachage automatique des mots de passe (make_password) - Validation des champs read_only (is_admin, is_staff) - Tests des messages d'erreur personnalisés (longueur min, email valide)"
+dd15fcd - Annece2935, 11 days ago : feat(test):  ajouter tests pour les formulaires utilisateur - Validation de CustomAuthenticationForm (auth par email) - Tests de CustomUserCreationForm (mots de passe, champs obligatoires) - Vérification des messages d'erreur personnalisés - Tests des classes CSS (form-control) et labels"
+7813942 - Annece2935, 11 days ago : feat(test):  ajouter tests pour les vues utilisateur - Tests des endpoints d'authentification (login, logout) - Création d'utilisateur via UserCreateView - Vérification des permissions (accès admin vs utilisateur standard) - Tests des réponses HTTP (200, 403, 302)"
+2545275 - Annece2935, 13 days ago : test(users): ajoute des tests unitaires complets pour le modèle User V2
+bf95880 - Annece2935, 13 days ago : test(users): ajoute des tests unitaires complets pour le modèle User
+7a23d96 - Annece2935, 13 days ago : feat(test): configure pytest et factory_boy pour les tests unitaires
+d0bfb82 - Annece2935, 2 weeks ago : feat(admin): configurer l'interface d'administration pour Repas Journalier
+5592315 - Annece2935, 2 weeks ago : feat(migrations): générer migration pour le modèle Repas Journalier (Nourrissage)
+8b4678e - Annece2935, 2 weeks ago : feat(models): ajouter modèle Repas Journalier (Nourrissage)
+7d2017b - Annece2935, 2 weeks ago : feat(aliments): implémente le CRUD complet pour les aliments
+83a8ba7 - Annece2935, 2 weeks ago : fix(fournisseurs): corrige les conflits de permissions et nettoie le modèle
+b5c8cc2 - Annece2935, 3 weeks ago : feat(stocks): implémente le modèle LotDePoisson avec calcul automatique du poids moyen
+9c66b62 - Annece2935, 3 weeks ago : ix(especes): corrige les erreurs de migration et d'admin pour Espece
+5ac8473 - Annece2935, 3 weeks ago : feat(especes): ajout du modèle Espece et intégration complète
+3ff890c - Annece2935, 3 weeks ago : fix(sites):
+d4ce86a - Annece2935, 3 weeks ago : feat(fournisseurs): implémentation complète du module de gestion
+8a1b3ae - Annece2935, 3 weeks ago : feat(flake8): ajout de flake8 pour faciliter developpement
+a389c31 - Annece2935, 3 weeks ago : feat(fournisseurs): ajoute le modèle Fournisseur avec catégories
+a0cb881 - Annece2935, 3 weeks ago : fix(sites): corrige les erreurs de syntaxe dans les modèles et URLs
+387b30f - Annece2935, 3 weeks ago : Voici un message de commit clair, concis et informatif pour ton travail :
+32b6c09 - Annece2935, 3 weeks ago : feat(sites): ajoute modèles, routes et templates pour Site et Bassin
+608195d - Annece2935, 3 weeks ago : WIP:Sauvegarde de toutes les modifications en cours
+6787dea - Annece2935, 3 weeks ago : "test(users): ajoute une suite complète de tests pour l'app users
+af54b99 - Annece2935, 3 weeks ago : feat(users): personnalisation du modèle User et de l'admin
+532540e - Annece2935, 3 weeks ago : docs(settings): ajoute des docstrings détaillées pour chaque paramètre
+32a182a - Annece2935, 3 weeks ago : feat(users): implémente la gestion complète des utilisateurs par l'admin
+084fdea - Annece2935, 4 weeks ago : feat(pisciculture): configuration complète de l'environnement Django et PostgreSQL
+8edb942 - Annece2935, 4 weeks ago : technical justification documentation part3
+994fec5 - Annece2935, 4 weeks ago : add seq diag register feeding
+839eaf9 - Annece2935, 4 weeks ago : add SCM and QA processes for documentation part 3
+ffe794c - Annece2935, 4 weeks ago : add documentation about API specidfications part 3
+f7c4773 - Annece2935, 4 weeks ago : sequence diagram documentation part3
+8977e28 - Annece2935, 4 weeks ago : er diagramm documentation part 3
+7d86055 - Annece2935, 4 weeks ago : add class diagram part 3 documentation
+14b35e7 - Annece2935, 4 weeks ago : add components documentation part 3
+515e85d - Annece2935, 4 weeks ago : add architecture diagram for documentation
+bfb4845 - Annece2935, 4 weeks ago : add mockup for documentation part 3
+d2373e3 - Annece2935, 4 weeks ago : add user stories documentation
+3fa2a01 - Annece2935, 4 weeks ago : add images for documentation part3
+be24b6c - Annece2935, 4 weeks ago : update documentation
+1ab573f - Annece2935, 6 weeks ago : update stage2 to display gantt diagram
+7e17e50 - Annece2935, 6 weeks ago : update modif stage 2
+396eb01 - Annece2935, 6 weeks ago : add gantt diagram
+949925c - Annece2935, 6 weeks ago : create projects charter developpement
+03b9e73 - Annece2935, 6 weeks ago : "feat: refactorise templates, URLs et vues pour l'app activite_quotidien"
+4830a71 - Annece2935, 6 weeks ago : feat: refactorise les URLs et l'administration Django
+fa08e96 - Annece2935, 6 weeks ago : feat: initialise l'architecture du projet et redispatche modèles/vues
+81c7a53 - Annece2935, 6 weeks ago : update modifications for devcontainer
+fba60a9 - Annece2935, 6 weeks ago : add autorisation to admin to bassin, site ans relevetempeoxy
+30b8c63 - Annece2935, 7 weeks ago : feat(models): add Site, Bassin, and ReleveTempOxy models
+dbda125 - Annece2935, 7 weeks ago : feat: add Dev Container configuration for VS Code
+497781c - Annece2935, 7 weeks ago : fix: resolve Docker and Django configuration issues
+1ce498d - Annece2935, 7 weeks ago : feat: initial project setup and app renaming
+e9339ff - Annece2935, 8 weeks ago : add mind map
+4232016 - Annece2935, 8 weeks ago : update documentation task 1 of porject portfolio
+efe25fb - Annece2935, 9 weeks ago : create folder documentation
+48cc3f0 - Annece2935, 9 weeks ago : stage1report documentation for the portfolio
+c9e5926 - AnneCecile2935, 8 months ago : Initial commit

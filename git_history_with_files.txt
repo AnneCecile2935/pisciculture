@@ -1,0 +1,792 @@
+93a9eb9 feat(nourrissage) : create global forms by sites to register the dish
+M	app_pisci/apps/activite_quotidien/forms.py
+M	app_pisci/apps/activite_quotidien/urls.py
+M	app_pisci/apps/activite_quotidien/views.py
+M	app_pisci/core/urls.py
+A	app_pisci/templates/activite_quotidien/choix_site_enregistrement_repas.html
+A	app_pisci/templates/activite_quotidien/nourrissage_par_site_form.html
+M	app_pisci/templates/base.html
+M	app_pisci/templates/form_templates.html
+626780e feat(templates): standardize deletion confirmation messages
+M	app_pisci/apps/activite_quotidien/urls.py
+M	app_pisci/apps/activite_quotidien/views.py
+M	app_pisci/apps/aliments/views.py
+A	app_pisci/apps/commun/view.py
+M	app_pisci/apps/especes/views.py
+M	app_pisci/apps/fournisseurs/views.py
+M	app_pisci/apps/sites/views.py
+M	app_pisci/apps/stocks/views.py
+D	app_pisci/templates/activite_quotidien/nourrissage_confirm_delete.html
+M	app_pisci/templates/activite_quotidien/nourrissage_list.html
+D	app_pisci/templates/aliments/alim_confirm_delete.html
+M	app_pisci/templates/aliments/alim_list.html
+M	app_pisci/templates/base.html
+A	app_pisci/templates/confirm_delete.html
+D	app_pisci/templates/especes/esp_confirm_delete.html
+D	app_pisci/templates/fournisseurs/frs_confirm_delete.html
+M	app_pisci/templates/fournisseurs/frs_form.html
+M	app_pisci/templates/fournisseurs/frs_list.html
+D	app_pisci/templates/sites/bassin_confirm_delete.html
+M	app_pisci/templates/sites/bassin_list.html
+D	app_pisci/templates/sites/site_confirm_delete.html
+M	app_pisci/templates/sites/site_list.html
+D	app_pisci/templates/stocks/lot_confirm_delete.html
+M	app_pisci/templates/stocks/lotdepoisson_list.html
+d4f2de2 feat(layout): enhance sidebar with submenu & logo styling
+M	app_pisci/templates/base.html
+f9fc1f4 feat(styles): add form_style.css for consistent form styling
+A	app_pisci/static/css/form.styles.css
+eb2d5d4 feat(ui): add DataTables and jQuery for interactive lists
+M	app_pisci/templates/activite_quotidien/nourrissage_list.html
+M	app_pisci/templates/aliments/alim_list.html
+M	app_pisci/templates/especes/esp_list.html
+M	app_pisci/templates/fournisseurs/frs_list.html
+M	app_pisci/templates/sites/bassin_list.html
+M	app_pisci/templates/sites/site_list.html
+M	app_pisci/templates/stocks/lotdepoisson_list.html
+5fd6ff2 Fix form widgets, error messages, and URL reversals to ensure all tests pass
+M	app_pisci/apps/activite_quotidien/forms.py
+M	app_pisci/apps/activite_quotidien/tests/test_form.py
+M	app_pisci/apps/fournisseurs/forms.py
+M	app_pisci/apps/fournisseurs/tests/test_views.py
+M	app_pisci/apps/fournisseurs/views.py
+M	app_pisci/apps/sites/tests/test_views.py
+M	app_pisci/apps/sites/views.py
+M	app_pisci/templates/activite_quotidien/nourrissage_form.html
+M	app_pisci/templates/form_templates.html
+12b6308 style: centre le contenu des cellules dans toutes les DataTables
+M	app_pisci/templates/activite_quotidien/nourrissage_list.html
+M	app_pisci/templates/aliments/alim_list.html
+M	app_pisci/templates/especes/esp_list.html
+M	app_pisci/templates/fournisseurs/frs_list.html
+M	app_pisci/templates/sites/bassin_list.html
+M	app_pisci/templates/sites/site_list.html
+M	app_pisci/templates/stocks/lotdepoisson_list.html
+7f5424f feat(templates): ajoute un template générique pour tous les formulaires (form_template)
+M	app_pisci/templates/aliments/alim_form.html
+M	app_pisci/templates/especes/esp_form.html
+A	app_pisci/templates/form_templates.html
+M	app_pisci/templates/fournisseurs/frs_form.html
+M	app_pisci/templates/sites/bassin_form.html
+M	app_pisci/templates/sites/site_form.html
+M	app_pisci/templates/stocks/lot_form.html
+868d3af feat(activité_quotidien): migre et améliore la liste des nourrissages avec DataTables
+M	app_pisci/apps/activite_quotidien/views.py
+M	app_pisci/templates/activite_quotidien/nourrissage_list.html
+260e0cf feat(stocks): migration de la liste des lots de poissons vers DataTables avec chargement dynamique
+M	app_pisci/apps/stocks/urls.py
+M	app_pisci/apps/stocks/views.py
+M	app_pisci/templates/stocks/lotdepoisson_list.html
+09aba1f feat(bassins): migre la liste des bassins vers un format DataTables dynamique
+M	app_pisci/apps/sites/urls.py
+M	app_pisci/apps/sites/views.py
+M	app_pisci/templates/sites/bassin_list.html
+M	app_pisci/templates/sites/site_list.html
+6a6b9bc feat(sites): migre vers un rendu DataTables dynamique avec une vue JSON dédiée
+M	app_pisci/templates/sites/site_list.html
+c8956b9 feat(aliments): migre vers un rendu DataTables dynamique avec AJAX et drawCallback
+M	app_pisci/templates/aliments/alim_list.html
+ae2b4ca fix(settings): configure STATICFILES_DIRS pour le chargement des fichiers statiques
+M	app_pisci/core/settings.py
+7cfb8f7 style: ajout boutond dans le tableau Datable
+M	app_pisci/static/css/button_custom.css
+cc95a1d style: ajoute Bootstrap Icons pour les boutons et éléments d'interface
+M	app_pisci/templates/base.html
+f5ae6f4 feat(especes): migre vers un rendu dynamique avec DataTables
+M	app_pisci/templates/especes/esp_list.html
+f1b3101 feat(fournisseurs): migre vers un rendu dynamique avec DataTables
+M	app_pisci/apps/fournisseurs/urls.py
+M	app_pisci/apps/fournisseurs/views.py
+M	app_pisci/templates/fournisseurs/frs_list.html
+9e5a516 fix(especes): corrige les icônes et classes des boutons Éditer/Supprimer
+M	app_pisci/templates/especes/esp_list.html
+77e1c11 feat(especes): harmonise template, vues et URLs avec le modèle commun
+M	app_pisci/apps/especes/urls.py
+M	app_pisci/apps/especes/views.py
+M	app_pisci/templates/especes/esp_list.html
+efa6c91 feat(activite_quotidien): améliore template nourrissage_list avec DataTables et messages utilisateur
+M	app_pisci/apps/activite_quotidien/urls.py
+M	app_pisci/apps/activite_quotidien/views.py
+M	app_pisci/templates/activite_quotidien/nourrissage_list.html
+53f7df5 feat(ui): refactorise le template base.html avec mode sombre/clair et intégration de DataTables
+M	app_pisci/templates/base.html
+39f28f2 feat(ui): modification du titre de la page dashboard
+M	app_pisci/templates/dashboard.html
+ff0ed04 feat(ui): ajoute des templates de boutons personnalisés réutilisables
+A	app_pisci/static/css/button_custom.css
+A	app_pisci/static/css/custom.css
+A	app_pisci/templates/commun/buttons/back_button.html
+A	app_pisci/templates/commun/buttons/cancel_button.html
+A	app_pisci/templates/commun/buttons/create_button.html
+A	app_pisci/templates/commun/buttons/delete_button.html
+A	app_pisci/templates/commun/buttons/submit_button.html
+A	app_pisci/templates/commun/buttons/update_button.html
+48abdd4 feat(aliments): implémente un template spécifique pour la liste des aliments
+M	app_pisci/apps/aliments/urls.py
+M	app_pisci/apps/aliments/views.py
+M	app_pisci/templates/aliments/alim_list.html
+06c655d feat(login): implémente une page de connexion responsive avec thème vert clair
+A	app_pisci/static/images/logo.jpg
+A	app_pisci/static/images/logo.jpg:Zone.Identifier
+M	app_pisci/templates/registration/login.html
+430cd3c  "feat(nourrissage): ajout de la configuration des URLs pour le module de nourrissage
+M	app_pisci/core/urls.py
+d620299 "refactor(config): standardisation des classes AppConfig
+M	app_pisci/apps/commun/__init__.py
+f136922 "refactor(config): standardisation des classes AppConfig
+M	app_pisci/apps.py
+A	app_pisci/apps/apps.py
+0344d66 "chore(deps): mise à jour de Django de 4.2.x vers 4.2.14 pour corriger les vulnérabilités de sécurité
+M	app_pisci/requirements.txt
+7746576 feat(templates): add and update nourrissage templates
+A	app_pisci/templates/activite_quotidien/nourrissage_confirm_delete.html
+A	app_pisci/templates/activite_quotidien/nourrissage_detail.html
+A	app_pisci/templates/activite_quotidien/nourrissage_form.html
+A	app_pisci/templates/activite_quotidien/nourrissage_list.html
+0f2fa07 feat(nourrissage): complete implementation and bug fixes
+M	app_pisci/apps/activite_quotidien/__init__.py
+M	app_pisci/apps/activite_quotidien/admin.py
+M	app_pisci/apps/activite_quotidien/forms.py
+M	app_pisci/apps/activite_quotidien/models.py
+A	app_pisci/apps/activite_quotidien/tests/factories.py
+A	app_pisci/apps/activite_quotidien/tests/test_form.py
+M	app_pisci/apps/activite_quotidien/tests/test_models.py
+M	app_pisci/apps/activite_quotidien/tests/test_views.py
+M	app_pisci/apps/activite_quotidien/urls.py
+M	app_pisci/apps/activite_quotidien/views.py
+3eaa3a8 chore(factories): add skip_postgeneration_save to all factories
+D	app_pisci/apps/activite_quotidien/permissions.py
+D	app_pisci/apps/activite_quotidien/serializers.py
+D	app_pisci/apps/activite_quotidien/tests/test_services.py
+D	app_pisci/apps/commun/exceptions.py
+D	app_pisci/apps/commun/signals.py
+8cc09f9 chore(factories): add skip_postgeneration_save to all factories
+M	app_pisci/apps/especes/tests/factories.py
+M	app_pisci/apps/fournisseurs/tests/factories.py
+M	app_pisci/apps/sites/tests/factories.py
+M	app_pisci/apps/stocks/tests/factories.py
+edd4f21 feat(auth): ajoute des tests complets pour CustomLoginView et CustomLogoutView
+M	app_pisci/apps/users/tests/test_views.py
+M	app_pisci/apps/users/views.py
+M	app_pisci/core/settings.py
+11a95b1 "feat(auth): ajoute les vues de connexion/déconnexion personnalisées
+M	app_pisci/apps/users/urls.py
+M	app_pisci/apps/users/views.py
+M	app_pisci/core/urls.py
+A	app_pisci/templates/dashboard.html
+R100	app_pisci/templates/users/login.html	app_pisci/templates/registration/login.html
+A	app_pisci/templates/registration/logout.html
+093a0d7 Voici un message de commit clair et concis pour cette modification :
+M	pytest.ini
+71e7e9f test(fournisseurs): complete Admin tests by adding missing model fields
+M	app_pisci/apps/fournisseurs/tests/test_admin.py
+ad02410 test(stocks): add comprehensive tests for LotDePoisson (model, form, view, urls, admin)
+M	app_pisci/apps/stocks/admin.py
+A	app_pisci/apps/stocks/tests/factories.py
+A	app_pisci/apps/stocks/tests/test_admin.py
+A	app_pisci/apps/stocks/tests/test_forms.py
+M	app_pisci/apps/stocks/tests/test_models.py
+A	app_pisci/apps/stocks/tests/test_urls.py
+M	app_pisci/apps/stocks/tests/test_views.py
+M	app_pisci/apps/stocks/urls.py
+M	app_pisci/apps/stocks/views.py
+M	app_pisci/templates/stocks/lot_confirm_delete.html
+R094	app_pisci/templates/stocks/lot_list.html	app_pisci/templates/stocks/lotdepoisson_list.html
+417a8e3 fix(users, stocks): correct is_staff handling in UserFactory and update related tests
+M	app_pisci/apps/users/tests/factories.py
+M	app_pisci/apps/users/tests/test_views.py
+d5b2a7e chore(aliment/fournisseurs/stock/users) update migrations for Aliment model changes
+D	app_pisci/apps/fournisseurs/migrations/0003_delete_fournisseurs.py
+A	app_pisci/apps/stocks/migrations/0002_alter_lotdepoisson_options.py
+A	app_pisci/apps/users/migrations/0002_alter_user_is_staff.py
+2ce3dd1 test(aliment): Aliment tests for model and view changes
+M	app_pisci/apps/aliments/tests/test_models.py
+M	app_pisci/apps/aliments/tests/test_views.py
+3a3a5de refactor(stocks): use UserPassesTestMixin instead of PermissionRequiredMixin for Aliment views
+M	app_pisci/apps/aliments/views.py
+5ea51d6 feat(users): add is_staff field to User model with default=False
+M	app_pisci/apps/users/models.py
+9801822 chore(users): remove unused conftest.py file
+D	app_pisci/apps/users/tests/conftest.py
+bac7f1b refactor(test): move conftest.py to app_pisci/ and update test fixtures
+A	app_pisci/conftest.py
+4e29dde chore(users): remove unused conftest.py file
+D	conftest.py
+e8df68f refactor(auth): résout #XX - Suppression des permissions personnalisées
+M	app_pisci/apps/stocks/models.py
+bbd0605 feat(suppresion) fichier inutiles
+D	app_pisci/apps/stocks/serializers.py
+D	app_pisci/apps/stocks/services.py
+D	app_pisci/apps/stocks/tests/test_services.py
+f4849cc ix(migrations): réinitialise les migrations pour corriger les conflits de base de données
+M	app_pisci/apps/activite_quotidien/migrations/0001_initial.py
+A	app_pisci/apps/activite_quotidien/migrations/0002_initial.py
+M	app_pisci/apps/aliments/migrations/0001_initial.py
+M	app_pisci/apps/especes/migrations/0001_initial.py
+M	app_pisci/apps/fournisseurs/migrations/0001_initial.py
+D	app_pisci/apps/fournisseurs/migrations/0002_fournisseur.py
+D	app_pisci/apps/fournisseurs/migrations/0004_alter_fournisseur_code_postal.py
+M	app_pisci/apps/sites/migrations/0001_initial.py
+D	app_pisci/apps/sites/migrations/0002_alter_bassin_options_bassin_est_actif_bassin_type_and_more.py
+D	app_pisci/apps/sites/migrations/0003_alter_bassin_volume_alter_site_nom.py
+M	app_pisci/apps/stocks/migrations/0001_initial.py
+D	app_pisci/apps/stocks/migrations/0002_alter_lotdepoisson_fournisseur.py
+D	app_pisci/apps/stocks/migrations/0003_alter_lotdepoisson_statut.py
+M	app_pisci/apps/users/migrations/0001_initial.py
+D	app_pisci/apps/users/migrations/0002_remove_user_is_staff.py
+D	app_pisci/apps/users/migrations/0003_user_is_staff.py
+D	app_pisci/apps/users/migrations/0004_alter_user_email.py
+D	app_pisci/apps/users/migrations/0005_alter_user_options.py
+6af18be feat(tests): complète la couverture de tests pour Espece
+M	app_pisci/apps/especes/forms.py
+A	app_pisci/apps/especes/tests/__init__.py
+A	app_pisci/apps/especes/tests/factories.py
+A	app_pisci/apps/especes/tests/test_admin.py
+A	app_pisci/apps/especes/tests/test_forms.py
+A	app_pisci/apps/especes/tests/test_models.py
+A	app_pisci/apps/especes/tests/test_urls.py
+A	app_pisci/apps/especes/tests/test_views.py
+M	app_pisci/apps/especes/urls.py
+M	app_pisci/apps/especes/views.py
+M	app_pisci/templates/especes/esp_confirm_delete.html
+M	app_pisci/templates/especes/esp_form.html
+M	app_pisci/templates/especes/esp_list.html
+42b29d9 feat(tests): v2 complète la couverture de tests pourAliment
+A	app_pisci/apps/aliments/tests/test_urls.py
+A	app_pisci/apps/aliments/tests/test_views.py
+922b33e feat(tests): complète la couverture de tests pour Aliment
+M	app_pisci/apps/aliments/forms.py
+M	app_pisci/apps/aliments/models.py
+A	app_pisci/apps/aliments/tests/__init__.py
+A	app_pisci/apps/aliments/tests/factories.py
+A	app_pisci/apps/aliments/tests/test_admin.py
+A	app_pisci/apps/aliments/tests/test_forms.py
+A	app_pisci/apps/aliments/tests/test_models.py
+M	app_pisci/apps/aliments/urls.py
+M	app_pisci/apps/aliments/views.py
+6ee50ec feat(tests): complète la couverture de tests pour Fournisseurs
+M	app_pisci/apps/fournisseurs/admin.py
+A	app_pisci/apps/fournisseurs/migrations/0004_alter_fournisseur_code_postal.py
+M	app_pisci/apps/fournisseurs/models.py
+D	app_pisci/apps/fournisseurs/serializers.py
+D	app_pisci/apps/fournisseurs/services.py
+A	app_pisci/apps/fournisseurs/tests/factories.py
+A	app_pisci/apps/fournisseurs/tests/test_admin.py
+A	app_pisci/apps/fournisseurs/tests/test_forms.py
+M	app_pisci/apps/fournisseurs/tests/test_models.py
+D	app_pisci/apps/fournisseurs/tests/test_services.py
+A	app_pisci/apps/fournisseurs/tests/test_urls.py
+M	app_pisci/apps/fournisseurs/tests/test_views.py
+M	app_pisci/apps/fournisseurs/urls.py
+M	app_pisci/templates/fournisseurs/frs_confirm_delete.html
+M	app_pisci/templates/fournisseurs/frs_form.html
+M	app_pisci/templates/fournisseurs/frs_list.html
+617edf4 feat(tests): complète la couverture de tests pour Site et Bassin
+M	app_pisci/apps/sites/admin.py
+M	app_pisci/apps/sites/forms.py
+A	app_pisci/apps/sites/migrations/0003_alter_bassin_volume_alter_site_nom.py
+M	app_pisci/apps/sites/models.py
+D	app_pisci/apps/sites/permissions.py
+D	app_pisci/apps/sites/serializers.py
+D	app_pisci/apps/sites/services.py
+A	app_pisci/apps/sites/tests/factories.py
+A	app_pisci/apps/sites/tests/test_admin.py
+A	app_pisci/apps/sites/tests/test_forms.py
+M	app_pisci/apps/sites/tests/test_models.py
+D	app_pisci/apps/sites/tests/test_services.py
+M	app_pisci/apps/sites/tests/test_views.py
+M	app_pisci/apps/sites/urls.py
+M	app_pisci/apps/sites/views.py
+M	app_pisci/templates/sites/bassin_list.html
+M	app_pisci/templates/sites/site_list.html
+8ef2803 feat(admin): ajouter configuration pour EspèceAdmin - Affichage des champs : nom_scientifique, nom_commun, temperature_ideale - Tri par défaut sur nom_commun - Filtres par famille - Recherche par nom_scientifique et nom_commun
+M	app_pisci/apps/especes/admin.py
+68f8c0b feat(admin): configurer StockAdmin pour le backoffice - Affichage des champs dans list_display : type_aliment, quantité_kg, fournisseur - Filtres par fournisseur et type_aliment - Recherche par nom d'aliment et référence - Permissions personnalisées (seuls les admins peuvent supprimer)
+M	app_pisci/apps/stocks/admin.py
+c693e75 feat(Stock): mettre à jour modèle pour gérer les aliments - Ajout des champs : type_aliment, quantité_kg, date_expiration - Relation vers Fournisseur et Espèce - Validation des quantités (positives) et dates - Méthode custom pour calculer stock_restant() - Migration : 0003_update_stock_model.py"
+M	app_pisci/apps/stocks/models.py
+f71db1d feat(LotPoisson): ajouter modèle et migration initiale - Modèle LotPoisson avec champs : bassin, espèce, quantité, date_creation - Relation ForeignKey vers Bassin et Espèce - Ajout de contraintes de validation (quantité > 0) - Migration générée : 0002_add_lotpoisson.py"
+A	app_pisci/apps/stocks/migrations/0003_alter_lotdepoisson_statut.py
+c68d49b feat(docs): ajouter documentation des tests - Guide pour lancer les tests (par composant) - Explications sur la structure et les bonnes pratiques - Tableaux récapitulatifs des commandes et problèmes courants - Configuration pour le coverage et CI/CD"
+A	app_pisci/apps/users/tests/TESTING.md
+M	conftest.py
+b2ede21 feat(test): ajouter tests pour EmailAuthBackend - Authentification par email (pas par username) - Gestion des mots de passe incorrects - Blocage des utilisateurs inactifs (is_active=False) - Intégration avec Django AUTHENTICATION_BACKENDS"
+M	app_pisci/apps/users/backends.py
+A	app_pisci/apps/users/tests/conftest.py
+M	app_pisci/apps/users/tests/factories.py
+A	app_pisci/apps/users/tests/test_backends.py
+M	app_pisci/apps/users/urls.py
+bc682c9 feat(test): ajouter tests pour UserSerializer - Création et mise à jour d'utilisateurs via API - Hachage automatique des mots de passe (make_password) - Validation des champs read_only (is_admin, is_staff) - Tests des messages d'erreur personnalisés (longueur min, email valide)"
+M	app_pisci/apps/users/serializers.py
+A	app_pisci/apps/users/tests/test_serializers.py
+dd15fcd feat(test):  ajouter tests pour les formulaires utilisateur - Validation de CustomAuthenticationForm (auth par email) - Tests de CustomUserCreationForm (mots de passe, champs obligatoires) - Vérification des messages d'erreur personnalisés - Tests des classes CSS (form-control) et labels"
+M	app_pisci/apps/users/forms.py
+A	app_pisci/apps/users/tests/test_forms.py
+7813942 feat(test):  ajouter tests pour les vues utilisateur - Tests des endpoints d'authentification (login, logout) - Création d'utilisateur via UserCreateView - Vérification des permissions (accès admin vs utilisateur standard) - Tests des réponses HTTP (200, 403, 302)"
+A	app_pisci/apps/users/tests/test_views.py
+M	app_pisci/apps/users/views.py
+2545275 test(users): ajoute des tests unitaires complets pour le modèle User V2
+M	app_pisci/apps/users/tests/factories.py
+bf95880 test(users): ajoute des tests unitaires complets pour le modèle User
+D	app_pisci/apps/users/permissions.py
+D	app_pisci/apps/users/services.py
+D	app_pisci/apps/users/tests/test_backends.py
+D	app_pisci/apps/users/tests/test_forms.py
+D	app_pisci/apps/users/tests/test_imports.py
+M	app_pisci/apps/users/tests/test_models.py
+D	app_pisci/apps/users/tests/test_serializers.py
+D	app_pisci/apps/users/tests/test_views.py
+M	app_pisci/apps/users/views.py
+A	conftest.py
+7a23d96 feat(test): configure pytest et factory_boy pour les tests unitaires
+A	app_pisci/.coverage
+M	app_pisci/apps/stocks/models.py
+D	app_pisci/apps/users/tests/conftest.py 
+M	app_pisci/core/settings.py
+M	app_pisci/core/urls.py
+M	docker-compose.yml
+M	pytest.ini
+d0bfb82 feat(admin): configurer l'interface d'administration pour Repas Journalier
+M	app_pisci/apps/activite_quotidien/admin.py
+5592315 feat(migrations): générer migration pour le modèle Repas Journalier (Nourrissage)
+A	app_pisci/apps/activite_quotidien/migrations/0001_initial.py
+8b4678e feat(models): ajouter modèle Repas Journalier (Nourrissage)
+A	app_pisci/apps/activite_quotidien/migrations/__init__.py
+M	app_pisci/apps/activite_quotidien/models.py
+A	app_pisci/apps/stocks/migrations/0002_alter_lotdepoisson_fournisseur.py
+7d2017b feat(aliments): implémente le CRUD complet pour les aliments
+A	app_pisci/apps/aliments/__init__.py
+A	app_pisci/apps/aliments/admin.py
+A	app_pisci/apps/aliments/forms.py
+A	app_pisci/apps/aliments/migrations/0001_initial.py
+A	app_pisci/apps/aliments/migrations/__init__.py
+A	app_pisci/apps/aliments/models.py
+A	app_pisci/apps/aliments/urls.py
+A	app_pisci/apps/aliments/views.py
+M	app_pisci/apps/sites/urls.py
+A	app_pisci/templates/aliments/alim_confirm_delete.html
+A	app_pisci/templates/aliments/alim_form.html
+A	app_pisci/templates/aliments/alim_list.html
+83a8ba7 fix(fournisseurs): corrige les conflits de permissions et nettoie le modèle
+M	app_pisci/apps/fournisseurs/admin.py
+M	app_pisci/apps/fournisseurs/forms.py
+A	app_pisci/apps/fournisseurs/migrations/0002_fournisseur.py
+A	app_pisci/apps/fournisseurs/migrations/0003_delete_fournisseurs.py
+M	app_pisci/apps/fournisseurs/models.py
+M	app_pisci/apps/fournisseurs/views.py
+b5c8cc2 feat(stocks): implémente le modèle LotDePoisson avec calcul automatique du poids moyen
+A	app_pisci/apps/stocks/forms.py
+A	app_pisci/apps/stocks/migrations/0001_initial.py
+A	app_pisci/apps/stocks/migrations/__init__.py
+M	app_pisci/apps/stocks/models.py
+M	app_pisci/apps/stocks/urls.py
+M	app_pisci/apps/stocks/views.py
+A	app_pisci/templates/stocks/lot_confirm_delete.html
+A	app_pisci/templates/stocks/lot_form.html
+A	app_pisci/templates/stocks/lot_list.html
+9c66b62 ix(especes): corrige les erreurs de migration et d'admin pour Espece
+M	app_pisci/apps/especes/admin.py
+M	app_pisci/apps/especes/forms.py
+A	app_pisci/apps/especes/migrations/0001_initial.py
+A	app_pisci/apps/especes/migrations/__init__.py
+M	app_pisci/apps/especes/models.py
+5ac8473 feat(especes): ajout du modèle Espece et intégration complète
+A	app_pisci/apps/especes/__init__.py
+A	app_pisci/apps/especes/admin.py
+A	app_pisci/apps/especes/forms.py
+A	app_pisci/apps/especes/models.py
+A	app_pisci/apps/especes/urls.py
+A	app_pisci/apps/especes/views.py
+A	app_pisci/templates/especes/esp_confirm_delete.html
+A	app_pisci/templates/especes/esp_form.html
+A	app_pisci/templates/especes/esp_list.html
+3ff890c fix(sites):
+A	app_pisci/apps/sites/migrations/0002_alter_bassin_options_bassin_est_actif_bassin_type_and_more.py
+M	app_pisci/apps/users/serializers.py
+d4ce86a feat(fournisseurs): implémentation complète du module de gestion
+M	app_pisci/apps/fournisseurs/admin.py
+A	app_pisci/apps/fournisseurs/forms.py
+A	app_pisci/apps/fournisseurs/migrations/0001_initial.py
+A	app_pisci/apps/fournisseurs/migrations/__init__.py
+M	app_pisci/apps/fournisseurs/models.py
+M	app_pisci/apps/fournisseurs/urls.py
+M	app_pisci/apps/fournisseurs/views.py
+M	app_pisci/core/urls.py
+A	app_pisci/templates/fournisseurs/frs_confirm_delete.html
+A	app_pisci/templates/fournisseurs/frs_form.html
+A	app_pisci/templates/fournisseurs/frs_list.html
+8a1b3ae feat(flake8): ajout de flake8 pour faciliter developpement
+A	.flake8
+a389c31 feat(fournisseurs): ajoute le modèle Fournisseur avec catégories
+D	app_pisci/.coverage
+M	app_pisci/apps/fournisseurs/models.py
+a0cb881 fix(sites): corrige les erreurs de syntaxe dans les modèles et URLs
+M	app_pisci/apps/sites/models.py
+M	app_pisci/apps/sites/views.py
+A	app_pisci/core/tests/__init__.py
+M	app_pisci/core/urls.py
+A	app_pisci/core/views.py
+387b30f Voici un message de commit clair, concis et informatif pour ton travail :
+A	app_pisci/apps/sites/forms.py
+M	app_pisci/apps/sites/views.py
+M	app_pisci/core/urls.py
+M	app_pisci/templates/sites/site_form.html
+32b6c09 feat(sites): ajoute modèles, routes et templates pour Site et Bassin
+M	app_pisci/apps/sites/models.py
+M	app_pisci/apps/sites/urls.py
+M	app_pisci/apps/sites/views.py
+R100	app_pisci/apps/users/admin copy.py	app_pisci/templates/sites/bassin_confirm_delete.html
+A	app_pisci/templates/sites/bassin_form.html
+A	app_pisci/templates/sites/bassin_list.html
+A	app_pisci/templates/sites/site_confirm_delete.html
+A	app_pisci/templates/sites/site_form.html
+A	app_pisci/templates/sites/site_list.html
+608195d WIP:Sauvegarde de toutes les modifications en cours
+A	app_pisci/apps/activite_quotidien/migrations/0001_initial.py
+R100	app_pisci/apps/users/admin copy.py	app_pisci/apps/activite_quotidien/migrations/__init__.py
+A	app_pisci/apps/activite_quotidien/templates/dashboard.html
+M	app_pisci/apps/activite_quotidien/urls.py
+M	app_pisci/apps/activite_quotidien/views.py
+M	app_pisci/apps/fournisseurs/admin.py
+A	app_pisci/apps/fournisseurs/apps.py
+A	app_pisci/apps/fournisseurs/forms.py
+A	app_pisci/apps/fournisseurs/migrations/0001_initial.py
+A	app_pisci/apps/fournisseurs/migrations/__init__.py
+M	app_pisci/apps/fournisseurs/models.py
+M	app_pisci/apps/fournisseurs/urls.py
+M	app_pisci/apps/fournisseurs/views.py
+M	app_pisci/apps/stocks/admin.py
+A	app_pisci/apps/stocks/apps.py
+A	app_pisci/apps/stocks/forms.py
+A	app_pisci/apps/stocks/migrations/0001_initial.py
+A	app_pisci/apps/stocks/migrations/__init__.py
+M	app_pisci/apps/stocks/models.py
+M	app_pisci/apps/stocks/urls.py
+M	app_pisci/apps/stocks/views.py
+A	app_pisci/core/test.py
+A	app_pisci/core/views.py
+A	app_pisci/static/css/style.css
+A	app_pisci/templates/dashboard.html
+A	app_pisci/templates/fournisseurs/fournisseur_form.html
+A	app_pisci/templates/fournisseurs/fournisseur_list.html
+A	app_pisci/templates/stocks/aliment_form.html
+A	app_pisci/templates/stocks/aliment_list.html
+A	run_tests.sh
+6787dea "test(users): ajoute une suite complète de tests pour l'app users
+M	Dockerfile
+A	app_pisci/.coverage
+M	app_pisci/apps/users/__init__.py
+A	app_pisci/apps/users/tests/conftest.py 
+A	app_pisci/apps/users/tests/factories.py
+A	app_pisci/apps/users/tests/test_backends.py
+A	app_pisci/apps/users/tests/test_forms.py
+A	app_pisci/apps/users/tests/test_imports.py
+M	app_pisci/apps/users/tests/test_models.py
+A	app_pisci/apps/users/tests/test_serializers.py
+D	app_pisci/apps/users/tests/test_services.py
+M	app_pisci/apps/users/tests/test_views.py
+A	app_pisci/requirements-test.txt
+M	app_pisci/requirements.txt
+M	docker-compose.yml
+A	pytest.ini
+af54b99 feat(users): personnalisation du modèle User et de l'admin
+M	app_pisci/apps/users/admin.py
+M	app_pisci/apps/users/apps.py
+M	app_pisci/apps/users/forms.py
+A	app_pisci/apps/users/migrations/0004_alter_user_email.py
+A	app_pisci/apps/users/migrations/0005_alter_user_options.py
+M	app_pisci/apps/users/models.py
+M	app_pisci/apps/users/serializers.py
+M	app_pisci/apps/users/views.py
+M	app_pisci/core/settings.py
+M	app_pisci/core/urls.py
+532540e docs(settings): ajoute des docstrings détaillées pour chaque paramètre
+M	app_pisci/core/settings.py
+32a182a feat(users): implémente la gestion complète des utilisateurs par l'admin
+M	app_pisci/apps/users/admin.py
+M	app_pisci/apps/users/backends.py
+A	app_pisci/apps/users/forms.py
+A	app_pisci/apps/users/migrations/0002_remove_user_is_staff.py
+A	app_pisci/apps/users/migrations/0003_user_is_staff.py
+M	app_pisci/apps/users/models.py
+M	app_pisci/apps/users/serializers.py
+M	app_pisci/apps/users/urls.py
+A	app_pisci/apps/users/views.py
+M	app_pisci/core/settings.py
+M	app_pisci/core/urls.py
+M	app_pisci/templates/base.html
+A	app_pisci/templates/users/login.html
+A	app_pisci/templates/users/signup.html
+084fdea feat(pisciculture): configuration complète de l'environnement Django et PostgreSQL
+R055	app_pisci/Dockerfile	Dockerfile
+M	app_pisci/apps/commun/models.py
+M	app_pisci/apps/sites/migrations/0001_initial.py
+M	app_pisci/apps/users/__init__.py
+M	app_pisci/apps/users/admin.py
+A	app_pisci/apps/users/apps.py
+A	app_pisci/apps/users/migrations/0001_initial.py
+A	app_pisci/apps/users/migrations/__init__.py
+M	app_pisci/apps/users/models.py
+M	app_pisci/core/settings.py
+D	app_pisci/migrations/0001_initial.py
+D	app_pisci/migrations/0002_relevetempoxy_moment_jour.py
+R078	app_pisci/docker-compose.yml	docker-compose.yml
+8edb942 technical justification documentation part3
+A	documentation/Part3/english_version/10-Technical Justifications.md
+A	documentation/Part3/french versions/10-Technical Justifications:.md
+994fec5 add seq diag register feeding
+A	documentation/Part3/images/seq_diag_enregistrer_repas.png
+839eaf9 add SCM and QA processes for documentation part 3
+A	documentation/Part3/english_version/9-SCM and QA Plans.md
+A	documentation/Part3/french versions/9-SCM and QA Plans.md
+ffe794c add documentation about API specidfications part 3
+A	documentation/Part3/english_version/8-API_specifications.md
+A	documentation/Part3/french versions/8-API_specifications.md
+f7c4773 sequence diagram documentation part3
+A	documentation/Part3/english_version/7-sequence_diagram.md
+A	documentation/Part3/french versions/7-sequence_diagram.md
+8977e28 er diagramm documentation part 3
+A	documentation/Part3/english_version/6-ER_diagram.md
+A	documentation/Part3/french versions/6-ER_diagram.md
+7d86055 add class diagram part 3 documentation
+A	documentation/Part3/english_version/5-class_diagram.md
+A	documentation/Part3/french versions/5-class_diagram.md
+14b35e7 add components documentation part 3
+A	documentation/Part3/english_version/4-components.md
+A	documentation/Part3/french versions/4-components.md
+515e85d add architecture diagram for documentation
+A	documentation/Part3/english_version/3-architecture_diagram.md
+A	documentation/Part3/french versions/3-architecture_diagram.md
+bfb4845 add mockup for documentation part 3
+A	documentation/Part3/english_version/2-mocksup.md
+A	documentation/Part3/french versions/2-mocksup.md
+d2373e3 add user stories documentation
+A	documentation/Part3/english_version/1-user_stories.md
+A	documentation/Part3/french versions/1-user_stories.md
+3fa2a01 add images for documentation part3
+A	documentation/Part3/images/BDD_schema.png
+A	documentation/Part3/images/class_diagram.png
+A	documentation/Part3/images/desktop_nourrissage.png
+A	documentation/Part3/images/desktop_suivi_nourrissage.png
+A	documentation/Part3/images/diag_architecture_haut_niveau.png
+A	documentation/Part3/images/ecran_connexion.png
+A	documentation/Part3/images/seq_diag_auth.png
+be24b6c update documentation
+R100	documentation/Stage 1 Report Idea Development (Individual Project).md	documentation/Part1/Stage 1 Report Idea Development (Individual Project).md
+R100	documentation/cartementale.png	documentation/Part1/cartementale.png
+R100	"documentation/Partie2_fran\303\247ais.md"	"documentation/Part2/Partie2_fran\303\247ais.md"
+R100	documentation/Stage2_Project Charter Development.md	documentation/Part2/Stage2_Project Charter Development.md
+R100	documentation/diagramme_de_gantt.png	documentation/Part2/diagramme_de_gantt.png
+A	"documentation/divers/Maquette Figma Les truites de la Vall\303\251e.md"
+R100	documentation/Tableau_competences (1).md	documentation/divers/Tableau_competences (1).md
+R100	documentation/Tableau_competences (1).md:Zone.Identifier	documentation/divers/Tableau_competences (1).md:Zone.Identifier
+1ab573f update stage2 to display gantt diagram
+M	"documentation/Partie2_fran\303\247ais.md"
+M	documentation/Stage2_Project Charter Development.md
+7e17e50 update modif stage 2
+M	documentation/Stage2_Project Charter Development.md
+396eb01 add gantt diagram
+A	documentation/diagramme_de_gantt.png
+949925c create projects charter developpement
+A	"documentation/Partie2_fran\303\247ais.md"
+A	documentation/Stage2_Project Charter Development.md
+03b9e73 "feat: refactorise templates, URLs et vues pour l'app activite_quotidien"
+R100	Dockerfile	app_pisci/Dockerfile
+A	app_pisci/apps/__init__.py
+M	app_pisci/apps/activite_quotidien/models.py
+R069	app_pisci/apps/activite_quotidien/templates/ajouter_releves.html	app_pisci/apps/activite_quotidien/templates/activite_quotidien/ajouter_releves.html
+A	app_pisci/apps/activite_quotidien/templates/activite_quotidien/liste_releves.html
+A	app_pisci/apps/activite_quotidien/templates/activite_quotidien/releves_manquants.html
+D	app_pisci/apps/activite_quotidien/templates/liste_releves.html
+D	app_pisci/apps/activite_quotidien/templates/releves_manquants.html
+M	app_pisci/apps/activite_quotidien/urls.py
+M	app_pisci/apps/activite_quotidien/views.py
+A	app_pisci/apps/sites/migrations/0001_initial.py
+A	app_pisci/apps/sites/migrations/__init__.py
+M	app_pisci/apps/sites/models.py
+M	app_pisci/core/settings.py
+M	app_pisci/core/urls.py
+R100	docker-compose.yml	app_pisci/docker-compose.yml
+R100	manage.py	app_pisci/manage.py
+R100	requirements.txt	app_pisci/requirements.txt
+A	app_pisci/templates/base.html
+4830a71 feat: refactorise les URLs et l'administration Django
+D	app_pisci/admin.py
+M	app_pisci/apps.py
+M	app_pisci/apps/activite_quotidien/admin.py
+M	app_pisci/apps/activite_quotidien/urls.py
+M	app_pisci/apps/sites/admin.py
+D	app_pisci/forms.py
+D	app_pisci/tests.py
+D	app_pisci/urls.py
+fa08e96 feat: initialise l'architecture du projet et redispatche modèles/vues
+D	.devcontainer/Dockerfile
+D	.devcontainer/devcontainer.json
+D	.github/dependabot.yml
+A	app_pisci/apps/activite_quotidien/__init__.py
+A	app_pisci/apps/activite_quotidien/admin.py
+A	app_pisci/apps/activite_quotidien/fixtures/initial_sites.json
+A	app_pisci/apps/activite_quotidien/forms.py
+A	app_pisci/apps/activite_quotidien/models.py
+A	app_pisci/apps/activite_quotidien/permissions.py
+A	app_pisci/apps/activite_quotidien/serializers.py
+A	app_pisci/apps/activite_quotidien/services.py
+A	app_pisci/apps/activite_quotidien/templates/ajouter_releves.html
+A	app_pisci/apps/activite_quotidien/templates/liste_releves.html
+A	app_pisci/apps/activite_quotidien/templates/releves_manquants.html
+A	app_pisci/apps/activite_quotidien/tests/__init__.py
+A	app_pisci/apps/activite_quotidien/tests/test_models.py
+A	app_pisci/apps/activite_quotidien/tests/test_services.py
+A	app_pisci/apps/activite_quotidien/tests/test_views.py
+A	app_pisci/apps/activite_quotidien/urls.py
+A	app_pisci/apps/activite_quotidien/views.py
+A	app_pisci/apps/clients/__init__.py
+A	app_pisci/apps/clients/admin.py
+A	app_pisci/apps/clients/fixtures/initial_sites.json
+A	app_pisci/apps/clients/models.py
+A	app_pisci/apps/clients/serializers.py
+A	app_pisci/apps/clients/services.py
+A	app_pisci/apps/clients/tests/__init__.py
+A	app_pisci/apps/clients/tests/test_models.py
+A	app_pisci/apps/clients/tests/test_services.py
+A	app_pisci/apps/clients/tests/test_views.py
+A	app_pisci/apps/clients/urls.py
+A	app_pisci/apps/clients/views.py
+A	app_pisci/apps/commun/__init__.py
+A	app_pisci/apps/commun/admin.py
+A	app_pisci/apps/commun/exceptions.py
+A	app_pisci/apps/commun/models.py
+A	app_pisci/apps/commun/signals.py
+A	app_pisci/apps/commun/tests/__init__.py
+A	app_pisci/apps/commun/tests/test_models.py
+A	app_pisci/apps/commun/tests/test_utils.py
+A	app_pisci/apps/commun/utils.py
+A	app_pisci/apps/fournisseurs/__init__.py
+A	app_pisci/apps/fournisseurs/admin.py
+A	app_pisci/apps/fournisseurs/fixtures/initial_sites.json
+A	app_pisci/apps/fournisseurs/models.py
+A	app_pisci/apps/fournisseurs/serializers.py
+A	app_pisci/apps/fournisseurs/services.py
+A	app_pisci/apps/fournisseurs/tests/__init__.py
+A	app_pisci/apps/fournisseurs/tests/test_models.py
+A	app_pisci/apps/fournisseurs/tests/test_services.py
+A	app_pisci/apps/fournisseurs/tests/test_views.py
+A	app_pisci/apps/fournisseurs/urls.py
+A	app_pisci/apps/fournisseurs/views.py
+A	app_pisci/apps/sites/__init__.py
+A	app_pisci/apps/sites/admin.py
+A	app_pisci/apps/sites/fixtures/initial_sites.json
+A	app_pisci/apps/sites/models.py
+A	app_pisci/apps/sites/permissions.py
+A	app_pisci/apps/sites/serializers.py
+A	app_pisci/apps/sites/services.py
+A	app_pisci/apps/sites/tests/__init__.py
+A	app_pisci/apps/sites/tests/test_models.py
+A	app_pisci/apps/sites/tests/test_services.py
+A	app_pisci/apps/sites/tests/test_views.py
+A	app_pisci/apps/sites/urls.py
+A	app_pisci/apps/sites/views.py
+A	app_pisci/apps/stocks/__init__.py
+A	app_pisci/apps/stocks/admin.py
+A	app_pisci/apps/stocks/fixtures/initial_sites.json
+A	app_pisci/apps/stocks/models.py
+A	app_pisci/apps/stocks/serializers.py
+A	app_pisci/apps/stocks/services.py
+A	app_pisci/apps/stocks/tests/__init__.py
+A	app_pisci/apps/stocks/tests/test_models.py
+A	app_pisci/apps/stocks/tests/test_services.py
+A	app_pisci/apps/stocks/tests/test_views.py
+A	app_pisci/apps/stocks/urls.py
+A	app_pisci/apps/stocks/views.py
+A	app_pisci/apps/users/__init__.py
+A	app_pisci/apps/users/admin copy.py
+A	app_pisci/apps/users/admin.py
+A	app_pisci/apps/users/backends.py
+A	app_pisci/apps/users/fixtures/initial_sites.json
+A	app_pisci/apps/users/models.py
+A	app_pisci/apps/users/permissions.py
+A	app_pisci/apps/users/serializers.py
+A	app_pisci/apps/users/services.py
+A	app_pisci/apps/users/tests/__init__.py
+A	app_pisci/apps/users/tests/test_models.py
+A	app_pisci/apps/users/tests/test_services.py
+A	app_pisci/apps/users/tests/test_views.py
+A	app_pisci/apps/users/urls.py
+A	app_pisci/apps/ventes/__init__.py
+A	app_pisci/apps/ventes/admin.py
+A	app_pisci/apps/ventes/fixtures/initial_sites.json
+A	app_pisci/apps/ventes/models.py
+A	app_pisci/apps/ventes/serializers.py
+A	app_pisci/apps/ventes/services.py
+A	app_pisci/apps/ventes/tests/__init__.py
+A	app_pisci/apps/ventes/tests/test_models.py
+A	app_pisci/apps/ventes/tests/test_services.py
+A	app_pisci/apps/ventes/tests/test_views.py
+A	app_pisci/apps/ventes/urls.py
+A	app_pisci/apps/ventes/views.py
+A	app_pisci/core/__init__.py
+R100	core/asgi.py	app_pisci/core/asgi.py
+R090	core/settings.py	app_pisci/core/settings.py
+R087	core/urls.py	app_pisci/core/urls.py
+R100	core/wsgi.py	app_pisci/core/wsgi.py
+A	app_pisci/forms.py
+A	app_pisci/migrations/0002_relevetempoxy_moment_jour.py
+D	app_pisci/models.py
+A	app_pisci/scripts/import_data.py
+M	app_pisci/urls.py
+D	app_pisci/views.py
+M	docker-compose.yml
+81c7a53 update modifications for devcontainer
+M	.devcontainer/Dockerfile
+M	.devcontainer/devcontainer.json
+A	.github/dependabot.yml
+A	Dockerfile
+M	core/settings.py
+M	docker-compose.yml
+fba60a9 add autorisation to admin to bassin, site ans relevetempeoxy
+M	app_pisci/admin.py
+30b8c63 feat(models): add Site, Bassin, and ReleveTempOxy models
+M	app_pisci/models.py
+dbda125 feat: add Dev Container configuration for VS Code
+A	.devcontainer/Dockerfile
+A	.devcontainer/devcontainer.json
+D	Dockerfile
+A	app_pisci/migrations/0001_initial.py
+M	docker-compose.yml
+497781c fix: resolve Docker and Django configuration issues
+M	app_pisci/apps.py
+M	core/settings.py
+M	core/urls.py
+M	core/wsgi.py
+1ce498d feat: initial project setup and app renaming
+A	.gitignore
+A	Dockerfile
+A	app_pisci/__init__.py
+A	app_pisci/admin.py
+A	app_pisci/apps.py
+A	app_pisci/migrations/__init__.py
+A	app_pisci/models.py
+A	app_pisci/tests.py
+A	app_pisci/urls.py
+A	app_pisci/views.py
+A	core/asgi.py
+A	core/settings.py
+A	core/urls.py
+A	core/wsgi.py
+A	docker-compose.yml
+A	manage.py
+A	requirements.txt
+e9339ff add mind map
+M	documentation/Stage 1 Report Idea Development (Individual Project).md
+4232016 update documentation task 1 of porject portfolio
+A	documentation/Stage 1 Report Idea Development (Individual Project).md
+D	documentation/Stage 1 Report.pdf
+A	documentation/Tableau_competences (1).md
+A	documentation/Tableau_competences (1).md:Zone.Identifier
+A	documentation/cartementale.png
+efe25fb create folder documentation
+R100	Stage 1 Report.pdf	documentation/Stage 1 Report.pdf
+48cc3f0 stage1report documentation for the portfolio
+A	Stage 1 Report.pdf
+c9e5926 Initial commit
+A	README.md
