@@ -167,9 +167,6 @@
                             }
                         }
 
-                        const tauxRemplissage = bassin.volume && bassin.lot ?
-                            Math.round((bassin.lot.quantite / (bassin.volume * 1000)) * 100) : null;
-
                         bassinCard.className = cardClass;
                         bassinCard.innerHTML = `
                             <div class="card-body">
@@ -177,10 +174,7 @@
                                     ${bassin.nom}
                                     ${statusBadge}
                                 </h6>
-                                <p class="card-text">
-                                    <i class="fas fa-water"></i> Volume: ${bassin.volume || 'N/A'} m³
-                                    ${tauxRemplissage ? ` • ${tauxRemplissage}% rempli` : ''}
-                                </p>
+
                                 <p class="card-text small text-muted">${statusMessage}</p>
                             </div>
                             ${bassin.a_un_lot ? `
@@ -188,15 +182,16 @@
                                 <div class="lot-item">
                                     <p class="mb-1">
                                         <i class="fas fa-fish"></i> <strong>${bassin.lot.code}</strong>:
-                                        ${bassin.lot.quantite} ${bassin.lot.espece}
+                                        ${bassin.lot.quantite_actuelle} ${bassin.lot.espece}
                                         <span class="badge bg-primary">${bassin.lot.statut}</span>
                                     </p>
                                     <p class="mb-1">
+																				Poids: ${bassin.lot.poids ? bassin.lot.poids + ' kg' : 'N/A'} |
                                         Poids moyen: ${bassin.lot.poids_moyen ? bassin.lot.poids_moyen + 'g' : 'N/A'} |
-                                        Arrivé le: ${bassin.lot.date_arrivee}
+																				Arrivé le: ${bassin.lot.date_arrivee}
                                     </p>
                                     <p class="mb-0">
-                                        Quantité: ${bassin.lot.quantite_actuelle}/${bassin.lot.quantite}
+                                        Quantité: ${bassin.lot.quantite_actuelle}
                                     </p>
                                 </div>
                             </div>

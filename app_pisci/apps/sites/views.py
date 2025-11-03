@@ -102,31 +102,31 @@ class BassinListJsonView(LoginRequiredMixin, View):
 
 class BassinsAPIView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        # Récupère tous les sites avec leurs bassins et lots associés
-        sites = Site.objects.prefetch_related(
-            'bassins__lots_poissons__espece'
-        ).filter(est_actif=True)
-
+        sites = Site.objects.prefetch_related('bassins__lots_poissons__espece').filter(est_actif=True)
         data = []
         for site in sites:
             bassins = []
             for bassin in site.bassins.filter(est_actif=True):
-                lot = bassin.lots_poissons.first()  # Un seul lot par bassin (grâce à ta validation)
-
+                lot = bassin.lots_poissons.first()
+                if lot:
+                    print(f"Lot {lot.code_lot}: poids={lot.poids} kg, poids_moyen={lot.poids_moyen} g")
+                    lot_data = {
+                        'code': lot.code_lot,
+                        'espece': lot.espece.nom_commun,
+                        'quantite_actuelle': lot.quantite_actuelle,
+                        'poids_moyen': lot.poids_moyen,
+                        'poids': lot.poids,
+                        'statut': lot.get_statut_display(),
+                        'date_arrivee': lot.date_arrivee.strftime('%d/%m/%Y'),
+                        'dernier_nourrissage': '30/10/2025',  # À remplacer par la vraie date
+                    }
+                else:  # Si aucun lot n'est associé au bassin
+                    lot_data = None
                 bassins.append({
                     'nom': bassin.nom,
                     'type': bassin.type,
-                    'volume': bassin.volume,
                     'a_un_lot': bool(lot),
-                    'lot': {
-                        'code': lot.code_lot if lot else None,
-                        'espece': lot.espece.nom_commun if lot else None,
-                        'quantite': lot.quantite_actuelle if lot else 0,
-                        'poids_moyen': lot.poids_moyen if lot else None,
-                        'statut': lot.get_statut_display() if lot else None,
-                        'date_arrivee': lot.date_arrivee.strftime('%d/%m/%Y') if lot else None,
-                        'dernier_nourrissage': '30/10/2025' if lot else None,  # À remplacer par tes données
-                    } if lot else None
+                    'lot': lot_data,
                 })
             data.append({
                 'nom': site.nom,
