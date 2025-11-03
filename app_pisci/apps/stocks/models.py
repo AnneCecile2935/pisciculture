@@ -84,8 +84,8 @@ class LotDePoisson(TimeStampedModel):
         ]
 
     def save(self, *args, **kwargs):
-        if self.quantite > 0:
-            self.poids_moyen = round((self.poids * 1000) / self.quantite, 2)
+        if self.quantite_actuelle > 0:
+            self.poids_moyen = round((self.poids * 1000) / self.quantite_actuelle, 2)
         else:
             self.poids_moyen = None
         super().save(*args, **kwargs)

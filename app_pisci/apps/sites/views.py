@@ -1,4 +1,4 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from .models import Site, Bassin
 from apps.commun.view import StandardDeleteMixin
@@ -100,4 +100,45 @@ class BassinListJsonView(LoginRequiredMixin, View):
         bassins = list(Bassin.objects.filter(site_id=site_id, est_actif=True).values('id', 'nom', 'est_actif'))
         return JsonResponse(bassins, safe=False)
 
+class BassinsAPIView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        # Récupère tous les sites avec leurs bassins et lots associés
+        sites = Site.objects.prefetch_related(
+            'bassins__lots_poissons__espece'
+        ).filter(est_actif=True)
 
+        data = []
+        for site in sites:
+            bassins = []
+            for bassin in site.bassins.filter(est_actif=True):
+                lot = bassin.lots_poissons.first()  # Un seul lot par bassin (grâce à ta validation)
+
+                bassins.append({
+                    'nom': bassin.nom,
+                    'type': bassin.type,
+                    'volume': bassin.volume,
+                    'a_un_lot': bool(lot),
+                    'lot': {
+                        'code': lot.code_lot if lot else None,
+                        'espece': lot.espece.nom_commun if lot else None,
+                        'quantite': lot.quantite_actuelle if lot else 0,
+                        'poids_moyen': lot.poids_moyen if lot else None,
+                        'statut': lot.get_statut_display() if lot else None,
+                        'date_arrivee': lot.date_arrivee.strftime('%d/%m/%Y') if lot else None,
+                        'dernier_nourrissage': '30/10/2025' if lot else None,  # À remplacer par tes données
+                    } if lot else None
+                })
+            data.append({
+                'nom': site.nom,
+                'bassins': bassins,
+            })
+        return JsonResponse(data, safe=False)
+
+class CarteBassinsView(LoginRequiredMixin, TemplateView):
+    template_name = 'sites/carte.html'  # Chemin vers ton template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Tu peux ajouter des données supplémentaires au contexte ici si besoin
+        # Exemple : context['titre'] = "Ma Carte des Bassins"
+        return context

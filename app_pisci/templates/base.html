@@ -23,18 +23,18 @@
 				display: block;
 				margin: 0 auto 1.5rem;
   		}
-			.bi {
-  font-family: "bootstrap-icons" !important;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  line-height: 1;
-  speak: never;
-  display: inline-block;
-  text-transform: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+		.bi {
+			font-family: "bootstrap-icons" !important;
+			font-style: normal;
+			font-weight: normal;
+			font-variant: normal;
+			line-height: 1;
+			speak: never;
+			display: inline-block;
+			text-transform: none;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
 
 
     </style>
@@ -102,7 +102,7 @@
 															href="#stocksSubmenu"
 															data-bs-toggle="collapse"
 															aria-expanded="{% if request.resolver_match.app_name == 'stocks' %}true{% else %}false{% endif %}">
-															<i class="bi bi-box-seam"></i>Stocks  <!-- Collés -->
+															<i class="bi bi-box-seam"></i>Stocks
 															<i class="bi bi-chevron-down ms-auto"></i>
 														</a>
 														<ul class="nav flex-column collapse {% if request.resolver_match.app_name == 'stocks' %}show{% endif %}" id="stocksSubmenu">
@@ -112,6 +112,12 @@
 																	Création Lots de truites
 																</a>
 															</li>
+															<li class="nav-item ps-3">
+																<a class="nav-link {% if request.resolver_match.url_name == 'bassins_carte' %}active{% endif %}"
+																		href="{% url 'sites:bassins_carte' %}">
+																		<i class="bi bi-map me-2"></i> Carte des bassins
+																</a>
+														</li>
 														</ul>
 													</li>
 
