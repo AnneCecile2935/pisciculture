@@ -84,6 +84,7 @@ class LotDePoisson(TimeStampedModel):
         ]
 
     def save(self, *args, **kwargs):
+        self.full_clean()
         if self.quantite_actuelle > 0:
             self.poids_moyen = round((self.poids * 1000) / self.quantite_actuelle, 2)
         else:
@@ -105,6 +106,4 @@ class LotDePoisson(TimeStampedModel):
     def __str__(self):
         return f"{self.code_lot} - {self.espece.nom_commun} ({self.quantite_actuelle}/{self.quantite})"
 
-    def save(self, *args, **kwargs):
-        self.full_clean()  # Appelle clean() avant de sauvegarder
-        super().save(*args, **kwargs)
+  

@@ -36,6 +36,12 @@ class LotForm(forms.ModelForm):
             raise forms.ValidationError("La quantité doit être supérieure à 0.")
         return quantite
 
+    def clean_quantite_actuelle(self):
+        quantite_actuelle = self.cleaned_data['quantite_actuelle']
+        if quantite_actuelle < 0:
+            raise forms.ValidationError("La quantité actuelle ne peut pas être négative.")
+        return quantite_actuelle
+
     def clean_bassins(self):
         bassins = self.cleaned_data.get('bassins')
         if not bassins:

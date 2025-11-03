@@ -64,6 +64,10 @@ class LotListJsonView(LoginRequiredMixin, View):
         # Ajoutez les noms des bassins manuellement
         for lot in lots:
             lot_id = lot['id']
-            bassins = LotDePoisson.objects.get(id=lot_id).bassins.all()
-            lot['bassins'] = [bassin.nom for bassin in bassins]
+            lot_obj = LotDePoisson.objects.get(id=lot_id)
+            lot['bassins'] = [bassin.nom for bassin in lot_obj.bassins.all()]
+            if lot_obj.quantite_actuelle > 0:
+                lot['poids_moyen'] = round((lot_obj.poids * 1000) / lot_obj.quantite_actuelle, 2)
+            else:
+                lot['poids_moyen'] = None
         return JsonResponse(lots, safe=False)

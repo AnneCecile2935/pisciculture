@@ -92,7 +92,7 @@ $(document).ready(function() {
             { "data": "quantite_actuelle" },
             { "data": "poids" },
             { "data": "poids_moyen", "render": function(data) {
-                return data ? data.toFixed(1) : '-';
+                return data ? data.toFixed(1) + ' g' : '-';
             }},
             { "data": "date_arrivee", "render": function(data) {
                 return data ? new Date(data).toLocaleDateString('fr-FR') : '-';
