@@ -5,7 +5,7 @@ async function afficherSites() {
     spinner.style.display = 'block';   // Affiche le spinner
 
     try {
-        const response = await fetch('sites/api/bassins/');
+        const response = await fetch('/api/bassins/');
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
@@ -53,27 +53,28 @@ async function afficherSites() {
                 let statusMessage = '';
 
                 if (!bassin.a_un_lot) {
-                    cardClass += 'border-secondary';
-                    statusBadge = '<span class="badge bg-secondary">Vide</span>';
-                    statusMessage = 'Aucun lot affecté à ce bassin.';
-                } else {
-                    const dernierNourrissage = new Date(bassin.lot.dernier_nourrissage);
-                    const aujourdHui = new Date();
-                    const joursSansNourriture = Math.floor((aujourdHui - dernierNourrissage) / (1000 * 60 * 60 * 24));
+					cardClass += 'border-secondary';
+					statusBadge = '<span class="badge bg-secondary">Vide</span>';
+					statusMessage = 'Aucun lot affecté à ce bassin.';
+				} else if (!bassin.lot.dernier_nourrissage) {
+					cardClass += 'border-warning';
+					statusBadge = '<span class="badge bg-warning">Non nourri</span>';
+					statusMessage = 'Ce lot n\'a jamais été nourri.';
+				} else {
+					const dernierNourrissageDate = new Date(bassin.lot.dernier_nourrissage);
+					const aujourdHui = new Date();
+					const joursSansNourriture = Math.floor((aujourdHui - dernierNourrissageDate) / (1000 * 60 * 60 * 24));
 
-                    if (joursSansNourriture > 2) {
-                        cardClass += 'border-danger';
-                        statusBadge = '<span class="badge bg-danger">À nourrir !</span>';
-                        statusMessage = `Dernier nourrissage il y a ${joursSansNourriture} jours.`;
-                    } else {
-                        cardClass += 'border-success';
-                        statusBadge = '<span class="badge bg-success">OK</span>';
-                        statusMessage = `Nourri le ${bassin.lot.dernier_nourrissage}.`;
-                    }
-                }
-
-                const tauxRemplissage = bassin.volume && bassin.lot ?
-                    Math.round((bassin.lot.quantite / (bassin.volume * 1000)) * 100) : null;
+					if (joursSansNourriture > 2) {
+						cardClass += 'border-danger';
+						statusBadge = '<span class="badge bg-danger">À nourrir !</span>';
+						statusMessage = `Dernier nourrissage il y a ${joursSansNourriture} jours.`;
+					} else {
+						cardClass += 'border-success';
+						statusBadge = '<span class="badge bg-success">OK</span>';
+						statusMessage = `Nourri le ${dernierNourrissageDate.toLocaleString('fr-FR')}.`;
+					}
+				}
 
                 bassinCard.className = cardClass;
                 bassinCard.innerHTML = `
@@ -82,10 +83,7 @@ async function afficherSites() {
                             ${bassin.nom}
                             ${statusBadge}
                         </h6>
-                        <p class="card-text">
-                            <i class="fas fa-water"></i> Volume: ${bassin.volume || 'N/A'} m³
-                            ${tauxRemplissage ? ` • ${tauxRemplissage}% rempli` : ''}
-                        </p>
+
                         <p class="card-text small text-muted">${statusMessage}</p>
                     </div>
                     ${bassin.a_un_lot ? `
@@ -93,15 +91,17 @@ async function afficherSites() {
                         <div class="lot-item">
                             <p class="mb-1">
                                 <i class="fas fa-fish"></i> <strong>${bassin.lot.code}</strong>:
-                                ${bassin.lot.quantite} ${bassin.lot.espece}
+                                ${bassin.lot.quantite_actuelle} ${bassin.lot.espece}
                                 <span class="badge bg-primary">${bassin.lot.statut}</span>
                             </p>
                             <p class="mb-1">
+								Poids: ${bassin.lot.poids ? bassin.lot.poids + ' kg' : 'N/A'} |
                                 Poids moyen: ${bassin.lot.poids_moyen ? bassin.lot.poids_moyen + 'g' : 'N/A'} |
                                 Arrivé le: ${bassin.lot.date_arrivee}
+								Dernier nourrissage: ${bassin.lot.dernier_nourrissage ? new Date(bassin.lot.dernier_nourrissage).toLocaleString('fr-FR') : 'Jamais'}
                             </p>
                             <p class="mb-0">
-                                Quantité: ${bassin.lot.quantite_actuelle}/${bassin.lot.quantite}
+                                Quantité: ${bassin.lot.quantite_actuelle}
                             </p>
                         </div>
                     </div>

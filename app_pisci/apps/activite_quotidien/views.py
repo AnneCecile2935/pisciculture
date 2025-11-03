@@ -42,11 +42,16 @@ class NourrissageCreateView(LoginRequiredMixin, CreateView):
 
         crea_lot = form.cleaned_data['crea_lot']
         if crea_lot.bassin != bassin:
-            messages.error(self.request, "Le lot ne appartient pas au bassin sélectionné.")
+            messages.error(self.request, "Le lot n'appartient pas au bassin sélectionné.")
             return self.form_invalid(form)
 
         # Associe l'utilisateur connecté (pour trace
         form.instance.cree_par = self.request.user
+
+        if crea_lot:
+            crea_lot.dernier_nourrissage = timezone.now()
+            crea_lot.save(update_fields=['dernier_nourrissage'])
+
         messages.success(self.request, "Le repas a été enregistré avec succès!")
         return super().form_valid(form)
 
@@ -89,14 +94,9 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         nourrissage = form.save(commit=False)
-
-        # ✅ Récupère site_prod depuis l'objet existant
         site_prod = nourrissage.site_prod
-
-        # Récupère date_repas et notes depuis POST si disponibles
         date_repas = self.request.POST.get('date_repas') or nourrissage.date_repas or timezone.now().date()
         notes = self.request.POST.get('notes') or nourrissage.notes
-
         erreurs = False
 
         # Validation de la quantité
@@ -118,7 +118,6 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
         # Cohérence quantité/motif/aliment
         motif = form.cleaned_data.get('motif_absence')
         aliment = form.cleaned_data.get('aliment')
-
         if qte is None or qte == 0:
             if not motif:
                 form.add_error('motif_absence', "Un motif est requis si la quantité est vide ou nulle.")
@@ -138,7 +137,7 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
         if erreurs:
             return self.form_invalid(form)
 
-        # Mise à jour de l'objet
+        # Mise à jour de l'objet Nourrissage
         nourrissage.qte = qte
         nourrissage.motif_absence = motif if qte is None or qte == 0 else None
         nourrissage.aliment = aliment
@@ -146,6 +145,11 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
         nourrissage.date_repas = date_repas
         nourrissage.notes = notes
         nourrissage.save()
+
+        # Met à jour dernier_nourrissage du lot
+        if lot:
+            lot.dernier_nourrissage = timezone.now()
+            lot.save(update_fields=['dernier_nourrissage'])
 
         messages.success(self.request, "Le repas a été mis à jour avec succès !")
         return super().form_valid(form)
@@ -168,7 +172,7 @@ class NourrissageListJsonView(LoginRequiredMixin, View):
         ).values(
             'id', 'site_prod__nom', 'bassin__nom', 'crea_lot__code_lot', 'qte',
             'date_repas', 'aliment__nom', 'cree_par__username', 'notes',
-            'motif_absence', 'motif_nom'
+            'motif_absence', 'motif_nom', 'crea_lot__dernier_nourrissage'
         ).order_by('-date_repas')
 
         return JsonResponse(list(nourrissages), safe=False)
@@ -278,6 +282,12 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
         # Enregistrement en base
         if nourrissages:
             Nourrissage.objects.bulk_create(nourrissages)
+            # Met à jour dernier_nourrissage pour chaque lot
+            for nourrissage in nourrissages:
+                if nourrissage.crea_lot:
+                    nourrissage.crea_lot.dernier_nourrissage = timezone.now()
+                    nourrissage.crea_lot.save(update_fields=['dernier_nourrissage'])
+
             messages.success(self.request, f"{len(nourrissages)} repas enregistrés !")
         else:
             messages.warning(self.request, "Aucun repas valide à enregistrer.")

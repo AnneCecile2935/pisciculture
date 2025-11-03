@@ -109,7 +109,7 @@ class BassinsAPIView(LoginRequiredMixin, View):
             for bassin in site.bassins.filter(est_actif=True):
                 lot = bassin.lots_poissons.first()
                 if lot:
-                    print(f"Lot {lot.code_lot}: poids={lot.poids} kg, poids_moyen={lot.poids_moyen} g")
+                    dernier_nourrissage = lot.dernier_nourrissage.isoformat() if lot.dernier_nourrissage else None
                     lot_data = {
                         'code': lot.code_lot,
                         'espece': lot.espece.nom_commun,
@@ -118,7 +118,7 @@ class BassinsAPIView(LoginRequiredMixin, View):
                         'poids': lot.poids,
                         'statut': lot.get_statut_display(),
                         'date_arrivee': lot.date_arrivee.strftime('%d/%m/%Y'),
-                        'dernier_nourrissage': '30/10/2025',  # À remplacer par la vraie date
+                        'dernier_nourrissage': dernier_nourrissage,
                     }
                 else:  # Si aucun lot n'est associé au bassin
                     lot_data = None
@@ -139,6 +139,4 @@ class CarteBassinsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Tu peux ajouter des données supplémentaires au contexte ici si besoin
-        # Exemple : context['titre'] = "Ma Carte des Bassins"
         return context

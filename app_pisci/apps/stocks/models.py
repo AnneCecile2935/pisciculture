@@ -71,6 +71,12 @@ class LotDePoisson(TimeStampedModel):
         null=True,
         help_text="Poids moyen d'un poisson (calculé automatiquement)"
     )
+    dernier_nourrissage = models.DateTimeField(
+        verbose_name="Dernier nourrissage",
+        null=True,
+        blank=True,
+        help_text="Date et heure du dernier nourrissage"
+    )
 
     class Meta:
         verbose_name= "Lot de poissons"
@@ -106,4 +112,3 @@ class LotDePoisson(TimeStampedModel):
     def __str__(self):
         return f"{self.code_lot} - {self.espece.nom_commun} ({self.quantite_actuelle}/{self.quantite})"
 
-  
