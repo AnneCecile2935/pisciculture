@@ -202,7 +202,6 @@ function showBassinDetails(bassinId) {
 
                 <div class="mt-3 d-flex gap-2">
                     <a href="/nourrissage/enregistrer-repas/${data.site_id}/" class="btn btn-primary btn-sm">Enregistrer un repas</a>
-                    <a href="/sites/bassins/${bassinId}/update/" class="btn btn-warning btn-sm">Modifier</a>
                 </div>
             `;
 
