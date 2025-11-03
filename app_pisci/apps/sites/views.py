@@ -1,12 +1,16 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from .models import Site, Bassin
+from apps.activite_quotidien.models import Nourrissage
 from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from .forms import SiteForm, BassinForm
 from django.urls import reverse
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from django.utils.decorators import method_decorator
 from typing import Any
+from django.utils import timezone
 
 class SiteListView(LoginRequiredMixin, ListView):
     model = Site
@@ -109,7 +113,20 @@ class BassinsAPIView(LoginRequiredMixin, View):
             for bassin in site.bassins.filter(est_actif=True):
                 lot = bassin.lots_poissons.first()
                 if lot:
-                    dernier_nourrissage = lot.dernier_nourrissage.isoformat() if lot.dernier_nourrissage else None
+                    dernier_nourrissage = Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas').first()
+
+                    # Calculer le nombre de repas aujourd'hui
+                    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                    today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+                    nourrissages_today = Nourrissage.objects.filter(
+                        bassin=bassin,
+                        date_repas__gte=today_start,
+                        date_repas__lte=today_end
+                    ).count()
+
+                    # Vérifier si le bassin est "À jeun"
+                    a_jeun = dernier_nourrissage and dernier_nourrissage.motif_absence == 'JEUN'
+
                     lot_data = {
                         'code': lot.code_lot,
                         'espece': lot.espece.nom_commun,
@@ -118,17 +135,21 @@ class BassinsAPIView(LoginRequiredMixin, View):
                         'poids': lot.poids,
                         'statut': lot.get_statut_display(),
                         'date_arrivee': lot.date_arrivee.strftime('%d/%m/%Y'),
-                        'dernier_nourrissage': dernier_nourrissage,
+                        'dernier_nourrissage': dernier_nourrissage.date_repas.isoformat() if dernier_nourrissage else None,
+                        'nourrissages_today': nourrissages_today,
+                        'a_jeun': a_jeun,
                     }
-                else:  # Si aucun lot n'est associé au bassin
+                else:
                     lot_data = None
                 bassins.append({
+                    'id': str(bassin.id),
                     'nom': bassin.nom,
                     'type': bassin.type,
                     'a_un_lot': bool(lot),
                     'lot': lot_data,
                 })
             data.append({
+                'id': str(site.id),
                 'nom': site.nom,
                 'bassins': bassins,
             })
@@ -140,3 +161,35 @@ class CarteBassinsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+@method_decorator(require_GET, name='dispatch')
+class BassinLotDetailsView(LoginRequiredMixin, View):
+    def get(self, request, bassin_id, *args, **kwargs):
+        # Récupère le bassin demandé
+        bassin = Bassin.objects.get(id=bassin_id)
+        # Récupère le lot actuel du bassin (s'il existe)
+        lot = bassin.lots_poissons.first()
+        # Récupère les 5 derniers repas pour ce bassin
+        repas = Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas')[:7]
+
+        # Prépare les données à retourner
+        data = {
+            "bassin_nom": bassin.nom,
+            "site_nom": bassin.site.nom,
+            "site_id": str(bassin.site.id),
+            "code_lot": lot.code_lot if lot else None,
+            "espece": lot.espece.nom_commun if lot and lot.espece else None,
+            "quantite_actuelle": lot.quantite_actuelle if lot else 0,
+            "poids_moyen": lot.poids_moyen if lot else None,
+            "poids_total": lot.poids if lot else None,
+            "date_arrivee": lot.date_arrivee.strftime("%d/%m/%Y") if lot and lot.date_arrivee else None,
+            "derniers_repas": [
+                {
+                    "date": repas.date_repas.strftime("%d/%m/%Y %H:%M"),
+                    "type_aliment": repas.aliment.nom,
+                    "quantite": repas.qte,
+                }
+                for repas in repas
+            ] if repas else [],
+        }
+        return JsonResponse(data)
