@@ -82,8 +82,8 @@ $(document).ready(function() {
                     'ADULTE': {text: 'Adulte', class: 'bg-success'},
                     'TRUITELLE': {text: 'Truitelle', class: 'bg-warning'},
                     'PORTION': {text: 'Portion', class: 'bg-light'},
-                    'GROSSE(G)': {text: 'Grosse', class: 'bg-dark'},
-                    'TRES GROSSE(TG)': {text: 'Très Grosse', class: 'bg-dark'}
+                    'GROSSE(G)': {text: 'Grosse', class: 'bg-success'},
+                    'TRES GROSSE(TG)': {text: 'Très Grosse', class: 'bg-success'}
                 };
                 var statut = statutText[data] || {text: data, class: 'bg-secondary'};
                 return `<span class="badge ${statut.class}">${statut.text}</span>`;

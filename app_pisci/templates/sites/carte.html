@@ -6,124 +6,9 @@
 {% endblock title %}
 
 {% block extra_css %}
-<style>
-    /* Conteneur principal pour les colonnes */
-    .ponds-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-top: 20px;
-        width: 100%;
-        gap: 15px; /* Espace entre les colonnes */
-    }
-
-    /* Style commun pour toutes les colonnes */
-    .ponds-column-left,
-    .ponds-column-middle,
-    .ponds-column-right {
-        flex: 1; /* Répartition égale de l'espace disponible */
-        min-width: 30%; /* Largeur minimale pour éviter que les colonnes ne deviennent trop étroites */
-        padding: 15px;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-    }
-
-
-
-    /* Masquer une colonne si elle est vide */
-    .ponds-column-left:empty,
-    .ponds-column-middle:empty,
-    .ponds-column-right:empty {
-        display: none;
-    }
-
-    /* Ligne de bassins */
-    .pond-line {
-        display: flex;
-        gap: 30px;
-        margin-bottom: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    /* Carte d'un bassin */
-    .bassin-card {
-        width: 100px;
-        height: 90px;
-        background-color: #6c757d;
-				margin: 10px;
-        color: white;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
-        position: relative; /* Pour positionner le badge correctement */
-    }
-
-    .bassin-card:hover {
-        transform: scale(1.02);
-    }
-
-    .pond-name {
-        font-size: 1.1em;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-    }
-
-    .pond-lot {
-        font-size: 0.8em;
-        text-align: center;
-    }
-
-    .badge {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        font-size: 0.7em;
-        background-color: white;
-        color: #333;
-        padding: 2px 5px;
-        border-radius: 3px;
-    }
-
-    .section-title {
-        margin-top: 0;
-        margin-bottom: 15px;
-        color: #343a40;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 5px;
-    }
-
-    .empty-message {
-        color: #6c757d;
-        font-style: italic;
-        text-align: center;
-        margin: 20px 0;
-    }
-
-    .legend {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-        align-items: center;
-    }
-
-    .color-box {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 1px solid #333;
-        margin-right: 5px;
-    }
-
-    #loading-spinner {
-        display: none;
-    }
-</style>
+    <!-- CSS spécifique à la carte des bassins -->
+    <link rel="stylesheet" href="{% static 'css/bassin_map.css' %}">
+    <!-- Autres CSS si nécessaire -->
 {% endblock extra_css %}
 
 {% block main_content %}
@@ -131,13 +16,7 @@
     <h1 class="my-4"> Carte des Bassins</h1>
 
     <!-- Légende des couleurs -->
-    <div class="legend">
-        <div><span class="color-box" style="background-color: #ffa500;"></span> 1 repas</div>
-        <div><span class="color-box" style="background-color: #28a745;"></span> 2 repas</div>
-        <div><span class="color-box" style="background-color: #dc3545;"></span> Pas de repas</div>
-        <div><span class="color-box" style="background-color: #6c757d;"></span> Vide</div>
-        <div><span class="color-box" style="background-color: #000000;"></span> À jeun</div>
-    </div>
+
 
     <!-- Spinner de chargement -->
     <div id="loading-spinner" class="text-center my-5">
@@ -154,6 +33,30 @@
             <option value="">-- Sélectionnez un site --</option>
         </select>
     </div>
+		<div class="d-flex justify-content-center mb-4">
+			<div class="legend">
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-1-repas);"></span>
+									<span>1 repas</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-2-repas);"></span>
+									<span>2 repas</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-pas-repas);"></span>
+									<span>Pas de repas</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-vide);"></span>
+									<span>Vide</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-a-jeun);"></span>
+									<span>À jeun</span>
+							</div>
+					</div>
+			</div>
     <!-- Conteneur pour les cartes des sites/bassins (vide au départ) -->
     <div class="row" id="sites-container"></div>
 </div>
@@ -169,6 +72,7 @@
         </div>
     </div>
 </div>
+
 {% endblock main_content %}
 
 {% block extra_js %}

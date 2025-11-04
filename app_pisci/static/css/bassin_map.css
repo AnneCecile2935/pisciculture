@@ -1,0 +1,245 @@
+/* bassins_map.css */
+:root {
+    --bassin-vide: #6c757d;
+    --bassin-1-repas: #ffa500;
+    --bassin-2-repas: #28a745;
+    --bassin-pas-repas: #dc3545;
+    --bassin-a-jeun: #000000;
+    --bassin-border: var(--bs-card-border, #dee2e6);
+    --bassin-bg: var(--bs-card-bg,  #f7e4d9);
+    --bassin-shadow: var(--bs-box-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
+    --text-color: var(--bs-body-color, #343a40);
+    --legend-border: var(--bs-primary, #0b8092);
+}
+
+[data-bs-theme="dark"] {
+    --bassin-vide: #495057;
+    --bassin-1-repas: #ffa94d;
+    --bassin-2-repas: #218838;
+    --bassin-pas-repas: #c82333;
+    --bassin-a-jeun: #212529;
+}
+
+/* Conteneur principal pour les colonnes */
+.ponds-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+    width: 100%;
+    gap: 15px;
+}
+
+/* Style commun pour toutes les colonnes */
+.ponds-column-left,
+.ponds-column-middle,
+.ponds-column-right {
+    flex: 1;
+    min-width: 30%;
+    padding: 15px;
+    border: 1px solid var(--bassin-border);
+    border-radius: 8px;
+    background-color: var(--bassin-bg);
+    box-shadow: var(--bassin-shadow);
+}
+
+/* Masquer une colonne si elle est vide */
+.ponds-column-left:empty,
+.ponds-column-middle:empty,
+.ponds-column-right:empty {
+    display: none;
+}
+
+/* Ligne de bassins */
+.pond-line {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Carte d'un bassin */
+.bassin-card {
+    width: 100px;
+    height: 90px;
+    background-color: var(--bassin-vide);
+    margin: 10px;
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.bassin-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+}
+
+/* Couleurs dynamiques pour les bassins */
+.bassin-card.repas-1 { background-color: var(--bassin-1-repas); }
+.bassin-card.repas-2 { background-color: var(--bassin-2-repas); }
+.bassin-card.pas-repas { background-color: var(--bassin-pas-repas); }
+.bassin-card.a-jeun { background-color: var(--bassin-a-jeun); }
+
+.pond-name {
+    font-size: 1.1em;
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.pond-lot {
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.7em;
+    background-color: white;
+    color: #333;
+    padding: 2px 5px;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.section-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--legend-border);
+    padding-bottom: 5px;
+    font-weight: 600;
+}
+
+.empty-message {
+    color: var(--text-color);
+    font-style: italic;
+    text-align: center;
+    margin: 20px 0;
+    opacity: 0.7;
+}
+
+/* Légende des couleurs */
+.legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.color-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    margin-right: 8px;
+    border-radius: 4px;
+}
+
+/* Spinner de chargement */
+#loading-spinner {
+    display: none;
+    text-align: center;
+    margin: 30px 0;
+}
+
+#loading-spinner .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.2em;
+}
+
+/* Modal */
+.modal-content {
+    background-color: var(--bs-card-bg);
+    border: 1px solid var(--bassin-border);
+    border-radius: 8px;
+    box-shadow: var(--bassin-shadow);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--bassin-border);
+    background-color: var(--bs-primary, #0b8092);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-title {
+    color: white;
+    font-weight: 600;
+}
+
+.modal-body {
+    color: var(--text-color);
+}
+
+/* Cartes de site */
+.site-card {
+    background-color: var(--bs-card-bg);
+    border: 1px solid var(--bassin-border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: var(--bassin-shadow);
+    transition: all 0.2s;
+}
+
+.site-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.site-card h3 {
+    color: var(--bs-primary, #0b8092);
+    margin-top: 0;
+    border-bottom: 1px solid var(--bassin-border);
+    padding-bottom: 10px;
+}
+#sites-container {
+    background-color: var(--bg-color); /* Utilise la couleur de fond définie dans :root */
+    border-radius: 8px; /* Optionnel : arrondir les bords */
+    padding: 15px; /* Optionnel : ajouter un espacement interne */
+    margin-bottom: 20px; /* Optionnel : ajouter une marge en bas */
+}
+.site-card .card-body {
+    background-color: #dbf1f5; /* Fond blanc */
+    color: #343a40; /* Texte noir */
+    border-radius: 8px 8px 0 0; /* Arrondi des coins supérieurs */
+    padding: 15px; /* Espacement interne */
+    border-bottom: 1px solid var(--bassin-border); /* Bordure inférieure */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Ombre légère */
+}
+.section-title {
+    color: #0b8092; /* Bleu foncé */
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 600; /* Texte en gras */
+    border-bottom: 2px solid #0b8092; /* Bordure inférieure bleue */
+    padding-bottom: 5px;
+}
+[data-bs-theme="dark"] .site-card .card-body {
+    background-color: #fae8dd; /* Fond gris clair en mode sombre */
+    color: #212529; /* Texte sombre */
+}
+
+[data-bs-theme="dark"] .section-title {
+    color: #3aa89e; /* Bleu plus clair pour le mode sombre */
+}

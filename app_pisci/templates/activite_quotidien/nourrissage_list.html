@@ -1,19 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Liste des nourrissages{% endblock %}
 {% block content %}
-<style>
-    #nourrissagesTable td,
-    #nourrissagesTable th {
-        text-align: center !important;
-    }
-		#nourrissagesTable td a.btn {
-    display: inline-flex;
-    justify-content: center;
-		}
-		#nourrissagesTable td:nth-child(7) {
-    text-align: center !important;
-		}
-</style>
+
 <div class="container-fluid p-0 m-0">
     <h1 class="mb-4">Liste des nourrissages</h1>
 
@@ -64,6 +52,7 @@ $(document).ready(function() {
     var deleteUrlTemplate = "{% url 'activite_quotidien:nourrissage-delete' '00000000-0000-0000-0000-000000000000' %}";
 
     var table = $('#nourrissagesTable').DataTable({
+				responsive: true,
 				pageLength: 50,
     		lengthMenu: [10, 25, 50, 100],
 			 "searching": false,

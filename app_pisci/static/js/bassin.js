@@ -51,6 +51,14 @@ async function afficherSites() {
                 return groups[prefix];
             }
 
+			// Fonction pour déterminer la classe CSS d'un bassin
+            function getBassinClass(bassin) {
+                if (!bassin.a_un_lot) return ''; // Vide
+                if (bassin.lot.motif_absence === 'JEUN') return 'a-jeun';
+                if (!bassin.lot.dernier_nourrissage || bassin.lot.nourrissages_today === 0) return 'pas-repas';
+                return bassin.lot.nourrissages_today === 2 ? 'repas-2' : 'repas-1';
+            }
+
             // Générer le HTML pour les bassins K
             let bassinsKHTML = '';
             const groupesK = groupByLine(bassinsK, 'K');
@@ -59,10 +67,7 @@ async function afficherSites() {
                     bassinsKHTML += `
                         <div class="pond-line">
                             ${ligne.map(bassin => `
-                                <div class="bassin-card" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')"
-                                     style="background-color: ${bassin.a_un_lot ? (bassin.lot.a_jeun ? '#000000' :
-                                                                                         !bassin.lot.dernier_nourrissage ? '#dc3545' :
-                                                                                         bassin.lot.nourrissages_today === 2 ? '#28a745' : '#ffa500') : '#6c757d'}">
+                                <div class="bassin-card ${getBassinClass(bassin)}" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')">
                                     <div class="pond-name">${bassin.nom}</div>
                                     ${bassin.a_un_lot ? `
                                         <div class="pond-lot">${bassin.lot.quantite_actuelle}<br>${bassin.lot.poids_moyen || 0} kg</div>
@@ -83,10 +88,7 @@ async function afficherSites() {
                     bassinsTHTMl += `
                         <div class="pond-line">
                             ${ligne.map(bassin => `
-                                <div class="bassin-card" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')"
-                                     style="background-color: ${bassin.a_un_lot ? (bassin.lot.a_jeun ? '#000000' :
-                                                                                         !bassin.lot.dernier_nourrissage ? '#dc3545' :
-                                                                                         bassin.lot.nourrissages_today === 2 ? '#28a745' : '#ffa500') : '#6c757d'}">
+                               <div class="bassin-card ${getBassinClass(bassin)}" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')">
                                     <div class="pond-name">${bassin.nom}</div>
                                     ${bassin.a_un_lot ? `
                                         <div class="pond-lot">${bassin.lot.quantite_actuelle}<br>${bassin.lot.poids_moyen || 0} kg</div>
@@ -107,10 +109,7 @@ async function afficherSites() {
                     bassinsBHTML += `
                         <div class="pond-line">
                             ${ligne.map(bassin => `
-                                <div class="bassin-card" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')"
-                                     style="background-color: ${bassin.a_un_lot ? (bassin.lot.motif_absence === 'JEUN' ? '#000000' :
-                                                                                         !bassin.lot.dernier_nourrissage ? '#dc3545' :
-                                                                                         bassin.lot.nourrissages_today === 2 ? '#28a745' : '#ffa500') : '#6c757d'}">
+                                <div class="bassin-card ${getBassinClass(bassin)}" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')">
                                     <div class="pond-name">${bassin.nom}</div>
                                     ${bassin.a_un_lot ? `
                                         <div class="pond-lot">${bassin.lot.quantite_actuelle}<br>${bassin.lot.poids_moyen || 0} kg</div>
@@ -133,19 +132,19 @@ async function afficherSites() {
                 </div>
                 <div class="ponds-container">
                     ${bassinsK.length > 0 ? `
-                        <div class="ponds-column">
+                        <div class="ponds-column-left">
                             <h4 class="section-title">Bassins de production</h4>
                             ${bassinsKHTML}
                         </div>
                     ` : ''}
                     ${bassinsT.length > 0 ? `
-                        <div class="ponds-column">
+                        <div class="ponds-column-middle">
                             <h4 class="section-title">Bassins de production</h4>
                             ${bassinsTHTMl}
                         </div>
                     ` : ''}
                     ${bassinsB.length > 0 ? `
-                        <div class="ponds-column">
+                        <div class="ponds-column-right">
                             <h4 class="section-title">Bassins Alevinage</h4>
                             ${bassinsBHTML}
                         </div>
@@ -201,7 +200,7 @@ function showBassinDetails(bassinId) {
                 `}
 
                 <div class="mt-3 d-flex gap-2">
-                    <a href="/nourrissage/enregistrer-repas/${data.site_id}/" class="btn btn-primary btn-sm">Enregistrer un repas</a>
+                    <a href="/nourrissage/enregistrer-repas/${data.site_id}/" class="btn btn-save btn-sm">Enregistrer un repas</a>
                 </div>
             `;
 

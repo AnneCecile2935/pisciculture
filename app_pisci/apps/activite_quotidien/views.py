@@ -24,6 +24,7 @@ from django.http import JsonResponse
 from apps.aliments.models import Aliment
 from django.forms import formset_factory
 import hashlib
+import logging
 
 
 class NourrissageCreateView(LoginRequiredMixin, CreateView):
@@ -218,17 +219,29 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
+        logger = logging.getLogger(__name__)
+        logger.info("Début de form_valid")
+
         self.formset = form
         date_repas = self.request.POST.get('date_repas') or timezone.now().date()
         notes = self.request.POST.get('notes')
         nourrissages = []
-        erreurs = False
 
         for subform in self.formset:
             bassin = subform.cleaned_data.get('bassin')
+            if not bassin:
+                continue  # Ignore si pas de bassin (cas rare)
+
+            # Vérifie si le bassin a un lot
+            lot = bassin.lots_poissons.first()
             qte_str = subform.cleaned_data.get('qte')
             aliment = subform.cleaned_data.get('aliment')
             motif = subform.cleaned_data.get('motif_absence')
+
+            # Si le bassin n'a pas de lot, on force le motif à "vide" et on ignore le repas
+            if not lot:
+                logger.info(f"Bassin {bassin.nom} sans lot : motif forcé à 'vide'.")
+                continue  # On passe au suivant
 
             # Validation de la quantité
             try:
@@ -237,65 +250,57 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
                     qte = float(qte_str)
                     if qte <= 0:
                         subform.add_error('qte', "La quantité doit être positive.")
-                        erreurs = True
                         continue
                 else:
                     qte = None
             except ValueError:
                 subform.add_error('qte', "Saisissez un nombre valide.")
-                erreurs = True
                 continue
 
-            # Cohérence quantité / motif / aliment
-            if qte is None or qte == 0:
-                if not motif:
-                    subform.add_error('motif_absence', "Un motif est requis si la quantité est vide ou nulle.")
-                    erreurs = True
-                    continue
-            else:
-                if not aliment:
-                    subform.add_error('aliment', "Un aliment est requis si une quantité est saisie.")
-                    erreurs = True
-                    continue
+            # Motif requis si quantité ET aliment sont vides
+            if qte is None and not aliment:
+                motif = "vide"  # Motif par défaut si vide
+                logger.info(f"Motif 'vide' appliqué pour {bassin.nom} (quantité et aliment vides).")
 
-            # Lot automatique
-            lot = bassin.lots_poissons.first() if bassin else None
-            if not lot:
-                subform.add_error(None, f"Aucun lot trouvé pour le bassin {bassin.nom if bassin else ''}.")
-                erreurs = True
+            # Aliment requis si quantité > 0
+            if qte is not None and qte > 0 and not aliment:
+                subform.add_error('aliment', "Un aliment est requis si une quantité est saisie.")
                 continue
 
-            # Création de l'objet Nourrissage
+            # Création du repas
             nourrissage = Nourrissage(
                 site_prod=bassin.site,
                 bassin=bassin,
                 crea_lot=lot,
                 aliment=aliment,
                 qte=qte,
-                motif_absence=motif if qte is None or qte == 0 else None,
+                motif_absence=motif if (qte is None or qte == 0) else None,
                 date_repas=date_repas,
                 notes=notes,
                 cree_par=self.request.user,
             )
             nourrissages.append(nourrissage)
+            logger.info(f"Repas valide pour {bassin.nom}: {qte} kg de {aliment} (motif: {motif})")
 
-        # Enregistrement en base
+        # Enregistrement des repas valides
         if nourrissages:
-            Nourrissage.objects.bulk_create(nourrissages)
-            # Met à jour dernier_nourrissage pour chaque lot
-            for nourrissage in nourrissages:
-                if nourrissage.crea_lot:
+            try:
+                Nourrissage.objects.bulk_create(nourrissages)
+                logger.info(f"{len(nourrissages)} repas enregistrés avec succès")
+                for nourrissage in nourrissages:
                     nourrissage.crea_lot.dernier_nourrissage = timezone.now()
                     nourrissage.crea_lot.save(update_fields=['dernier_nourrissage'])
-
-            messages.success(self.request, f"{len(nourrissages)} repas enregistrés !")
+                messages.success(self.request, f"{len(nourrissages)} repas enregistrés !")
+            except Exception as e:
+                logger.error(f"Erreur lors de l'enregistrement: {e}")
+                messages.error(self.request, f"Erreur lors de l'enregistrement: {e}")
+                return self.form_invalid(form)
         else:
             messages.warning(self.request, "Aucun repas valide à enregistrer.")
-
-        if erreurs:
             return self.form_invalid(form)
 
-        return super().form_valid(form)
+        return super().form_valid(form)  # Redirection
+
 
 class ChoixSiteEnregistrementRepasView(LoginRequiredMixin, TemplateView):
     template_name = 'activite_quotidien/choix_site_enregistrement_repas.html'
@@ -372,7 +377,7 @@ class RelevesListJsonView(LoginRequiredMixin, View):
 
 class TempChartDataView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        start_date = timezone.now().date() - timedelta(days=7)
+        start_date = timezone.now().date() - timedelta(days=21)
         releves = ReleveTempOxy.objects.filter(
             date_releve__gte=start_date,
             temperature__isnull=False
@@ -406,7 +411,7 @@ class TempChartDataView(LoginRequiredMixin, View):
 
 class OxygenChartDataView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
-        start_date = timezone.now().date() - timedelta(days=7)
+        start_date = timezone.now().date() - timedelta(days=21)
         releves = ReleveTempOxy.objects.filter(
             date_releve__gte=start_date,
             oxygene__isnull=False

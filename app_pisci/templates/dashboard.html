@@ -7,7 +7,7 @@
         <!-- Graphique Température -->
         <div class="col-md-4">
             <div class="card shadow h-100">
-                <div class="card-header bg-primary text-white">
+                 <div class="card-header" style="background: linear-gradient(135deg, #0b8092, #065f73); color: white;">
                     <h5 class="mb-0">Température (°C)</h5>
                 </div>
                 <div class="card-body">
@@ -21,7 +21,7 @@
         <!-- Graphique Oxygène -->
         <div class="col-md-4">
             <div class="card shadow h-100">
-                <div class="card-header bg-success text-white">
+                <div class="card-header" style="background: linear-gradient(135deg, #3aa89e, #5dade2); color: white;">
                     <h5 class="mb-0">Oxygène (mg/L)</h5>
                 </div>
                 <div class="card-body">
@@ -35,7 +35,7 @@
         <!-- Graphique Débit -->
         <div class="col-md-4">
             <div class="card shadow h-100">
-                <div class="card-header bg-info text-white">
+                <div class="card-header" style="background: linear-gradient(135deg, #5dade2, #7fb3d5); color: white;">
                     <h5 class="mb-0">Débit (L/min)</h5>
                 </div>
                 <div class="card-body">
@@ -59,11 +59,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Détection du thème (inchangé)
-    const isDarkMode = document.body.hasAttribute('data-theme');
+    const isDarkMode = document.body.hasAttribute('data-bs-theme');
     // Couleurs des lignes (inchangé)
-    const lineColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+    const lineColors = ['#0b8092', '#065f73', '#3aa89e', '#5dade2', '#7fb3d5', '#a8c8d8'];
+		const backgroundColors = lineColors.map(color => color + '33');
 
-    // 2. Options communes pour les graphiques (inchangé)
+    // 2. Options communes pour les graphiques
     function getChartOptions(isDark, chartId) {
         return {
             responsive: true,
@@ -71,9 +72,15 @@ document.addEventListener('DOMContentLoaded', function() {
             plugins: {
                 legend: {
                     position: 'top',
-                    labels: { color: isDark ? 'white' : 'black' }
-                },
+										labels:{
+                    	color: isDark ? '#e0e0e0' : '#212529',
+                    	font: { weight: '500' }
+                    }
+									},
                 tooltip: {
+										backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                    titleColor: isDark ? '#e0e0e0' : '#212529',
+                    bodyColor: isDark ? '#e0e0e0' : '#212529',
                     callbacks: {
                         label: function(context) {
                             const unit = chartId.includes('temperature') ? '°C' :
@@ -85,22 +92,37 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             scales: {
                 x: {
-                    title: { display: true, text: 'Date', color: isDark ? 'white' : 'black' },
-                    grid: { color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                    ticks: { color: isDark ? 'white' : 'black' }
+                    title: { display: true, text: 'Date', color: isDark ? '#e0e0e0' : '#212529' }, font: {weight: '500' },
+                    grid: { color: isDark ? 'rgba(11, 128, 146, 0.2)' : 'rgba(11, 128, 146, 0.1)' },
+                    ticks: { color: isDark ? '#e0e0e0' : '#212529' }
                 },
                 y: {
                     title: {
                         display: true,
                         text: chartId.includes('temperature') ? 'Température (°C)' :
                               chartId.includes('oxygen') ? 'Oxygène (mg/L)' : 'Débit (L/min)',
-                        color: isDark ? 'white' : 'black'
+                        color: isDark ? '#e0e0e0' : '#212529',
+												font: {weight: '500' }
+
                     },
-                    grid: { color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-                    ticks: { color: isDark ? 'white' : 'black' },
+                    grid: { color: isDark ? 'rgba(11, 128, 146, 0.2)' : 'rgba(11, 128, 146, 0.1)' },
+                    ticks: { color: isDark ? '#e0e0e0' : '#212529' },
                     suggestedMin: chartId.includes('temperature') ? 10 : 0,
                     suggestedMax: chartId.includes('temperature') ? 30 :
                                   chartId.includes('oxygen') ? 15 : 100
+                }
+            },
+						 elements: {
+                line: {
+                    borderWidth: 2,
+                    fill: 'start' // Remplissage sous la ligne
+                },
+                point: {
+                    radius: 3,
+                    hoverRadius: 5,
+                    backgroundColor: lineColors, // Couleur des points
+                    borderColor: '#fff', // Bordure des points
+                    borderWidth: 1
                 }
             }
         };
@@ -116,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataset.borderColor = lineColors[index % lineColors.length];
                 dataset.borderWidth = 2;
                 dataset.pointBackgroundColor = lineColors[index % lineColors.length];
+								dataset.backgroundColor = backgroundColors[index % backgroundColors.length];
             });
             window.tempChart = new Chart(ctx, {
                 type: 'line',
@@ -137,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataset.borderColor = lineColors[index % lineColors.length];
                 dataset.borderWidth = 2;
                 dataset.pointBackgroundColor = lineColors[index % lineColors.length];
+								dataset.backgroundColor = backgroundColors[index % backgroundColors.length];
             });
             window.oxyChart = new Chart(ctxOxy, {
                 type: 'line',
@@ -158,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataset.borderColor = lineColors[index % lineColors.length];
                 dataset.borderWidth = 2;
                 dataset.pointBackgroundColor = lineColors[index % lineColors.length];
+								dataset.backgroundColor = backgroundColors[index % backgroundColors.length];
             });
             window.flowChart = new Chart(ctxFlow, {
                 type: 'line',

@@ -1,82 +1,119 @@
 {% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/button_custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+{% endblock %}
 {% block title %}Enregistrement des repas pour {{ site.nom }}{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Enregistrement des repas pour le site : {{ site.nom }}</h3>
-        </div>
-        <div class="card-body">
-
-            <!-- ✅ Début du formulaire (on englobe tout) -->
-            <form method="post" novalidate>
-                {% csrf_token %}
-
-                <!-- Date et notes -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="date_repas" class="form-label">Date des repas</label>
-                            <input type="date" class="form-control" id="date_repas" name="date_repas"
-                                   value="{{ today|date:'Y-m-d' }}" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="notes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
-                        </div>
-                    </div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">  <!-- Ajuste la largeur selon tes besoins -->
+            <div class="card form-container">
+                <!-- En-tête avec titre stylisé -->
+                <div class="card-header form-title-header bg-gradient-custom">
+                    <h3 class="mb-0 d-flex align-items-center text-white">
+                        Enregistrement des repas pour le site : {{ site.nom }}
+                    </h3>
                 </div>
-
-                <!-- Formset -->
-                {{ form.management_form }}
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Bassin</th>
-                                <th>Aliment</th>
-                                <th>Quantité (kg)</th>
-                                <th>Motif d'absence</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for subform in form %}
-                            <tr>
-                                <td>
-                                    {{ subform.initial.bassin.nom }}
-                                    {{ subform.bassin }}
-                                    {{ subform.bassin.errors }}
-                                </td>
-                                <td>
-                                    {{ subform.aliment }}
-                                    {{ subform.aliment.errors }}
-                                </td>
-                                <td>
-                                    {{ subform.qte }}
-                                    {{ subform.qte.errors }}
-                                </td>
-                                <td>
-                                    {{ subform.motif_absence }}
-                                    {{ subform.motif_absence.errors }}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <!-- Corps du formulaire -->
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <!-- Date et notes (style "floating labels" comme dans form.html) -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="date_repas" name="date_repas"
+                                           value="{{ today|date:'Y-m-d' }}" required>
+                                    <label for="date_repas">Date des repas</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="notes" name="notes" rows="2" style="height: 100%;"></textarea>
+                                    <label for="notes">Notes</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Formset (tableau) -->
+                        {{ form.management_form }}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Bassin</th>
+                                        <th>Aliment</th>
+                                        <th>Quantité (kg)</th>
+                                        <th>Motif d'absence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subform in form %}
+                                    <tr>
+                                        <td>
+																					{{ subform.initial.bassin.nom }}
+																					{{ subform.bassin }}
+																					{{ subform.bassin.errors }}
+																				</td>
+                                        <td>{{ subform.aliment }}</td>
+                                        <td>{{ subform.qte }}</td>
+                                        <td>
+                                            {% with bassin=subform.initial.bassin %}
+                                                {% if not bassin.lots_poissons.first %}
+                                                    {{ subform.motif_absence.as_hidden }}
+                                                    <span>vide</span>
+                                                    <input type="hidden" name="form-{{ forloop.counter0 }}-motif_absence" value="vide">
+                                                {% else %}
+                                                    {{ subform.motif_absence }}
+                                                {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Boutons alignés à droite -->
+                        <div class="d-flex justify-content-between mt-4"">
+                            <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill">
+                                <i class="bi bi-save me-2"></i> Enregistrer les repas
+                            </button>
+                            <a href="{% url 'activite_quotidien:nourrissage-list' %}"
+                               class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+                                <i class="bi bi-x-circle me-2"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
                 </div>
+								{% if request.method == 'POST' %}
+										<div class="debug-data mt-4 p-3 bg-light">
+												<h5>Données soumises (debug) :</h5>
+												<pre>{{ request.POST }}</pre>
+										</div>
+										{% endif %}
 
-                <div class="d-flex justify-content-end mt-3">
-									<button type="submit" class="btn btn-primary">
-											<i class="bi bi-save"></i> Enregistrer les repas
-									</button>
-									<a href="{% url 'activite_quotidien:nourrissage-list' %}" class="btn btn-secondary ms-2">
-											<i class="bi bi-x-circle"></i> Annuler
-									</a>
-							</div>
-            </form>
-            <!-- ✅ Fin du formulaire -->
+										<!-- Bloc de debug des erreurs -->
+										{% if form.errors or form.non_form_errors %}
+										<div class="alert alert-danger mt-3">
+												<strong>Erreurs dans le formulaire :</strong>
+												<ul>
+														{% for error in form.non_form_errors %}
+														<li>{{ error }}</li>
+														{% endfor %}
+														{% for subform in form %}
+																{% for field, errors in subform.errors.items %}
+																		{% for error in errors %}
+																		<li>{{ subform.prefix }} - {{ field }}: {{ error }}</li>
+																		{% endfor %}
+																{% endfor %}
+														{% endfor %}
+												</ul>
+										</div>
+										{% endif %}
+								</div>
+            </div>
         </div>
     </div>
 </div>
