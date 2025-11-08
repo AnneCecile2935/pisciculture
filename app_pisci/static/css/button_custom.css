@@ -119,3 +119,13 @@ table .btn-sm {
 .btn.px-4.py-2 {
     padding: 0.5rem 1.5rem !important;
 }
+/* ============================================= */
+/* BAADGES ACTIFS : INACTIFS */
+/* ============================================= */
+.bg-custom-blue {
+  background-color: #539CAC;
+}
+
+.bg-custom-orange {
+  background-color: #f89c46; /* Exemple d'orange */
+}
