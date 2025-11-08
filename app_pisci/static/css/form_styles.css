@@ -4,8 +4,8 @@
     --bs-body-color: #212529;
     --bs-card-bg: #ffffff;
     --bs-card-border: #dee2e6;
-    --bs-primary: #3a7bd5;
-    --bs-primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+    --bs-primary:  #2E7D32;
+    --bs-primary-gradient: linear-gradient(135deg, #0b8092 0%, #065f73 100%);
     --bs-secondary: #6c757d;
     --bs-input-bg: #ffffff;
     --bs-input-border: #ced4da;
@@ -23,8 +23,8 @@
     --bs-body-color: #e0e0e0;
     --bs-card-bg: #1e1e1e;
     --bs-card-border: #444;
-    --bs-primary: #5d9cec;
-    --bs-primary-gradient: linear-gradient(135deg, #5d9cec 0%, #00d4ff 100%);
+    --bs-primary: #0b8092;
+    --bs-primary-gradient: linear-gradient(135deg, #0b8092 0%, #065f73 100%);
     --bs-secondary: #adb5bd;
     --bs-input-bg: #2d2d2d;
     --bs-input-border: #444;
@@ -86,7 +86,7 @@ body {
 }
 /* Classe spécifique pour le gradient */
 .bg-gradient-custom {
-    background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%) !important;
+    background: linear-gradient(135deg, #0b8092 0%, #065f73 100%);
     color: white !important;
     border: none !important;
     padding: 1rem 1.5rem !important;
@@ -104,7 +104,7 @@ body {
 
 /* Version dark mode */
 [data-bs-theme="dark"] .bg-gradient-custom {
-    background: linear-gradient(135deg, #5d9cec 0%, #00d4ff 100%) !important;
+    background: linear-gradient(135deg, #0b8092 0%, #065f73 100%);
 }
 
 /* ============================================= */
@@ -245,7 +245,7 @@ body {
 /* STYLE DES BOUTONS DANS LES FORMULAIRES */
 /* ============================================= */
 .form-container .btn-primary {
-    background: var(--bs-primary-gradient) !important;
+    background: linear-gradient(135deg, #0b8092 0%, #065f73 100%) !important;;
     border: none !important;
     color: white !important;
     transition: var(--bs-transition);
@@ -254,6 +254,7 @@ body {
 }
 
 .form-container .btn-primary:hover {
+	background: linear-gradient(135deg, #0b8092 0%, #065f73 100%) !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

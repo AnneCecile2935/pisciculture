@@ -1,22 +1,43 @@
 {% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+		<link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+{% endblock %}
 {% block title %}Choisir un site pour enregistrer les repas{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Choisir un site pour enregistrer les repas</h2>
-    <div class="row">
-        {% for site in sites %}
-        <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <h5 class="card-title">{{ site.nom }}</h5>
-                    <a href="{% url 'activite_quotidien:enregistrer-repas-par-site' site.id %}"
-                       class="btn btn-outline-primary">
-                        <i class="bi bi-plus-circle"></i> Enregistrer les repas
-                    </a>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card form-container">
+                <!-- En-tête avec titre stylisé -->
+                <div class="card-header form-title-header bg-gradient-custom">
+                    <h3 class="mb-0 d-flex align-items-center text-white">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        Choisir un site pour enregistrer les repas
+                    </h3>
+                </div>
+                <!-- Corps de la carte -->
+                <div class="card-body">
+                    <div class="row">
+                        {% for site in sites %}
+                        <div class="col-md-4 mb-3 d-flex">
+                            <div class="card flex-fill">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <h5 class="card-title">{{ site.nom }}</h5>
+                                    <a href="{% url 'activite_quotidien:enregistrer-repas-par-site' site.id %}"
+                                       class="btn btn-save px-4 py-2 rounded-pill mt-auto">
+                                        <i class="bi bi-plus-circle me-2"></i> Enregistrer les repas
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
 </div>
 {% endblock %}

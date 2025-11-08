@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     SiteListView, SiteCreateView, SiteDeleteView, SiteUpdateView,
-    BassinCreateView, BassinDeleteView, BassinListView, BassinUpdateView, SiteListJsonView, BassinListJsonView
+    BassinCreateView, BassinDeleteView, BassinListView, BassinUpdateView, SiteListJsonView, BassinListJsonView, CarteBassinsView, BassinLotDetailsView
 )
 
 app_name = "sites"
@@ -18,4 +18,6 @@ urlpatterns = [
     path("<uuid:site_id>/bassins/create/", BassinCreateView.as_view(), name="bassin-create"),
     path("<uuid:site_id>/bassins/<uuid:pk>/update/", BassinUpdateView.as_view(), name="bassin-update"),
     path("<uuid:site_id>/bassins/<uuid:pk>/delete/", BassinDeleteView.as_view(), name="bassin-delete"),
+    path('bassin/<uuid:bassin_id>/lot/', BassinLotDetailsView.as_view(), name='get_lot_details'),
+    path('bassins/carte/', CarteBassinsView.as_view(), name='bassins_carte'),
 ]

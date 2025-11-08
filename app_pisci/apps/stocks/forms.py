@@ -4,7 +4,7 @@ from .models import LotDePoisson
 class LotForm(forms.ModelForm):
     class Meta:
         model = LotDePoisson
-        fields = ['espece', 'site_prod', 'fournisseur', 'bassins', 'date_arrivee', 'quantite', 'statut', 'code_lot', 'poids']
+        fields = ['espece', 'site_prod', 'fournisseur', 'bassins', 'date_arrivee', 'quantite', 'quantite_actuelle', 'statut', 'code_lot', 'poids']
         labels = {
             'espece': 'Espèce du lot',
             'site_prod': 'Site de production',
@@ -12,6 +12,7 @@ class LotForm(forms.ModelForm):
             'bassins': 'Bassins',
             'date_arrivee': 'Date d’arrivée du lot',
             'quantite': 'Quantité initiale reçue',
+            'quantite_actuelle': 'Quantité actuelle en bassin',
             'poids': 'Poids total reçu (en kg)',
             'code_lot': 'Code unique du lot',
             'statut': 'Statut de croissance',
@@ -21,6 +22,7 @@ class LotForm(forms.ModelForm):
             'code_lot': forms.TextInput(attrs={'placeholder': 'Ex: LOT2025-001'}),
             'poids': forms.NumberInput(attrs={'step': '0.01'}),
             'quantite': forms.NumberInput(attrs={'min': '1'}),
+            'quantite_actuelle': forms.NumberInput(attrs={'min': '1'}),
             'bassins': forms.SelectMultiple(attrs={'class': 'form-control'}),
         }
         help_texts = {
@@ -33,6 +35,12 @@ class LotForm(forms.ModelForm):
         if quantite <= 0:
             raise forms.ValidationError("La quantité doit être supérieure à 0.")
         return quantite
+
+    def clean_quantite_actuelle(self):
+        quantite_actuelle = self.cleaned_data['quantite_actuelle']
+        if quantite_actuelle < 0:
+            raise forms.ValidationError("La quantité actuelle ne peut pas être négative.")
+        return quantite_actuelle
 
     def clean_bassins(self):
         bassins = self.cleaned_data.get('bassins')

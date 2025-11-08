@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+{% load bassin_filters %}
+{% block title %}
+    Carte des Bassins - {% if site %}{{ site.nom }}{% else %}Sélectionnez un site{% endif %}
+{% endblock title %}
+
+{% block extra_css %}
+		<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <!-- CSS spécifique à la carte des bassins -->
+    <link rel="stylesheet" href="{% static 'css/bassin_map.css' %}">
+    <!-- Autres CSS si nécessaire -->
+{% endblock extra_css %}
+
+{% block main_content %}
+<div class="container-fluid">
+    <h1 class="my-4"> Carte des Bassins</h1>
+
+    <!-- Légende des couleurs -->
+
+
+    <!-- Spinner de chargement -->
+    <div id="loading-spinner" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p>Chargement des bassins...</p>
+    </div>
+
+    <!-- Sélecteur de site -->
+    <div class="mb-3">
+        <label for="site-select" class="form-label">Filtrer par site :</label>
+        <select id="site-select" class="form-select" onchange="filtrerParSite(this.value)">
+            <option value="">-- Sélectionnez un site --</option>
+        </select>
+    </div>
+		<div class="d-flex justify-content-center mb-4">
+			<div class="legend">
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-1-repas);"></span>
+									<span>1 repas</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-2-repas);"></span>
+									<span>2 repas</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-pas-repas);"></span>
+									<span>Pas de repas</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-vide);"></span>
+									<span>Vide</span>
+							</div>
+							<div class="legend-item">
+									<span class="color-box" style="background-color: var(--bassin-a-jeun);"></span>
+									<span>À jeun</span>
+							</div>
+					</div>
+			</div>
+    <!-- Conteneur pour les cartes des sites/bassins (vide au départ) -->
+    <div class="row" id="sites-container"></div>
+</div>
+<!-- Modal pour les détails du bassin -->
+<div class="modal fade" id="bassinDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Détails du bassin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="bassinDetailsContent">
+                <!-- Contenu dynamique ici -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <a id="btnEnregistrerRepas" href="#" class="btn btn-save">Enregistrer un repas</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock main_content %}
+
+{% block extra_js %}
+<script src="{% static 'js/bassin.js' %}"></script>
+{% endblock extra_js %}

@@ -21,6 +21,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from apps.users.views import CustomLoginView, CustomLogoutView
 from .views import DashboardView
+from apps.sites.views import BassinsAPIView
 #from .views import dashboard
 
 urlpatterns = [
@@ -42,6 +43,7 @@ urlpatterns = [
     path('stocks/', include('apps.stocks.urls')),
     path('aliments/', include('apps.aliments.urls')),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('api/bassins/', BassinsAPIView.as_view(), name='bassins_api'),
 
 
     # Utilisateurs
