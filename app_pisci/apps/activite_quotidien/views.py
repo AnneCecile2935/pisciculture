@@ -1,89 +1,115 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.db.models import Case, When, Value, CharField
-from datetime import timedelta
-from apps.sites.models import Site, Bassin
-from apps.activite_quotidien.models import ReleveTempOxy
-from apps.activite_quotidien.forms import ReleveTempOxyForm
-from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, View, FormView, TemplateView
-from apps.commun.view import StandardDeleteMixin
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Nourrissage
-from .forms import NourrissageForm, NourrissageFormSet
-from django.contrib import messages
-from django.utils import timezone
-from django.http import JsonResponse
-from django.db.models import Max
-from apps.stocks.models import LotDePoisson
-from django import forms
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
-import json
-from django.http import JsonResponse
-from apps.aliments.models import Aliment
-from django.forms import formset_factory
-import hashlib
-import logging
+from django.shortcuts import render, redirect, get_object_or_404  # Utilisé pour les vues, redirections, et récupération d'objets
+from django.http import HttpResponse, JsonResponse  # Utilisé pour les réponses HTTP et JSON
+from django.db.models import Case, When, Value, CharField  # Utilisé dans NourrissageListJsonView pour les annotations
+from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, View, FormView, TemplateView  # Utilisé pour toutes les vues basées sur des classes
+from django.urls import reverse_lazy  # Utilisé pour les URLs de redirection
+from django.contrib.auth.mixins import LoginRequiredMixin  # Utilisé pour sécuriser les vues
+from django.contrib import messages  # Utilisé pour les messages flash (succès/erreur)
+from django.utils import timezone  # Utilisé pour gérer les dates/heures
+
+# Modèles
+from apps.sites.models import Site, Bassin  # Utilisés partout pour les sites et bassins
+from apps.activite_quotidien.models import ReleveTempOxy, Nourrissage  # Modèles principaux
+from apps.stocks.models import LotDePoisson  # Utilisé pour les lots de poissons
+from apps.aliments.models import Aliment  # Utilisé pour les aliments
+
+# Formulaires
+from apps.activite_quotidien.forms import ReleveTempOxyForm, NourrissageForm, NourrissageFormSet  # Formulaires utilisés
+
+# Mixins personnalisés
+from apps.commun.view import StandardDeleteMixin  # Utilisé pour la suppression
+
+# Librairies Python
+from datetime import timedelta  # Utilisé pour les plages de dates dans les graphiques
+import hashlib  # Utilisé pour générer des couleurs uniques dans les graphiques
+import logging  # Utilisé pour le logging
 
 
 class NourrissageCreateView(LoginRequiredMixin, CreateView):
+    """
+    Vue pour la création d'un nouveau repas (nourrissage).
+    Vérifie la cohérence entre le bassin, le site et le lot, et associe automatiquement l'utilisateur connecté.
+    Met à jour la date du dernier nourrissage pour le lot concerné.
+    """
     model = Nourrissage
     form_class = NourrissageForm
     template_name = 'activite_quotidien/nourrissage_form.html'
     success_url = reverse_lazy('activite_quotidien:nourrissage-list')
 
     def form_valid(self, form):
-        """Vérifie la cohérence bassin/site/lot (pas de restriction par utilisateur)."""
+        """
+        Valide le formulaire et sauvegarde le repas.
+        Vérifie que le bassin appartient bien au site sélectionné et que le lot appartient au bassin.
+        Met à jour la date du dernier nourrissage pour le lot.
+        """
         bassin = form.cleaned_data['bassin']
         site_prod = form.cleaned_data['site_prod']
+        # Vérifie que le bassin appartient au site sélectionné
         if bassin.site != site_prod:
             messages.error(self.request, "Le bassin ne appartient pas au site sélectionné.")
             return self.form_invalid(form)
-
         crea_lot = form.cleaned_data['crea_lot']
+        # Vérifie que le lot appartient au bassin sélectionné
         if crea_lot.bassin != bassin:
             messages.error(self.request, "Le lot n'appartient pas au bassin sélectionné.")
             return self.form_invalid(form)
 
-        # Associe l'utilisateur connecté (pour trace
+        # Associe l'utilisateur connecté pour la traceabilité
         form.instance.cree_par = self.request.user
-
+        # Met à jour la date du dernier nourrissage pour le lot
         if crea_lot:
             crea_lot.dernier_nourrissage = timezone.now()
             crea_lot.save(update_fields=['dernier_nourrissage'])
-
         messages.success(self.request, "Le repas a été enregistré avec succès!")
         return super().form_valid(form)
 
     def get_initial(self):
-        """Pré-remplit la date avec la date du jour."""
+        """
+        Initialise le formulaire avec la date du jour par défaut.
+        """
         initial = super().get_initial()
         initial['date_repas'] = timezone.now().date()
         return initial
 
 class NourrissageListView(LoginRequiredMixin, ListView):
+    """
+    Vue pour lister tous les repas (nourrissages).
+    Trie les repas par date décroissante et pagine les résultats.
+    """
     model = Nourrissage
     template_name = 'activite_quotidien/nourrissage_list.html'
     context_object_name = 'nourrissages'
     paginate_by = 20
 
     def get_queryset(self):
-        """Tri par défaut : repas les plus récents en premier."""
+        """
+        Retourne la liste des repas triés par date décroissante.
+        """
         return super().get_queryset().order_by('-date_repas')
 
 class NourrissageDetailView(LoginRequiredMixin, DetailView):
+    """
+    Vue pour afficher les détails d'un repas.
+    """
     model = Nourrissage
     template_name = 'activite_quotidien/nourrissage_detail.html'
     context_object_name = 'nourrissage'
 
 class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Vue pour mettre à jour un repas existant.
+    Valide la quantité, l'aliment et le motif d'absence.
+    Met à jour la date du dernier nourrissage pour le lot associé.
+    """
     model = Nourrissage
     form_class = NourrissageForm
     template_name = 'activite_quotidien/nourrissage_form.html'
     success_url = reverse_lazy('activite_quotidien:nourrissage-list')
 
     def get_form(self, form_class=None):
+        """
+        Initialise le formulaire avec le bassin actuel et filtre les bassins par site si nécessaire.
+        """
         form = super().get_form(form_class)
         # Initialise le champ bassin avec la valeur actuelle
         if hasattr(self, 'object') and self.object:
@@ -94,6 +120,10 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
         return form
 
     def form_valid(self, form):
+        """
+        Valide et sauvegarde les modifications apportées à un repas.
+        Vérifie la cohérence des données (quantité positive, aliment requis si quantité > 0, motif requis si quantité nulle).
+        """
         nourrissage = form.save(commit=False)
         site_prod = nourrissage.site_prod
         date_repas = self.request.POST.get('date_repas') or nourrissage.date_repas or timezone.now().date()
@@ -156,15 +186,27 @@ class NourrissageUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 class NourrissageDeleteView(LoginRequiredMixin,StandardDeleteMixin, DeleteView):
+    """
+    Vue pour supprimer un repas.
+    Utilise StandardDeleteMixin pour standardiser le comportement de suppression.
+    """
     model = Nourrissage
     list_url_name='activite_quotidien:nourrissage-list'
 
 
 class NourrissageListJsonView(LoginRequiredMixin, View):
+    """
+    Vue pour retourner la liste des repas au format JSON.
+    Utilisée pour alimenter une interface dynamique.
+    """
     def get(self, request, *args, **kwargs):
+        """
+        Retourne la liste des repas avec leurs informations associées (site, bassin, lot, aliment, etc.) au format JSON.
+        """
         nourrissages = Nourrissage.objects.select_related(
             'site_prod', 'bassin', 'crea_lot', 'aliment', 'cree_par'
         ).annotate(
+            # Annote les motifs d'absence pour les afficher sous forme de libellés
             motif_nom=Case(
                 *[When(motif_absence=m[0], then=Value(m[1])) for m in Nourrissage.MOTIFS_ABSENCE],
                 default=Value(None),
@@ -181,16 +223,26 @@ class NourrissageListJsonView(LoginRequiredMixin, View):
 import json
 
 class NourrissageParSiteView(LoginRequiredMixin, FormView):
+    """
+    Vue pour saisir plusieurs repas pour tous les bassins d'un site en une seule fois.
+    Utilise un FormSet pour gérer un formulaire par bassin.
+    """
     template_name = 'activite_quotidien/nourrissage_par_site_form.html'
     success_url = reverse_lazy('activite_quotidien:nourrissage-list')
     form_class = NourrissageFormSet
 
     def get_form_kwargs(self):
+        """
+        Passe les données initiales au FormSet.
+        """
         kwargs = super().get_form_kwargs()
         kwargs['initial'] = self.get_initial_data()
         return kwargs
 
     def get_initial_data(self):
+        """
+        Initialise les données du FormSet avec les bassins du site et les derniers aliments utilisés.
+        """
         site = get_object_or_404(Site, id=self.kwargs['site_id'])
         bassins = Bassin.objects.filter(site=site).prefetch_related('lots_poissons')
         initial_data = []
@@ -205,6 +257,9 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
         return initial_data
 
     def get_form(self, form_class=None):
+        """
+        Initialise chaque sous-formulaire avec la liste des bassins du site.
+        """
         form = super().get_form(form_class)
         for subform in form:
             subform.site_id = self.kwargs['site_id']
@@ -212,6 +267,9 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
         return form
 
     def get_context_data(self, **kwargs):
+        """
+        Ajoute le site et la date du jour au contexte du template.
+        """
         context = super().get_context_data(**kwargs)
         site = get_object_or_404(Site, id=self.kwargs['site_id'])
         context['site'] = site
@@ -219,6 +277,10 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
+        """
+        Valide et sauvegarde les repas pour chaque bassin.
+        Ignore les bassins sans lot et gère les erreurs par repas.
+        """
         logger = logging.getLogger(__name__)
         logger.info("Début de form_valid")
 
@@ -303,6 +365,9 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
 
 
 class ChoixSiteEnregistrementRepasView(LoginRequiredMixin, TemplateView):
+    """
+    Vue pour permettre à l'utilisateur de choisir un site avant de saisir les repas.
+    """
     template_name = 'activite_quotidien/choix_site_enregistrement_repas.html'
 
     def get_context_data(self, **kwargs):
@@ -311,11 +376,18 @@ class ChoixSiteEnregistrementRepasView(LoginRequiredMixin, TemplateView):
         return context
 
 class ListRelevesView(LoginRequiredMixin, ListView):
+    """
+    Vue pour lister les relevés de température, oxygène et débit.
+    Filtre les relevés par site si un site est spécifié dans la requête GET.
+    """
     model = ReleveTempOxy
     template_name = 'activite_quotidien/releve_list.html'
     context_object_name = 'releves'
 
     def get_queryset(self):
+        """
+        Retourne les relevés du jour, filtrables par site.
+        """
         today = timezone.now().date()
         site_id = self.request.GET.get('site')
         releves = ReleveTempOxy.objects.filter(date_releve=today).order_by('site__nom', 'moment_jour')
@@ -324,35 +396,54 @@ class ListRelevesView(LoginRequiredMixin, ListView):
         return releves
 
     def get_context_data(self, **kwargs):
+        """
+        Ajoute la liste des sites et la date du jour au contexte du template.
+        """
         context = super().get_context_data(**kwargs)
         context['sites'] = Site.objects.all()
         context['today'] = timezone.now().date()
         return context
 
 class CreateReleveView(LoginRequiredMixin, CreateView):
+    """
+    Vue pour créer un nouveau relevé.
+    """
     model = ReleveTempOxy
     form_class = ReleveTempOxyForm
     template_name = 'activite_quotidien/releve_form.html'
     success_url = reverse_lazy('activite_quotidien:releve-list')
 
     def get_initial(self):
+        """
+        Initialise le formulaire avec la date du jour par défaut.
+        """
         initial = super().get_initial()
         initial['date_releve'] = timezone.now().date()
         return initial
 
 
 class UpdateReleveView(LoginRequiredMixin, UpdateView):
+    """
+    Vue pour mettre à jour un relevé existant.
+    """
     model = ReleveTempOxy
     form_class = ReleveTempOxyForm
     template_name = 'activite_quotidien/releve_form.html'
     success_url = reverse_lazy('activite_quotidien:releve-list')
 
 class DeleteReleveView(LoginRequiredMixin, DeleteView):
+    """
+    Vue pour supprimer un relevé.
+    """
     model = ReleveTempOxy
     template_name = 'activite_quotidien/releve_delete.html'
     success_url = reverse_lazy('activite_quotidien:releve-list')
 
 class RelevesListJsonView(LoginRequiredMixin, View):
+    """
+    Vue pour retourner la liste des relevés au format JSON.
+    Filtre les relevés par site et/ou date si spécifiés dans la requête GET.
+    """
     def get(self, request, *args, **kwargs):
         site_id = request.GET.get('site')
         date_releve = request.GET.get('date')  # Optionnel : filtre par date si fourni
@@ -376,6 +467,10 @@ class RelevesListJsonView(LoginRequiredMixin, View):
         return JsonResponse(data, safe=False)
 
 class TempChartDataView(LoginRequiredMixin, View):
+    """
+    Vue pour retourner les données de température au format JSON, pour alimenter un graphique.
+    Retourne les températures des 21 derniers jours pour chaque site.
+    """
     def get(self, request, *args, **kwargs):
         start_date = timezone.now().date() - timedelta(days=21)
         releves = ReleveTempOxy.objects.filter(
@@ -410,6 +505,10 @@ class TempChartDataView(LoginRequiredMixin, View):
         return JsonResponse({'labels': labels, 'datasets': datasets})
 
 class OxygenChartDataView(LoginRequiredMixin,View):
+    """
+    Vue pour retourner les données d'oxygène au format JSON, pour alimenter un graphique.
+    Retourne les niveaux d'oxygène des 21 derniers jours pour chaque site.
+    """
     def get(self, request, *args, **kwargs):
         start_date = timezone.now().date() - timedelta(days=21)
         releves = ReleveTempOxy.objects.filter(
@@ -438,6 +537,10 @@ class OxygenChartDataView(LoginRequiredMixin,View):
         return JsonResponse({'labels': labels, 'datasets': datasets})
 
 class FlowChartDataView(LoginRequiredMixin, View):
+    """
+    Vue pour retourner les données de débit au format JSON, pour alimenter un graphique.
+    Retourne les débits des 28 derniers jours pour chaque site.
+    """
     def get(self, request, *args, **kwargs):
         start_date = timezone.now().date() - timedelta(days=28)
         releves = ReleveTempOxy.objects.filter(
@@ -466,4 +569,7 @@ class FlowChartDataView(LoginRequiredMixin, View):
         return JsonResponse({'labels': labels, 'datasets': datasets})
 
 class DashboardTemperatureView(LoginRequiredMixin, TemplateView):
+    """
+    Vue pour afficher le tableau de bord avec les graphiques de température, oxygène et débit.
+    """
     template_name = 'dashboard.html'
