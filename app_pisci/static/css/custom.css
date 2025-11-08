@@ -1,48 +1,78 @@
-/* Thème par défaut (clair) */
+/* ===== VARIABLES GLOBALES (par défaut, thème clair) ===== */
 :root {
-    --bg-color: #f8f9fa;
-    --text-color: #333;
-    --sidebar-bg: #f8f9fa;
-    --nav-link-color: #333;
-    --card-bg: #ffffff;
-	--sidebar-heading-color: #333;
-
+	--bs-table-bg: initial; /* Désactive le fond par défaut de Bootstrap */
+    --bs-table-hover-bg: initial; /* Désactive le survol par défaut */
+    --bs-table-striped-bg: initial; /* Désactive le zebrage par défaut */
+    --bs-table-active-bg: initial; /* Désactive la sélection par défaut */
+    --bg-color: #EEF5F7;
+    --text-color: #212529;
+    --sidebar-bg: #065D6F;
+    --card-bg: #D5E7EB;
+	--graph-card-bg: white;
+    --form-bg: rgb(238 245 247);
+    --form-border: #dee2e6;
+    --form-text: #26484F;
+    --btn-primary: #e28e0e;
+    --btn-danger: #ef4444;
+    --btn-primary-dark: #e28e0e;
+    --btn-danger-dark: #b71c1c;
+    --login-text: #4CAF50;
+    --login-border: #054957;
+    --table-header: #065D6F;
+    --table-even: #EEF5F7;
+    --table-odd: #D5E7EB;
+    --table-hover: #e6f2ff;
+    --dark-bg-color: #172C30;
+	--color-warning: #e28e0e;
+    --color-danger: #ef4444;
+    --color-text-dark: white;
+    --color-text-light: white;
+	--main-content-bg: #F8FAFB;
 }
 
-/* Thème sombre */
-[data-theme="dark"] {
-    --bg-color: #212529;
-    --text-color: #f8f9fa;
-    --sidebar-bg: #343a40;
-    --nav-link-color: #afadbd;
-    --card-bg: #495057;
-	--sidebar-heading-color: #f8f9fa;
+/* ===== THÈME SOMBRE ===== */
+[data-bs-theme="dark"] {
+	--bs-table-bg: initial;
+    --bs-table-hover-bg: initial;
+    --bs-table-striped-bg: initial;
+    --bs-table-active-bg: initial;
+    --bg-color: var(--dark-bg-color);
+    --text-color: #D5E7EB;
+    --sidebar-bg: #539CAC;
+    --card-bg: #26484F;
+	--graph-card-bg: white;
+    --form-bg: rgb(23 44 48);
+    --form-border: #539CAC;
+    --form-text: #e0e0e0;
+    --table-header: #539CAC;
+    --table-even: #3c4249;
+    --table-odd: #26484F;
+    --table-hover: #1a2e3f;
+	--main-content-bg: #1E3A3F;
+	--color-text-dark: #212529;
 }
-body {
+
+/* ===== STYLES GLOBAUX ===== */
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
+    transition: all 0.3s ease;
 }
-.sidebar {
-    background-color: var(--sidebar-bg) !important;
-}
-.sidebar-heading {
-    color: var(--sidebar-heading-color) !important;  /* Force la couleur du titre */
-}
-.sidebar .nav-link {
-    color: var(--nav-link-color) !important;
+.main-content {
+    background-color: var(--main-content-bg) !important;
 }
 
-.card {
-    background-color: var(--card-bg);
-    color: var(--text-color);
+/* Fond en mode sombre */
+[data-bs-theme="dark"] html,
+[data-bs-theme="dark"] body {
+    background: var(--dark-bg-gradient) no-repeat fixed !important;
+    background-size: cover !important;
 }
 
-/* Style du bouton de bascule */
-#theme-toggle {
-    margin-bottom: 1rem;
-}
-/* Sidebar */
+/* ===== SIDEBAR ===== */
 .sidebar {
     position: fixed;
     top: 0;
@@ -51,26 +81,119 @@ body {
     z-index: 100;
     padding: 48px 0 0;
     box-shadow: 2px 0 0.5rem rgba(0, 0, 0, 0.1);
-    background-color: #f8f9fa;
     width: 250px;
+    background-color: var(--sidebar-bg) !important;
+	color: white;
 }
+
+.sidebar-heading {
+    color: var(--sidebar-heading-color) !important;
+    padding: 0 1rem;
+}
+
 .sidebar .nav-link {
+    color: var(--nav-link-color) !important;
     font-weight: 500;
-    color: #333;
     padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
 }
+
 .sidebar .nav-link.active {
     color: #0d6efd;
-    background-color: #e7f1ff;
+    background-color: rgba(211, 247, 199, 0.2);
 }
+
 .sidebar .nav-link:hover {
     color: #0d6efd;
-    background-color: #f0f4ff;
+    background-color: rgba(211, 247, 199, 0.3);
 }
+
+.sidebar .nav-link[aria-expanded] {
+    justify-content: space-between;
+}
+
+.sidebar .nav-link i.bi {
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.sidebar .nav-link .bi-chevron-down {
+    margin-left: auto;
+}
+
+/* ===== CONTENU PRINCIPAL ===== */
 .main-content {
     padding: 20px;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    background-color: var(--card-bg) !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(5px);
 }
+
+/* ===== FORMULAIRES ===== */
+.form-signin, .form-page {
+    max-width: 330px;
+    padding: 1rem;
+    border: 1px solid var(--form-border);
+    border-radius: 2rem;
+    width: 100%;
+    margin: auto;
+    background-color: var(--form-bg);
+    color: var(--form-text);
+}
+
+.form-signin h1, .form-page h1 {
+    color: var(--login-text);
+    font-weight: bold;
+}
+
+.form-signin .form-floating, .form-page .form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-signin .text-muted, .form-page .text-muted {
+    color: var(--login-text) !important;
+    font-size: 0.9rem;
+}
+
+/* ===== BOUTONS PERSONNALISÉS ===== */
+.btn-custom {
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+.btn-custom:hover {
+    background-color: var(--btn-primary-dark);
+    border-color: var(--btn-primary-dark);
+}
+
+/* ===== LOGO ===== */
+.soft-rounded-logo {
+    border-radius: 50px;
+    border: 2px solid var(--login-border);
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 1.5rem;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+    body {
+        padding-bottom: 100px;
+    }
     .sidebar {
         width: 100%;
         height: auto;
@@ -78,47 +201,225 @@ body {
     }
     .main-content {
         margin-left: 0;
+        width: 100%;
     }
 }
+
+/* ===== ICÔNES BOOTSTRAP ===== */
 .icon-bi {
-  font-family: "bootstrap-icons" !important;
-  font-style: normal !important;
-  font-weight: normal !important;
-  font-variant: normal !important;
-  line-height: 1;
-  speak: none;
-  display: inline-block;
-  text-transform: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  vertical-align: middle;
+    font-family: "bootstrap-icons" !important;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    speak: none;
+    display: inline-block;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Force la couleur et la taille pour vérifier */
 .icon-bi.bi-leaf {
-  color: red !important;
-  font-size: 1.2rem !important;
+    color: #ef4444 !important;
+    font-size: 1.2rem !important;
 }
 
-/* Alignement des liens de la sidebar */
-.sidebar .nav-link {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
+/* ===== BOUTON DE BASCULE DE THÈME ===== */
+#theme-toggle {
+    margin-bottom: 1rem;
+    background-color: var(--btn-primary);
+    color: white;
+    border-color: var(--btn-primary);
+    transition: all 0.2s ease;
 }
 
-/* Alignement spécifique pour les liens avec sous-menu */
-.sidebar .nav-link[aria-expanded] {
-  justify-content: space-between;
+#theme-toggle:hover {
+    background-color: var(--btn-primary-dark);
+    color: white;
 }
 
-/* Assure que les icônes et le texte sont toujours alignés */
-.sidebar .nav-link i.bi {
-  min-width: 1.5rem; /* Espace réservé pour les icônes */
-  text-align: center;
+/* ===== CONTAINERS TRANSPARENTS ===== */
+.container-fluid {
+    background-color: transparent !important;
 }
 
-/* Style pour les chevrons */
-.sidebar .nav-link .bi-chevron-down {
-  margin-left: auto; /* Pousse le chevron à droite */
+/* ===== ALERTES ===== */
+.alert {
+    position: relative;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+/*===== STYLES POUR LES TABLEAUX ===== */
+.table thead th,
+.dataTables_wrapper .dataTable thead th {
+    background-color: var(--table-header) !important;
+    color: white !important;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.75rem !important;
+}
+
+.table tbody tr:nth-child(even),
+.dataTables_wrapper .dataTable tbody tr:nth-child(even) {
+    background-color: var(--table-even) !important;
+}
+
+.table tbody tr:nth-child(odd),
+.dataTables_wrapper .dataTable tbody tr:nth-child(odd) {
+    background-color: var(--table-odd) !important;
+}
+
+.table tbody tr:hover,
+.dataTables_wrapper .dataTable tbody tr:hover {
+    background-color: var(--table-hover) !important;
+}
+
+.table td, .table th,
+.dataTables_wrapper .dataTable td,
+.dataTables_wrapper .dataTable th {
+    border-color: var(--form-border) !important;
+    padding: 0.75rem !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+
+/* Boutons d'actions dans les tableaux */
+.btn-update {
+    background-color: var(--btn-primary) !important;
+    border-color: var(--btn-primary) !important;
+    color: white !important;
+}
+
+.btn-delete {
+    background-color: var(--btn-danger) !important;
+    border-color: var(--btn-danger) !important;
+    color: white !important;
+}
+
+[data-bs-theme="dark"] .btn-update {
+    background-color: var(--btn-primary-dark) !important;
+    border-color: var(--btn-primary-dark) !important;
+}
+
+[data-bs-theme="dark"] .btn-delete {
+    background-color: var(--btn-danger-dark) !important;
+    border-color: var(--btn-danger-dark) !important;
+}
+
+/* Style spécifique pour #nourrissagesTable */
+[data-bs-theme="light"] #nourrissagesTable thead.table-dark th,
+[data-bs-theme="dark"] #nourrissagesTable thead.table-dark th {
+    background-color: var(--table-header) !important;
+    color: white !important;
+}
+
+#nourrissagesTable td,
+#nourrissagesTable th {
+    text-align: center !important;
+}
+
+#nourrissagesTable td a.btn {
+    display: inline-flex;
+    justify-content: center;
+}
+/* ============================================= */
+/* STYLES POUR LA PAGINATION (DataTables et Bootstrap) */
+/* ============================================= */
+
+/* Pagination générale (Bootstrap) */
+.page-item.active .page-link {
+    background-color: #0b8092 !important;
+    border-color: #0b8092 !important;
+    color: white !important;
+}
+.page-item.active .page-link:hover,
+.page-item.active .page-link:focus {
+    background-color: #065f73 !important;
+    border-color: #065f73 !important;
+    color: white !important;
+    z-index: 2;
+}
+.page-link {
+    color: var(--bs-primary, #0b8092) !important;
+    background-color: transparent !important;
+    border: 1px solid #dee2e6 !important;
+}
+.page-link:hover {
+    color: #065f73 !important;
+    background-color: rgba(11, 128, 146, 0.1) !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Pagination pour DataTables */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: linear-gradient(to bottom, #0b8092, #065f73) !important;
+    border: 1px solid #0b8092 !important;
+    color: white !important;
+    box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: rgba(11, 128, 146, 0.2) !important;
+    border: 1px solid #0b8092 !important;
+    color: #0b8092 !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 0.375rem !important;
+    margin: 0 0.125rem !important;
+    padding: 0.375rem 0.75rem !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    color: #6c757d !important;
+    background: transparent !important;
+}
+
+/* Adaptation au mode sombre */
+[data-bs-theme="dark"] .page-link {
+    color: white !important;
+    background-color: transparent !important;
+    border-color: #495057 !important;
+}
+[data-bs-theme="dark"] .page-item.active .page-link {
+    background-color: #0b8092 !important;
+    border-color: #0b8092 !important;
+}
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-color: #495057 !important;
+}
+/* Style des cartes du dashboard */
+.card {
+    border: none !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+	background-color: var(--card-bg) !important;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1) !important;
+}
+.card-header {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+    padding: 0.75rem 1.25rem !important;
+    border: none !important;
+}
+.card-body {
+    background-color: var(--card-bg);
+    border-radius: 0 0 0.5rem 0.5rem !important;
+    padding: 1rem !important;
+}
+
+
+[data-bs-theme="dark"] .card-title,
+[data-bs-theme="dark"] .card-text,
+[data-bs-theme="dark"] .card-body
+ {
+    background-color: var(--graph-card-bg) !important;
+}
+.graph-card-body{
+	background-color: var(--graph-card-bg);
 }

@@ -41,8 +41,8 @@
         </div>
     {% endfor %}
     <div class="d-flex justify-content-between mt-4">
-        <button type="submit" class="btn px-4 py-2 rounded-pill"
-								style="background-color: #2563eb !important; border-color: #2563eb !important; color: white !important;">Enregistrer
+        <button type="submit" class="btn btn-save px-4 py-2 rounded-pill"
+						<i class="bi bi-save me-2"></i> Enregistrer
 				</button>
         {% block cancel_button %}
         <a href="{% url 'users:user_list' %}" class="btn btn-outline-secondary"> Annuler

@@ -1,19 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Liste des nourrissages{% endblock %}
 {% block content %}
-<style>
-    #nourrissagesTable td,
-    #nourrissagesTable th {
-        text-align: center !important;
-    }
-		#nourrissagesTable td a.btn {
-    display: inline-flex;
-    justify-content: center;
-		}
-		#nourrissagesTable td:nth-child(7) {
-    text-align: center !important;
-		}
-</style>
+
 <div class="container-fluid p-0 m-0">
     <h1 class="mb-4">Liste des nourrissages</h1>
 
@@ -42,6 +30,7 @@
                     <th>Quantité (kg)</th>
 										<th>Motif d'absence</th>
                     <th>Enregistré par</th>
+										<th>Dernier nourrissage</th>
                     <th>Commentaires</th>
                     <th>Actions</th>
                 </tr>
@@ -59,8 +48,11 @@
 <script>
 $(document).ready(function() {
     console.log("Initialisation de DataTables...");
+		var updateUrlTemplate = "{% url 'activite_quotidien:nourrissage-update' '00000000-0000-0000-0000-000000000000' %}";
+    var deleteUrlTemplate = "{% url 'activite_quotidien:nourrissage-delete' '00000000-0000-0000-0000-000000000000' %}";
 
     var table = $('#nourrissagesTable').DataTable({
+				responsive: true,
 				pageLength: 50,
     		lengthMenu: [10, 25, 50, 100],
 			 "searching": false,
@@ -87,16 +79,17 @@ $(document).ready(function() {
             { "data": "qte" },
 						{ "data": "motif_nom", "defaultContent": "-" },
             { "data": "cree_par__username", "defaultContent": "-" },
+						{ "data": "crea_lot__dernier_nourrissage", "render": function(data) {
+								return data ? new Date(data).toLocaleString('fr-FR') : 'Jamais';
+						}},
             { "data": "notes", "render": function(data) {
                 return data ? data.substring(0, 30) + (data.length > 30 ? '...' : '') : '-';
             }},
             { "data": null, "render": function(data) {
-                var updateBtn = data.id && {% if user.is_authenticated %}true{% else %}false{% endif %}
-										? `<a href="${updateUrlTemplate.replace('0', data.id)}" class="btn btn-sm btn-update" title="Modifier"><i class="bi bi-pencil"></i></a>`
-										: '';
-								var deleteBtn = data.id && {% if user.is_authenticated %}true{% else %}false{% endif %}
-										? `<a href="${deleteUrlTemplate.replace('0', data.id)}" class="btn btn-sm btn-delete" title="Supprimer"><i class="bi bi-trash"></i></a>`
-										: '';
+                var updateBtn = data.id ?
+                    `<a href="${updateUrlTemplate.replace('00000000-0000-0000-0000-000000000000', data.id)}" class="btn btn-sm btn-update" title="Modifier"><i class="bi bi-pencil"></i></a>` : '';
+                var deleteBtn = data.id ?
+                    `<a href="${deleteUrlTemplate.replace('00000000-0000-0000-0000-000000000000', data.id)}" class="btn btn-sm btn-delete" title="Supprimer"><i class="bi bi-trash"></i></a>` : '';
                 return updateBtn + ' ' + deleteBtn;
             }}
         ],

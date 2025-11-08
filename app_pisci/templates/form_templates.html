@@ -6,12 +6,9 @@
 {% block title %}Formulaire{% endblock %}
 
 {% block extra_css %}
+		<link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
-    <style>
-        .bg-gradient-custom {
-            background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%) !important;
-        }
-    </style>
 {% endblock %}
 
 {% block main_content %}
@@ -27,7 +24,7 @@
                         {% endfor %}
                     {% endif %}
                     <!-- En-tête avec titre stylisé -->
-                    <div class="card-header form-title-header bg-gradient-custom">
+                    <div class="card-header form-title-header bg-gradient-custom" style="background: linear-gradient(135deg, #0b8092 0%, #065f73 100%) !important;">
                         <h3 class="mb-0 d-flex align-items-center text-white">
                             <i class="bi {% block form_icon %}bi-plus-circle-fill{% endblock %} me-2"></i>
                             {% block form_title %}
@@ -78,7 +75,7 @@
                                 </div>
                             {% endfor %}
                             <div class="d-flex justify-content-between mt-4">
-                                <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill">
+                                <button type="submit" class="btn btn-save px-4 py-2 rounded-pill">
                                     <i class="bi bi-save me-2"></i> Enregistrer
                                 </button>
                                 {% block cancel_button %}

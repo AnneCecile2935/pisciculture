@@ -19,10 +19,9 @@ class LotCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("stocks:list")
 
     def form_valid(self, form):
-        print(form.errors)
-        self.object = form.save()
+        response = super().form_valid(form)  # Appelle form.save() qui appelle save() du modèle
         messages.success(self.request, "Le lot a été créé avec succès")
-        return super().form_valid(form)
+        return response
 
     def form_invalid(self, form):
         return super().form_invalid(form)
@@ -34,8 +33,9 @@ class LotUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("stocks:list")
 
     def form_valid(self, form):
+        response = super().form_valid(form)
         messages.success(self.request, "Le lot a été mis à jour avec succès")
-        return super().form_valid(form)
+        return response
 
 class LotDeleteView(LoginRequiredMixin, UserPassesTestMixin, StandardDeleteMixin, DeleteView):
     model = LotDePoisson
@@ -64,6 +64,10 @@ class LotListJsonView(LoginRequiredMixin, View):
         # Ajoutez les noms des bassins manuellement
         for lot in lots:
             lot_id = lot['id']
-            bassins = LotDePoisson.objects.get(id=lot_id).bassins.all()
-            lot['bassins'] = [bassin.nom for bassin in bassins]
+            lot_obj = LotDePoisson.objects.get(id=lot_id)
+            lot['bassins'] = [bassin.nom for bassin in lot_obj.bassins.all()]
+            if lot_obj.quantite_actuelle > 0:
+                lot['poids_moyen'] = round((lot_obj.poids * 1000) / lot_obj.quantite_actuelle, 2)
+            else:
+                lot['poids_moyen'] = None
         return JsonResponse(lots, safe=False)

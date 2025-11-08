@@ -3,7 +3,7 @@ from .models import LotDePoisson
 
 
 class LotDePoissonAdmin(admin.ModelAdmin):
-    list_display = ('code_lot', 'espece', 'site_prod', 'get_bassins', 'date_arrivee', 'quantite', 'statut')
+    list_display = ('code_lot', 'espece', 'site_prod', 'get_bassins', 'date_arrivee', 'quantite', 'quantite_actuelle', 'poids_moyen', 'statut')
     list_filter = ('site_prod', 'espece', 'statut')
     search_fields = ('code_lot', 'espece__nom_commun')
     ordering = ('-date_arrivee',)

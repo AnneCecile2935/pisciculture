@@ -71,6 +71,12 @@ class LotDePoisson(TimeStampedModel):
         null=True,
         help_text="Poids moyen d'un poisson (calculé automatiquement)"
     )
+    dernier_nourrissage = models.DateTimeField(
+        verbose_name="Dernier nourrissage",
+        null=True,
+        blank=True,
+        help_text="Date et heure du dernier nourrissage"
+    )
 
     class Meta:
         verbose_name= "Lot de poissons"
@@ -84,8 +90,9 @@ class LotDePoisson(TimeStampedModel):
         ]
 
     def save(self, *args, **kwargs):
-        if self.quantite > 0:
-            self.poids_moyen = round((self.poids * 1000) / self.quantite, 2)
+        self.full_clean()
+        if self.quantite_actuelle > 0:
+            self.poids_moyen = round((self.poids * 1000) / self.quantite_actuelle, 2)
         else:
             self.poids_moyen = None
         super().save(*args, **kwargs)
@@ -105,6 +112,3 @@ class LotDePoisson(TimeStampedModel):
     def __str__(self):
         return f"{self.code_lot} - {self.espece.nom_commun} ({self.quantite_actuelle}/{self.quantite})"
 
-    def save(self, *args, **kwargs):
-        self.full_clean()  # Appelle clean() avant de sauvegarder
-        super().save(*args, **kwargs)
