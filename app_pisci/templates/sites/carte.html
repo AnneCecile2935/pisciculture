@@ -6,6 +6,7 @@
 {% endblock title %}
 
 {% block extra_css %}
+		<link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <!-- CSS spécifique à la carte des bassins -->
     <link rel="stylesheet" href="{% static 'css/bassin_map.css' %}">
     <!-- Autres CSS si nécessaire -->
@@ -68,7 +69,13 @@
                 <h5 class="modal-title">Détails du bassin</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="bassinDetailsContent"></div>
+            <div class="modal-body" id="bassinDetailsContent">
+                <!-- Contenu dynamique ici -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <a id="btnEnregistrerRepas" href="#" class="btn btn-save">Enregistrer un repas</a>
+            </div>
         </div>
     </div>
 </div>
