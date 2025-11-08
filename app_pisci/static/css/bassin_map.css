@@ -1,23 +1,30 @@
-/* bassins_map.css */
 :root {
-    --bassin-vide: #6c757d;
+    /* Variables globales */
+    --bassin-vide: #35646E;
     --bassin-1-repas: #ffa500;
     --bassin-2-repas: #28a745;
-    --bassin-pas-repas: #dc3545;
-    --bassin-a-jeun: #000000;
-    --bassin-border: var(--bs-card-border, #dee2e6);
-    --bassin-bg: var(--bs-card-bg,  #f7e4d9);
-    --bassin-shadow: var(--bs-box-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
-    --text-color: var(--bs-body-color, #343a40);
-    --legend-border: var(--bs-primary, #0b8092);
+    --bassin-pas-repas: #f15a69;
+    --bassin-a-jeun: #081011;
+    --bassin-border: var(--form-border, #dee2e6);
+    --bassin-bg: var(--card-bg, rgba(255, 255, 255, 0.9));
+    --bassin-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --text-color: var(--form-text, #343a40);
+    --legend-border: var(--table-header, #0b8092);
+    --site-background-color: #f8f9fa;
+    --site-text-color: #065D6F;
+	--bs-backdrop-zindex: 1040 !important;
 }
 
+/* Thème sombre */
 [data-bs-theme="dark"] {
-    --bassin-vide: #495057;
+    --bassin-vide: #72AEBB;
     --bassin-1-repas: #ffa94d;
-    --bassin-2-repas: #218838;
-    --bassin-pas-repas: #c82333;
-    --bassin-a-jeun: #212529;
+    --bassin-2-repas: #55ca6e;
+    --bassin-pas-repas: #f15a69;
+    --bassin-a-jeun: #081011;
+    --bassin-bg: var(--table-odd, rgba(10, 25, 41, 0.5));
+    --site-background-color: #2d3748; /* Adapté pour le thème sombre */
+    --site-text-color: #a0aec0; /* Texte clair pour le thème sombre */
 }
 
 /* Conteneur principal pour les colonnes */
@@ -31,11 +38,21 @@
 }
 
 /* Style commun pour toutes les colonnes */
+/* Style pour les colonnes latérales (left et right) */
 .ponds-column-left,
-.ponds-column-middle,
 .ponds-column-right {
-    flex: 1;
-    min-width: 30%;
+    flex: 0 0 50%; /* Largeur fixe de 25% */
+    padding: 15px;
+    border: 1px solid var(--bassin-border);
+    border-radius: 8px;
+    background-color: var(--bassin-bg);
+    box-shadow: var(--bassin-shadow);
+}
+
+/* Style pour la colonne du milieu */
+.ponds-column-middle {
+    flex: 1; /* Prend tout l'espace restant */
+    min-width: 0; /* Permet de rétrécir si nécessaire */
     padding: 15px;
     border: 1px solid var(--bassin-border);
     border-radius: 8px;
@@ -82,6 +99,7 @@
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     z-index: 1;
+	overflow: hidden;
 }
 
 /* Couleurs dynamiques pour les bassins */
@@ -167,79 +185,132 @@
     border-width: 0.2em;
 }
 
-/* Modal */
-.modal-content {
-    background-color: var(--bs-card-bg);
-    border: 1px solid var(--bassin-border);
+
+
+
+/* Conteneur pour le nom du site (légende) */
+.site-name-container {
+    background-color: var(--site-background-color);
+    padding: 15px;
     border-radius: 8px;
-    box-shadow: var(--bassin-shadow);
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid var(--legend-border);
+    border-left: 5px solid var(--bassin-2-repas);
+    background: linear-gradient(to right, var(--site-background-color), rgba(40, 167, 69, 0.1));
 }
 
-.modal-header {
-    border-bottom: 1px solid var(--bassin-border);
-    background-color: var(--bs-primary, #0b8092);
-    color: white;
-    border-radius: 8px 8px 0 0;
+.site-name {
+    color: var(--site-text-color);
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.5em;
 }
 
-.modal-title {
-    color: white;
-    font-weight: 600;
+/* Conteneur pour le nom du site et le nombre de bassins */
+.site-header-container {
+    background-color: var(--site-background-color);
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--legend-border);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.modal-body {
-    color: var(--text-color);
+.site-header-title {
+    color: var(--site-text-color);
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.5em;
 }
 
-/* Cartes de site */
+/* Style pour le nombre de bassins */
+.site-bassin-count {
+    color: var(--bassin-2-repas);
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Cartes de site (optimisé et fusionné) */
 .site-card {
-    background-color: var(--bs-card-bg);
-    border: 1px solid var(--bassin-border);
+    background-color: var(--site-background-color);
+    border: 1px solid var(--legend-border) !important;
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
     box-shadow: var(--bassin-shadow);
     transition: all 0.2s;
+    border-left: 5px solid var(--bassin-2-repas);
 }
 
 .site-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
 }
 
-.site-card h3 {
-    color: var(--bs-primary, #0b8092);
-    margin-top: 0;
-    border-bottom: 1px solid var(--bassin-border);
-    padding-bottom: 10px;
-}
-#sites-container {
-    background-color: var(--bg-color); /* Utilise la couleur de fond définie dans :root */
-    border-radius: 8px; /* Optionnel : arrondir les bords */
-    padding: 15px; /* Optionnel : ajouter un espacement interne */
-    margin-bottom: 20px; /* Optionnel : ajouter une marge en bas */
-}
 .site-card .card-body {
-    background-color: #dbf1f5; /* Fond blanc */
-    color: #343a40; /* Texte noir */
-    border-radius: 8px 8px 0 0; /* Arrondi des coins supérieurs */
-    padding: 15px; /* Espacement interne */
-    border-bottom: 1px solid var(--bassin-border); /* Bordure inférieure */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Ombre légère */
-}
-.section-title {
-    color: #0b8092; /* Bleu foncé */
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-weight: 600; /* Texte en gras */
-    border-bottom: 2px solid #0b8092; /* Bordure inférieure bleue */
-    padding-bottom: 5px;
-}
-[data-bs-theme="dark"] .site-card .card-body {
-    background-color: #fae8dd; /* Fond gris clair en mode sombre */
-    color: #212529; /* Texte sombre */
+    padding: 15px;
 }
 
-[data-bs-theme="dark"] .section-title {
-    color: #3aa89e; /* Bleu plus clair pour le mode sombre */
+.site-card .card-title {
+    color: var(--site-text-color);
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 0;
+}
+
+/* Conteneur des sites */
+#sites-container {
+    background-color: transparent;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+/* Conteneur du graphique */
+.canvas-container {
+    background-color: #D5E7EB !important;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: var(--bassin-shadow);
+}
+
+/* Mode sombre : fond du canvas */
+[data-bs-theme="dark"] .canvas-container,
+[data-bs-theme="dark"] .canvas-container canvas {
+    background-color: #D5E7EB !important; /* Fond sombre */
+}
+}
+.canvas-container canvas {
+    background-color: var(--card-bg) !important; /* Force le fond */
+}
+[data-bs-theme="dark"] .graph-card,
+[data-bs-theme="dark"] .graph-card .card-header,
+[data-bs-theme="dark"] .graph-card .card-body {
+    color: white !important;
+}
+.modal {
+    --bs-modal-zindex: 1060 !important;     /* Force le z-index de la modale */
+    z-index: var(--bs-modal-zindex) !important;
+}
+#bassinDetailsModal {
+    z-index: 1060 !important;
+}
+.modal-backdrop {
+    --bs-backdrop-zindex: 1040 !important;  /* Force le z-index du backdrop */
+    z-index: var(--bs-backdrop-zindex) !important;
+}
+.modal dialog,
+.modal-content {
+    position: relative;
+    z-index: 1;
+}
+#bassinDetailsModal .modal-content {
+    position: relative;
+    z-index: 1;
+}
+.btn-save {
+    pointer-events: auto !important;
 }
