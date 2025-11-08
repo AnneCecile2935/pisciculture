@@ -1,42 +1,55 @@
+/* ===== VARIABLES GLOBALES (par défaut, thème clair) ===== */
 :root {
-    /* Couleurs pour le thème clair */
-    --bg-color: #f0f4f8;
+	--bs-table-bg: initial; /* Désactive le fond par défaut de Bootstrap */
+    --bs-table-hover-bg: initial; /* Désactive le survol par défaut */
+    --bs-table-striped-bg: initial; /* Désactive le zebrage par défaut */
+    --bs-table-active-bg: initial; /* Désactive la sélection par défaut */
+    --bg-color: #EEF5F7;
     --text-color: #212529;
-    --sidebar-bg: #097b8d;
-    --card-bg: rgba(255, 255, 255, 0.9);
-    --form-bg: rgba(255, 255, 255, 0.9);
+    --sidebar-bg: #065D6F;
+    --card-bg: #D5E7EB;
+	--graph-card-bg: white;
+    --form-bg: rgb(238 245 247);
     --form-border: #dee2e6;
-    --form-text: #495057;
+    --form-text: #26484F;
     --btn-primary: #e28e0e;
     --btn-danger: #ef4444;
     --btn-primary-dark: #e28e0e;
     --btn-danger-dark: #b71c1c;
     --login-text: #4CAF50;
-    --login-border: #0b8092;
-    --table-header: #0b8092;
-    --table-even: #ffffff;
-    --table-odd: #f8f9fa;
+    --login-border: #054957;
+    --table-header: #065D6F;
+    --table-even: #EEF5F7;
+    --table-odd: #D5E7EB;
     --table-hover: #e6f2ff;
-
-    /* Fond pour le mode sombre */
-    --dark-bg-color: #0a1929;
-    --dark-bg-gradient: linear-gradient(rgba(10, 25, 41, 0.9), rgba(10, 25, 41, 0.9)),
-                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0a1929"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="rgba(68,138,255,0.1)" stroke-width="2"/></svg>');
+    --dark-bg-color: #172C30;
+	--color-warning: #e28e0e;
+    --color-danger: #ef4444;
+    --color-text-dark: white;
+    --color-text-light: white;
+	--main-content-bg: #F8FAFB;
 }
 
 /* ===== THÈME SOMBRE ===== */
 [data-bs-theme="dark"] {
+	--bs-table-bg: initial;
+    --bs-table-hover-bg: initial;
+    --bs-table-striped-bg: initial;
+    --bs-table-active-bg: initial;
     --bg-color: var(--dark-bg-color);
-    --text-color: #e0e0e0;
-    --sidebar-bg: rgba(10, 25, 41, 0.9);
-    --card-bg: rgba(0, 0, 0, 0.2);
-    --form-bg: rgba(10, 25, 41, 0.9);
-    --form-border: #0b8092;
+    --text-color: #D5E7EB;
+    --sidebar-bg: #539CAC;
+    --card-bg: #26484F;
+	--graph-card-bg: white;
+    --form-bg: rgb(23 44 48);
+    --form-border: #539CAC;
     --form-text: #e0e0e0;
-    --table-header: #0b8092;
+    --table-header: #539CAC;
     --table-even: #3c4249;
-    --table-odd: #0a121e;
+    --table-odd: #26484F;
     --table-hover: #1a2e3f;
+	--main-content-bg: #1E3A3F;
+	--color-text-dark: #212529;
 }
 
 /* ===== STYLES GLOBAUX ===== */
@@ -47,6 +60,9 @@ html, body {
     background-color: var(--bg-color);
     color: var(--text-color);
     transition: all 0.3s ease;
+}
+.main-content {
+    background-color: var(--main-content-bg) !important;
 }
 
 /* Fond en mode sombre */
@@ -234,8 +250,7 @@ html, body {
     border: 1px solid transparent;
     border-radius: 0.25rem;
 }
-
-/* ===== STYLES POUR LES TABLEAUX ===== */
+/*===== STYLES POUR LES TABLEAUX ===== */
 .table thead th,
 .dataTables_wrapper .dataTable thead th {
     background-color: var(--table-header) !important;
@@ -270,6 +285,7 @@ html, body {
     vertical-align: middle !important;
 }
 
+
 /* Boutons d'actions dans les tableaux */
 .btn-update {
     background-color: var(--btn-primary) !important;
@@ -294,7 +310,8 @@ html, body {
 }
 
 /* Style spécifique pour #nourrissagesTable */
-#nourrissagesTable thead.table-dark th {
+[data-bs-theme="light"] #nourrissagesTable thead.table-dark th,
+[data-bs-theme="dark"] #nourrissagesTable thead.table-dark th {
     background-color: var(--table-header) !important;
     color: white !important;
 }
@@ -379,6 +396,7 @@ html, body {
     border-radius: 0.5rem !important;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+	background-color: var(--card-bg) !important;
 }
 .card:hover {
     transform: translateY(-5px);
@@ -393,4 +411,15 @@ html, body {
     background-color: var(--card-bg);
     border-radius: 0 0 0.5rem 0.5rem !important;
     padding: 1rem !important;
+}
+
+
+[data-bs-theme="dark"] .card-title,
+[data-bs-theme="dark"] .card-text,
+[data-bs-theme="dark"] .card-body
+ {
+    background-color: var(--graph-card-bg) !important;
+}
+.graph-card-body{
+	background-color: var(--graph-card-bg);
 }
