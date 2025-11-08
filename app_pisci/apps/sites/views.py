@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET
 from django.utils.decorators import method_decorator
 from typing import Any
 from django.utils import timezone
+from apps.stocks.models import LotDePoisson
 
 class SiteListView(LoginRequiredMixin, ListView):
     model = Site
@@ -125,7 +126,8 @@ class BassinsAPIView(LoginRequiredMixin, View):
                     ).count()
 
                     # Vérifier si le bassin est "À jeun"
-                    a_jeun = dernier_nourrissage and dernier_nourrissage.motif_absence == 'JEUN'
+                    motif_absence = dernier_nourrissage.motif_absence if dernier_nourrissage else None
+                    a_jeun = motif_absence == 'ajeun'
 
                     lot_data = {
                         'code': lot.code_lot,
@@ -137,7 +139,8 @@ class BassinsAPIView(LoginRequiredMixin, View):
                         'date_arrivee': lot.date_arrivee.strftime('%d/%m/%Y'),
                         'dernier_nourrissage': dernier_nourrissage.date_repas.isoformat() if dernier_nourrissage else None,
                         'nourrissages_today': nourrissages_today,
-                        'a_jeun': a_jeun,
+                        'motif_absence': motif_absence,
+                        'a_jeun': motif_absence == 'ajeun',
                     }
                 else:
                     lot_data = None
@@ -164,15 +167,12 @@ class CarteBassinsView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(require_GET, name='dispatch')
 class BassinLotDetailsView(LoginRequiredMixin, View):
+
     def get(self, request, bassin_id, *args, **kwargs):
-        # Récupère le bassin demandé
         bassin = Bassin.objects.get(id=bassin_id)
-        # Récupère le lot actuel du bassin (s'il existe)
-        lot = bassin.lots_poissons.first()
-        # Récupère les 5 derniers repas pour ce bassin
+        lot = bassin.lots_poissons.first()  # type: ignore
         repas = Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas')[:7]
 
-        # Prépare les données à retourner
         data = {
             "bassin_nom": bassin.nom,
             "site_nom": bassin.site.nom,
@@ -186,7 +186,7 @@ class BassinLotDetailsView(LoginRequiredMixin, View):
             "derniers_repas": [
                 {
                     "date": repas.date_repas.strftime("%d/%m/%Y %H:%M"),
-                    "type_aliment": repas.aliment.nom,
+                    "type_aliment": repas.aliment.nom if repas.aliment else "Non spécifié", # type: ignore
                     "quantite": repas.qte,
                 }
                 for repas in repas
