@@ -54,7 +54,7 @@ async function afficherSites() {
 			// Fonction pour déterminer la classe CSS d'un bassin
             function getBassinClass(bassin) {
                 if (!bassin.a_un_lot) return ''; // Vide
-                if (bassin.lot.motif_absence === 'JEUN') return 'a-jeun';
+                if (bassin.lot.motif_absence === 'ajeun') return 'ajeun';
                 if (!bassin.lot.dernier_nourrissage || bassin.lot.nourrissages_today === 0) return 'pas-repas';
                 return bassin.lot.nourrissages_today === 2 ? 'repas-2' : 'repas-1';
             }
@@ -162,26 +162,50 @@ async function afficherSites() {
         container.style.display = 'block';
     }
 }
+function isDarkMode() {
+    return document.body.hasAttribute('data-bs-theme') &&
+           document.body.getAttribute('data-bs-theme') === 'dark';
+}
+// Nettoyage global des backdrops et modales (à exécuter une fois au chargement)
+document.addEventListener('DOMContentLoaded', function() {
+    // Écouteur pour nettoyer à la fermeture de la modale
+    const modalElement = document.getElementById('bassinDetailsModal');
+    modalElement.addEventListener('hidden.bs.modal', function() {
+        document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    });
+});
 
-// Fonction pour afficher les détails d'un bassin
 function showBassinDetails(bassinId) {
     const spinner = document.getElementById('loading-spinner');
-    spinner.style.display = 'block';  // Affiche le spinner de chargement
+    spinner.style.display = 'block';
 
-    // Appelle l'API Django pour récupérer les détails du lot
+    // 1. Fermez toutes les modales ouvertes
+    const openModals = document.querySelectorAll('.modal.show');
+    openModals.forEach(modal => {
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        if (modalInstance) modalInstance.hide();
+    });
+
+    // 2. Supprimez TOUS les backdrops existants
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+
+    // 3. Réinitialisez le body
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+
+    // 4. Chargez les données
     fetch(`/sites/bassin/${bassinId}/lot/`)
         .then(response => response.json())
         .then(data => {
-            spinner.style.display = 'none';  // Cache le spinner
-
-            // Génère la liste des repas (ou un message si vide)
-            let repasList = data.derniers_repas && data.derniers_repas.length > 0
-                ? data.derniers_repas.map(repas =>
-                    `<li>${repas.date} : ${repas.quantite} kg de ${repas.type_aliment}</li>`
-                ).join('')
+            spinner.style.display = 'none';
+            let repasList = data.derniers_repas?.length
+                ? data.derniers_repas.map(repas => `<li>${repas.date} : ${repas.quantite} kg de ${repas.type_aliment || 'aliment non spécifié'}</li>`).join('')
                 : '<li>Aucun repas enregistré.</li>';
 
-            // Construit le contenu de la modale
             let content = `
                 <p><strong>Bassin:</strong> ${data.bassin_nom || 'N/A'}</p>
                 <p><strong>Site:</strong> ${data.site_nom || 'N/A'}</p>
@@ -195,27 +219,36 @@ function showBassinDetails(bassinId) {
                     <p><strong>Date d'arrivée:</strong> ${data.date_arrivee || 'N/A'}</p>
                     <h5>Derniers repas :</h5>
                     <ul>${repasList}</ul>
-                ` : `
-                    <p class="empty-message">Ce bassin est vide.</p>
-                `}
-
-                <div class="mt-3 d-flex gap-2">
-                    <a href="/nourrissage/enregistrer-repas/${data.site_id}/" class="btn btn-save btn-sm">Enregistrer un repas</a>
-                </div>
+                ` : '<p class="empty-message">Ce bassin est vide.</p>'}
             `;
 
-            // Injecte le contenu dans la modale et l'affiche
             document.getElementById('bassinDetailsContent').innerHTML = content;
-            const modal = new bootstrap.Modal(document.getElementById('bassinDetailsModal'));
+            const btnEnregistrerRepas = document.getElementById('btnEnregistrerRepas');
+
+            if (data.site_id) {
+                btnEnregistrerRepas.href = `/nourrissage/enregistrer-repas/${data.site_id}/`;
+                btnEnregistrerRepas.style.display = 'inline-block';
+                btnEnregistrerRepas.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = this.href;
+                };
+            } else {
+                btnEnregistrerRepas.style.display = 'none';
+            }
+
+            // 5. Ouvrez la modale
+			const modalElement = document.getElementById('bassinDetailsModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElement,{
+				backdrop:false
+			});
             modal.show();
         })
         .catch(error => {
-            spinner.style.display = 'none';  // Cache le spinner en cas d'erreur
+            spinner.style.display = 'none';
             console.error('Erreur:', error);
-            alert("Une erreur est survenue lors du chargement des détails.");
+            alert("Une erreur est survenue.");
         });
 }
-
 // Fonction pour filtrer par site
 function filtrerParSite(siteId) {
     document.querySelectorAll('.site-container').forEach(container => {
@@ -228,6 +261,8 @@ function filtrerParSite(siteId) {
             container.style.display = 'block';
         });
     }
+	const bassinCount = document.querySelectorAll('.bassin-card').length;
+    document.getElementById('site-bassin-count').textContent = `${bassinCount} bassins`;
 }
 
 // Charge les sites au démarrage
