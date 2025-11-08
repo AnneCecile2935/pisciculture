@@ -1,0 +1,30 @@
+<div class="bassin-card {% if bassin.nom|slice:':1' == 'B' %}labo-card{% endif %}"
+     data-bassin-id="{{ bassin.id }}"
+     onclick="showBassinDetails('{{ bassin.id }}')"
+     style="background-color: {%
+         if not bassin.lots_poissons.first %
+             '#6c757d'
+         {% elif bassin.lots_poissons.first.motif_absence == 'ajeun' %}
+             '#000000'
+         {% elif not bassin.lots_poissons.first.dernier_nourrissage %}
+             '#dc3545'
+         {% elif bassin.lots_poissons.first.nourrissages_today|default:0 == 2 %}
+             '#28a745'
+         {% else %}
+             '#ffa500'
+         {% endif %}">
+    <div class="pond-name">{{ bassin.nom }}</div>
+    <div class="pond-lot">
+        {% if bassin.lots_poissons.first %}
+            {{ bassin.lots_poissons.first.quantite_actuelle }}<br>
+						{{ bassin.lots_poissons.first.poids_moyen|default:0 }} kg
+        {% else %}
+            Vide
+        {% endif %}
+    </div>
+    {% if bassin.lots_poissons.first %}
+        <span class="badge bg-light text-dark">
+            {{ bassin.lots_poissons.first.get_statut_display|default:"-"|truncatechars:5 }}
+        </span>
+    {% endif %}
+</div>
