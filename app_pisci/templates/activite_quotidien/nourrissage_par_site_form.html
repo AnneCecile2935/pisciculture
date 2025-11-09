@@ -118,3 +118,32 @@
     </div>
 </div>
 {% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Pour chaque ligne du formset
+    document.querySelectorAll('[name$="-motif_absence"]').forEach(function(select) {
+        const row = select.closest('tr'); // Trouve la ligne du formset
+        const qteInput = row.querySelector('[name$="-qte"]'); // Trouve le champ quantité
+
+        // Fonction pour mettre à jour la quantité
+        function updateQte() {
+            if (select.value === 'ajeun') {
+                qteInput.value = 0;
+                qteInput.readOnly = true;
+                qteInput.required = false; // Pas obligatoire si "à jeun"
+            } else {
+                qteInput.readOnly = false;
+                qteInput.required = true;
+            }
+        }
+
+        // Écoute les changements sur le select
+        select.addEventListener('change', updateQte);
+
+        // Initialise au chargement de la page
+        updateQte();
+    });
+});
+</script>
+{% endblock %}

@@ -283,7 +283,6 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
         """
         logger = logging.getLogger(__name__)
         logger.info("Début de form_valid")
-
         self.formset = form
         date_repas = self.request.POST.get('date_repas') or timezone.now().date()
         notes = self.request.POST.get('notes')
@@ -296,38 +295,42 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
 
             # Vérifie si le bassin a un lot
             lot = bassin.lots_poissons.first()
+            if not lot:
+                logger.info(f"Bassin {bassin.nom} sans lot : ignoré.")
+                continue  # On passe au suivant
+
             qte_str = subform.cleaned_data.get('qte')
             aliment = subform.cleaned_data.get('aliment')
             motif = subform.cleaned_data.get('motif_absence')
 
-            # Si le bassin n'a pas de lot, on force le motif à "vide" et on ignore le repas
-            if not lot:
-                logger.info(f"Bassin {bassin.nom} sans lot : motif forcé à 'vide'.")
-                continue  # On passe au suivant
+            # Gestion spéciale pour "à jeun"
+            if motif == 'ajeun':
+                qte = 0  # Force la quantité à 0
+            else:
+                # Validation normale pour les autres cas
+                try:
+                    if qte_str:
+                        qte_str = str(qte_str).replace(',', '.')
+                        qte = float(qte_str)
+                        if qte < 0:  # Accepte 0 pour les autres motifs
+                            subform.add_error('qte', "La quantité ne peut pas être négative.")
+                            continue
+                    else:
+                        qte = None
+                except ValueError:
+                    subform.add_error('qte', "Saisissez un nombre valide.")
+                    continue
 
-            # Validation de la quantité
-            try:
-                if qte_str:
-                    qte_str = str(qte_str).replace(',', '.')
-                    qte = float(qte_str)
-                    if qte <= 0:
-                        subform.add_error('qte', "La quantité doit être positive.")
-                        continue
-                else:
-                    qte = None
-            except ValueError:
-                subform.add_error('qte', "Saisissez un nombre valide.")
-                continue
-
-            # Motif requis si quantité ET aliment sont vides
-            if qte is None and not aliment:
-                motif = "vide"  # Motif par défaut si vide
-                logger.info(f"Motif 'vide' appliqué pour {bassin.nom} (quantité et aliment vides).")
-
-            # Aliment requis si quantité > 0
-            if qte is not None and qte > 0 and not aliment:
-                subform.add_error('aliment', "Un aliment est requis si une quantité est saisie.")
-                continue
+            # Motif requis si quantité est None ou 0
+            if qte is None or qte == 0:
+                if not motif:
+                    subform.add_error('motif_absence', "Un motif est requis si la quantité est vide ou nulle.")
+                    continue
+            else:
+                # Aliment requis uniquement si quantité > 0
+                if not aliment:
+                    subform.add_error('aliment', "Un aliment est requis si une quantité est saisie.")
+                    continue
 
             # Création du repas
             nourrissage = Nourrissage(
@@ -350,8 +353,9 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
                 Nourrissage.objects.bulk_create(nourrissages)
                 logger.info(f"{len(nourrissages)} repas enregistrés avec succès")
                 for nourrissage in nourrissages:
-                    nourrissage.crea_lot.dernier_nourrissage = timezone.now()
-                    nourrissage.crea_lot.save(update_fields=['dernier_nourrissage'])
+                    if nourrissage.crea_lot:
+                        nourrissage.crea_lot.dernier_nourrissage = timezone.now()
+                        nourrissage.crea_lot.save(update_fields=['dernier_nourrissage'])
                 messages.success(self.request, f"{len(nourrissages)} repas enregistrés !")
             except Exception as e:
                 logger.error(f"Erreur lors de l'enregistrement: {e}")
@@ -362,6 +366,7 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
             return self.form_invalid(form)
 
         return super().form_valid(form)  # Redirection
+
 
 
 class ChoixSiteEnregistrementRepasView(LoginRequiredMixin, TemplateView):

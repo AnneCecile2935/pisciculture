@@ -113,7 +113,7 @@
 .bassin-card.repas-1 { background-color: var(--bassin-1-repas); }
 .bassin-card.repas-2 { background-color: var(--bassin-2-repas); }
 .bassin-card.pas-repas { background-color: var(--bassin-pas-repas); }
-.bassin-card.a-jeun { background-color: var(--bassin-a-jeun); }
+.bassin-card.a-jeun { background-color: var(--bassin-a-jeun) !important; }
 
 .pond-name {
     font-size: 1.1em;

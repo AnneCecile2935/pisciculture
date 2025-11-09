@@ -84,6 +84,10 @@ class Nourrissage(TimeStampedModel):
         if self.qte == 0 and not self.motif_absence:
             raise ValidationError(
                 {"motif_absence": "Un motif d'absence est requis si la quantité est 0."})
+        if self.motif_absence == 'ajeun' and self.qte != 0:
+            raise ValidationError(
+                {"qte": "La quantité doit être 0 si le motif est 'À jeun'."}
+            )
 
     def save(self, *args, **kwargs):
         self.full_clean()  # Valide avant sauvegarde
@@ -99,6 +103,11 @@ class Nourrissage(TimeStampedModel):
     def qte_affichage(self):
         """Retourne l'affichage de la quantité ou 'Aucun repas' si None"""
         return f"{self.qte} kg" if self.qte is not None else "Aucun repas"
+
+    @property
+    def est_a_jeun(self):
+        """Retourne True si le repas est marqué comme 'à jeun'."""
+        return self.motif_absence == 'ajeun'
 
     def __str__(self):
             return f"{self.code_lot} - {self.qte_affichage} le {self.date_repas}"

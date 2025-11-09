@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from typing import Any
 from django.utils import timezone
 from apps.stocks.models import LotDePoisson
+from django.db.models import Q
 
 class SiteListView(LoginRequiredMixin, ListView):
     model = Site
@@ -109,14 +110,20 @@ class BassinsAPIView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         sites = Site.objects.prefetch_related('bassins__lots_poissons__espece').filter(est_actif=True)
         data = []
+
+        today = timezone.now().date()
+
         for site in sites:
             bassins = []
+
             for bassin in site.bassins.filter(est_actif=True):
                 lot = bassin.lots_poissons.first()
-                if lot:
-                    dernier_nourrissage = Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas').first()
+                lot_data = None
+                nourrissages_today = 0
+                a_jeun = False
 
-                    # Calculer le nombre de repas aujourd'hui
+                if lot:
+                    # Compter les repas d'aujourd'hui
                     today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
                     today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
                     nourrissages_today = Nourrissage.objects.filter(
@@ -125,10 +132,27 @@ class BassinsAPIView(LoginRequiredMixin, View):
                         date_repas__lte=today_end
                     ).count()
 
-                    # Vérifier si le bassin est "À jeun"
-                    motif_absence = dernier_nourrissage.motif_absence if dernier_nourrissage else None
-                    a_jeun = motif_absence == 'ajeun'
+                    # Vérifier le dernier repas à jeun
+                    dernier_ajeun = Nourrissage.objects.filter(
+                        bassin=bassin
+                    ).filter(
+                        Q(motif_absence__icontains='ajeun') | Q(qte=0)
+                    ).order_by('-date_repas').first()
 
+                    dernier_nourrissage_data = None
+                    motif_absence = None
+
+                    if dernier_ajeun:
+                        if dernier_ajeun.qte == 0 or (dernier_ajeun.motif_absence and dernier_ajeun.motif_absence.lower() == 'ajeun'):
+                            a_jeun = True
+                            motif_absence = dernier_ajeun.motif_absence
+                            dernier_nourrissage_data = {
+                                'motif_absence': dernier_ajeun.motif_absence,
+                                'qte': dernier_ajeun.qte,
+                                'date_repas': dernier_ajeun.date_repas.isoformat(),
+                            }
+
+                    # Préparer lot_data
                     lot_data = {
                         'code': lot.code_lot,
                         'espece': lot.espece.nom_commun,
@@ -137,13 +161,12 @@ class BassinsAPIView(LoginRequiredMixin, View):
                         'poids': lot.poids,
                         'statut': lot.get_statut_display(),
                         'date_arrivee': lot.date_arrivee.strftime('%d/%m/%Y'),
-                        'dernier_nourrissage': dernier_nourrissage.date_repas.isoformat() if dernier_nourrissage else None,
+                        'dernier_nourrissage': dernier_nourrissage_data,
                         'nourrissages_today': nourrissages_today,
                         'motif_absence': motif_absence,
-                        'a_jeun': motif_absence == 'ajeun',
+                        'a_jeun': a_jeun,
                     }
-                else:
-                    lot_data = None
+
                 bassins.append({
                     'id': str(bassin.id),
                     'nom': bassin.nom,
@@ -151,12 +174,15 @@ class BassinsAPIView(LoginRequiredMixin, View):
                     'a_un_lot': bool(lot),
                     'lot': lot_data,
                 })
+
             data.append({
                 'id': str(site.id),
                 'nom': site.nom,
                 'bassins': bassins,
             })
+
         return JsonResponse(data, safe=False)
+
 
 class CarteBassinsView(LoginRequiredMixin, TemplateView):
     template_name = 'sites/carte.html'  # Chemin vers ton template

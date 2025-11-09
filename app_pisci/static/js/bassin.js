@@ -58,11 +58,22 @@ async function afficherSites() {
 
 			// Fonction pour déterminer la classe CSS d'un bassin
             function getBassinClass(bassin) {
-                if (!bassin.a_un_lot) return ''; // Vide
-                if (bassin.lot.motif_absence === 'ajeun') return 'ajeun';
-                if (!bassin.lot.dernier_nourrissage || bassin.lot.nourrissages_today === 0) return 'pas-repas';
-                return bassin.lot.nourrissages_today === 2 ? 'repas-2' : 'repas-1';
-            }
+				if (!bassin.a_un_lot || !bassin.lot) return ''; // Bassin vide
+
+				const lot = bassin.lot;
+
+				// 1️⃣ Noir si bassin à jeun
+				if (lot.a_jeun) return 'a-jeun';
+
+				// 2️⃣ Orange / Vert si repas aujourd'hui
+				if (lot.nourrissages_today > 0) {
+					// Tu peux distinguer 1 repas ou 2 repas si besoin
+					return lot.nourrissages_today === 2 ? 'repas-2' : 'repas-1';
+				}
+
+				// 3️⃣ Rouge si pas de repas
+				return 'pas-repas';
+			}
 
             // Générer le HTML pour les bassins K
             let bassinsKHTML = '';

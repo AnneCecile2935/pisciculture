@@ -38,6 +38,17 @@ class NourrissageForm(forms.ModelForm):
         widgets = {
             'motif_absence': forms.Select(attrs={'class': 'form-control'}),
         }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        motif_absence = cleaned_data.get('motif_absence')
+        qte = cleaned_data.get('qte')
+
+        # Si "à jeun" est sélectionné, force qte à 0
+        if motif_absence == 'ajeun':
+            cleaned_data['qte'] = 0  # ✅ Force la quantité à 0
+
+        return cleaned_data
 
     def __init__(self, *args, site_id=None, **kwargs):
         """
@@ -118,7 +129,7 @@ class ReleveTempOxyForm(forms.ModelForm):
             forms.ValidationError: Si la température n'est pas un nombre valide.
         """
         temperature = self.cleaned_data.get('temperature')
-        
+
         # Si une température est saisie, vérifie qu'elle est bien un nombre
         if temperature is not None:
             # Vérifie que la température est un nombre valide (positif ou négatif)
