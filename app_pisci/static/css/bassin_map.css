@@ -49,6 +49,7 @@
     box-shadow: var(--bassin-shadow);
 }
 
+
 /* Style pour la colonne du milieu */
 .ponds-column-middle {
     flex: 1; /* Prend tout l'espace restant */
@@ -58,6 +59,12 @@
     border-radius: 8px;
     background-color: var(--bassin-bg);
     box-shadow: var(--bassin-shadow);
+}
+.ponds-column-new {
+    display: inline-block;
+    vertical-align: top;
+    width: 30%; /* Ajuste selon tes besoins */
+    margin-right: 2%;
 }
 
 /* Masquer une colonne si elle est vide */
@@ -306,6 +313,13 @@
 .modal-content {
     position: relative;
     z-index: 1;
+}
+.modal-dialog.modal-dialog-centered {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
 }
 #bassinDetailsModal .modal-content {
     position: relative;

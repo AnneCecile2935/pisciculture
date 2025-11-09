@@ -15,7 +15,8 @@ def group_by_line(bassins, prefix):
     groups = {
         'K': {1: [], 2: [], 3: [], 4: [], 5: []},  # K1-K4, K5-K8, K9-K10, K11-K12, K13-K14
         'B': {1: [], 2: []},  # B1-B4, B5-B6
-        'T': {1: [], 2: []}
+        'T': {1: [], 2: []},
+        'D': {1: [], 2: []}
     }
     for bassin in bassins:
         if bassin.nom.startswith(prefix):
@@ -44,4 +45,9 @@ def group_by_line(bassins, prefix):
                     groups['T'][1].append(bassin)
                 elif 5 <= num <= 8:
                     groups['T'][2].append(bassin)
+            elif prefix == 'D':
+                if 1 <= num <= 3:
+                    groups['D'][1].append(bassin)
+                elif 4 <= num <= 5:
+                    groups['D'][2].append(bassin)
     return groups

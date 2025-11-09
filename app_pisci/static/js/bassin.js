@@ -18,6 +18,7 @@ async function afficherSites() {
             const bassinsK = site.bassins.filter(bassin => bassin.nom.startsWith('K'));
             const bassinsT = site.bassins.filter(bassin => bassin.nom.startsWith('T'));
             const bassinsB = site.bassins.filter(bassin => bassin.nom.startsWith('B'));
+			const bassinsD = site.bassins.filter(bassin => bassin.nom.startsWith('D'));
 
             const siteCard = document.createElement('div');
             siteCard.className = 'col-md-12 mb-4 site-container';
@@ -28,7 +29,8 @@ async function afficherSites() {
                 const groups = {
                     'K': [[], [], [], [], []], // K1-K4, K5-K8, K9-K10, K11-K12, K13-K14
                     'T': [[], []],            // T1-T4, T5-T8 (adaptez selon vos besoins)
-                    'B': [[], []]             // B1-B4, B5-B6
+                    'B': [[], []],             // B1-B4, B5-B6
+					'D': [[], []]
                 };
 
                 bassins.forEach(bassin => {
@@ -45,7 +47,10 @@ async function afficherSites() {
                     } else if (prefix === 'B') {
                         if (num >= 1 && num <= 4) groups['B'][0].push(bassin);
                         else if (num >= 5 && num <= 6) groups['B'][1].push(bassin);
-                    }
+                    }else if (prefix === 'D') {
+						if (num >= 1 && num <= 3) groups['D'][0].push(bassin);
+						else if (num >= 4 && num <= 5) groups['D'][1].push(bassin);
+					}
                 });
 
                 return groups[prefix];
@@ -121,6 +126,26 @@ async function afficherSites() {
                     `;
                 }
             });
+			// Générer le HTML pour les bassins D
+			let bassinsDHTML = '';
+			const groupesD = groupByLine(bassinsD, 'D');
+			groupesD.forEach((ligne, index) => {
+				if (ligne.length > 0) {
+					bassinsDHTML += `
+						<div class="pond-line">
+							${ligne.map(bassin => `
+								<div class="bassin-card ${getBassinClass(bassin)}" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')">
+									<div class="pond-name">${bassin.nom}</div>
+									${bassin.a_un_lot ? `
+										<div class="pond-lot">${bassin.lot.quantite_actuelle}<br>${bassin.lot.poids_moyen || 0} kg</div>
+										<span class="badge bg-light text-dark">${bassin.lot.get_statut_display || '-'}</span>
+									` : '<div class="pond-lot">Vide</div>'}
+								</div>
+							`).join('')}
+						</div>
+					`;
+				}
+			});
 
             // Assembler le HTML du site
             siteCard.innerHTML = `
@@ -149,6 +174,12 @@ async function afficherSites() {
                             ${bassinsBHTML}
                         </div>
                     ` : ''}
+					${bassinsD.length > 0 ? `
+						<div class="ponds-column-new">
+							<h4 class="section-title">Bassins Demo</h4>
+							${bassinsDHTML}
+						</div>
+					` : ''}
                 </div>
             `;
 
@@ -239,7 +270,9 @@ function showBassinDetails(bassinId) {
             // 5. Ouvrez la modale
 			const modalElement = document.getElementById('bassinDetailsModal');
             const modal = bootstrap.Modal.getOrCreateInstance(modalElement,{
-				backdrop:false
+				backdrop:false,
+				keyboard: true,
+				focus:true
 			});
             modal.show();
         })
