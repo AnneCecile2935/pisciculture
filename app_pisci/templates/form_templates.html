@@ -41,39 +41,48 @@
                         {% block form_content %}
                         <form method="post" novalidate>
                             {% csrf_token %}
+														 {% if form.non_field_errors %}
+																	<div class="alert alert-danger mb-3">
+																			{% for error in form.non_field_errors %}
+																					{{ error }}
+																			{% endfor %}
+																	</div>
+															{% endif %}
                             {% for field in form %}
-                                <div class="form-floating mb-3">
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi
-                                                {% if field.name == 'nom_commun' %}bi-tag-fill
-                                                {% elif field.name == 'nom_scientifique' %}bi-book-fill
-                                                {% elif field.name == 'est_actif' %}bi-toggle-on
-                                                {% else %}bi-pencil-fill
-                                                {% endif %} text-muted"></i>
-                                        </span>
-                                        {% if field|widget_type == 'CheckboxInput' %}
-                                            <div class="form-check form-switch ps-2">
-                                                {{ field|add_class:"form-check-input mt-0" }}
-                                                <label class="form-check-label" for="{{ field.id_for_label }}">
-                                                    {{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                                                </label>
-                                            </div>
-                                        {% else %}
-                                            {{ field|add_class:"form-control border-start-0" }}
-                                            <label for="{{ field.id_for_label }}">
-                                                {{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                                            </label>
-                                        {% endif %}
-                                    </div>
-                                    {% if field.help_text %}
-                                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                        <div class="text-danger">{{ field.errors|first }}</div>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
+																<div class="form-floating mb-3">
+																		<div class="input-group {% if field.errors %}is-invalid{% endif %}">  <!-- Ajoute la classe is-invalid si erreur -->
+																				<span class="input-group-text">
+																						<i class="bi
+																								{% if field.name == 'nom_commun' %}bi-tag-fill
+																								{% elif field.name == 'nom_scientifique' %}bi-book-fill
+																								{% elif field.name == 'est_actif' %}bi-toggle-on
+																								{% else %}bi-pencil-fill
+																								{% endif %} text-muted"></i>
+																				</span>
+																				{% if field|widget_type == 'CheckboxInput' %}
+																						<div class="form-check form-switch ps-2">
+																								{{ field|add_class:"form-check-input mt-0" }}
+																								<label class="form-check-label" for="{{ field.id_for_label }}">
+																										{{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+																								</label>
+																						</div>
+																				{% else %}
+																						{{ field|add_class:"form-control border-start-0" }}
+																						<label for="{{ field.id_for_label }}">
+																								{{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+																						</label>
+																						{% if field.errors %}
+																								<div class="invalid-feedback">  <!-- Utilise invalid-feedback pour Bootstrap -->
+																										{{ field.errors|first }}
+																								</div>
+																						{% endif %}
+																				{% endif %}
+																		</div>
+																		{% if field.help_text %}
+																				<small class="form-text text-muted">{{ field.help_text }}</small>
+																		{% endif %}
+																</div>
+																{% endfor %}
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="submit" class="btn btn-save px-4 py-2 rounded-pill">
                                     <i class="bi bi-save me-2"></i> Enregistrer
@@ -114,6 +123,15 @@
             if (savedTheme === 'dark') {
                 icon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
             }
+        });
+				document.addEventListener('DOMContentLoaded', function() {
+            const fieldsWithErrors = document.querySelectorAll('.invalid-feedback');
+            fieldsWithErrors.forEach(function(errorElement) {
+                const inputGroup = errorElement.closest('.input-group');
+                if (inputGroup) {
+                    inputGroup.classList.add('is-invalid');
+                }
+            });
         });
     </script>
 {% endblock %}

@@ -21,6 +21,13 @@
                 <div class="card-body">
                     <form method="post" novalidate>
                         {% csrf_token %}
+												{% if form.non_form_errors %}
+                        <div class="alert alert-danger mb-3">
+                            {% for error in form.non_form_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                         <!-- Date et notes (style "floating labels" comme dans form.html) -->
                         <div class="row mb-4">
                             <div class="col-md-6">
@@ -55,10 +62,19 @@
                                         <td>
 																					{{ subform.initial.bassin.nom }}
 																					{{ subform.bassin }}
-																					{{ subform.bassin.errors }}
+																					{% if subform.bassin.errors %}
+                                              <div class="text-danger">{{ subform.bassin.errors|first }}</div>
+                                          {% endif %}
 																				</td>
                                         <td>{{ subform.aliment }}</td>
-                                        <td>{{ subform.qte }}</td>
+
+																				{% if subform.aliment.errors %}
+                                            <div class="text-danger">{{ subform.aliment.errors|first }}</div>
+                                        {% endif %}
+																				<td>{{ subform.qte }}</td>
+																				{% if subform.qte.errors %}
+																						<div class="text-danger">{{ subform.qte.errors|first }}</div>
+																				{% endif %}
                                         <td>
                                             {% with bassin=subform.initial.bassin %}
                                                 {% if not bassin.lots_poissons.first %}
@@ -67,6 +83,9 @@
                                                     <input type="hidden" name="form-{{ forloop.counter0 }}-motif_absence" value="vide">
                                                 {% else %}
                                                     {{ subform.motif_absence }}
+																										{% if subform.motif_absence.errors %}
+                                                        <div class="text-danger">{{ subform.motif_absence.errors|first }}</div>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endwith %}
                                         </td>
@@ -76,7 +95,7 @@
                             </table>
                         </div>
                         <!-- Boutons alignés à droite -->
-                        <div class="d-flex justify-content-between mt-4"">
+                        <div class="d-flex justify-content-between mt-4">
                             <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill">
                                 <i class="bi bi-save me-2"></i> Enregistrer les repas
                             </button>
@@ -87,31 +106,8 @@
                         </div>
                     </form>
                 </div>
-								{% if request.method == 'POST' %}
-										<div class="debug-data mt-4 p-3 bg-light">
-												<h5>Données soumises (debug) :</h5>
-												<pre>{{ request.POST }}</pre>
-										</div>
-										{% endif %}
 
-										<!-- Bloc de debug des erreurs -->
-										{% if form.errors or form.non_form_errors %}
-										<div class="alert alert-danger mt-3">
-												<strong>Erreurs dans le formulaire :</strong>
-												<ul>
-														{% for error in form.non_form_errors %}
-														<li>{{ error }}</li>
-														{% endfor %}
-														{% for subform in form %}
-																{% for field, errors in subform.errors.items %}
-																		{% for error in errors %}
-																		<li>{{ subform.prefix }} - {{ field }}: {{ error }}</li>
-																		{% endfor %}
-																{% endfor %}
-														{% endfor %}
-												</ul>
-										</div>
-										{% endif %}
+
 								</div>
             </div>
         </div>
@@ -143,6 +139,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Initialise au chargement de la page
         updateQte();
+});
+
+		document.querySelectorAll('.invalid-feedback, .text-danger').forEach(function(errorElement) {
+            if (errorElement.textContent.trim() !== '') {
+                const input = errorElement.previousElementSibling;
+                if (input && input.classList.contains('form-control')) {
+                    input.classList.add('is-invalid');
+                }
+            }
+
     });
 });
 </script>
