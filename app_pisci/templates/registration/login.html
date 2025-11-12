@@ -120,5 +120,21 @@
     </main>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				// Sélectionne toutes les alertes Django
+				const alerts = document.querySelectorAll('.alert');
+
+				// Pour chaque alerte, ajoute un timer pour la masquer après 3 secondes
+				alerts.forEach(alert => {
+					setTimeout(() => {
+						alert.style.transition = 'opacity 0.5s ease-out';
+						alert.style.opacity = '0';
+						// Supprime l'alerte du DOM après la transition
+						setTimeout(() => alert.remove(), 500);
+					}, 3000); // 3000 ms = 3 secondes
+				});
+			});
+		</script>
   </body>
 </html>
