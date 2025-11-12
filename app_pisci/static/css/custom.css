@@ -376,7 +376,58 @@ html, body {
     color: #6c757d !important;
     background: transparent !important;
 }
+/* Cible la balise <a> à l'intérieur des boutons "Précédent" et "Suivant" */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:not(.disabled) a.page-link,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:not(.disabled) a.page-link {
+    color: #054957) !important;
+}
 
+/* Effet au survol */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:not(.disabled) a.page-link:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:not(.disabled) a.page-link:hover {
+    color: #054957 !important;
+}
+
+/* Boutons désactivés */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous.disabled a.page-link,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next.disabled a.page-link {
+    color: #054957 !important;
+}
+/* Style pour les liens "Précédent" et "Suivant" en mode clair */
+.dataTables_wrapper .paginate_button.previous a.page-link,
+.dataTables_wrapper .paginate_button.next a.page-link {
+    color: #054957  !important;
+}
+
+/* Effet au survol */
+.dataTables_wrapper .paginate_button.previous a.page-link:hover,
+.dataTables_wrapper .paginate_button.next a.page-link:hover {
+    color: #054957  !important;
+}
+
+/* Boutons désactivés */
+.dataTables_wrapper .paginate_button.disabled a.page-link {
+    color: #6c757d !important;
+}
+/* Couleur pour TOUS les liens de pagination non actifs (y compris "Précédent", "Suivant" et numéros de page) */
+.dataTables_wrapper .paginate_button:not(.active):not(.disabled) a.page-link {
+    color: #054957 !important;
+}
+
+/* Effet au survol pour tous les liens non actifs */
+.dataTables_wrapper .paginate_button:not(.active):not(.disabled) a.page-link:hover {
+    color: #054957 !important;
+}
+
+/* Couleur pour les liens désactivés (ex: "Précédent" sur la première page) */
+.dataTables_wrapper .paginate_button.disabled a.page-link {
+    color: #6c757d !important;
+}
+
+/* Couleur pour le numéro de page active (blanc sur fond bleu par défaut) */
+.dataTables_wrapper .paginate_button.active a.page-link {
+    color: white !important;
+}
 /* Adaptation au mode sombre */
 [data-bs-theme="dark"] .page-link {
     color: white !important;
