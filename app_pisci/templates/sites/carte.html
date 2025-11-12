@@ -14,7 +14,20 @@
 
 {% block main_content %}
 <div class="container-fluid">
+
     <h1 class="my-4"> Carte des Bassins</h1>
+		<div class="row mb-4 align-items-center">
+        <div class="col-auto">
+            <a href="{% url 'dashboard' %}" class="btn btn-create mb-3">
+                <i class="bi bi-arrow-left me-2"></i>Retour au dashboard
+            </a>
+        </div>
+				<div class="col-auto">
+						<a href="{% url 'activite_quotidien:nourrissage-list' %}" class="btn btn-create mb-3">
+								<i class="bi bi-arrow-left me-2"></i>Retour à la liste de nourrissages
+						</a>
+				</div>
+		</div>
 
     <!-- Légende des couleurs -->
 

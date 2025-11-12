@@ -5,11 +5,16 @@
 <div class="container-fluid p-0 m-0">
     <h1 class="mb-4">Liste des nourrissages</h1>
 
+
     <!-- Bouton pour créer un nouveau nourrissage -->
     {% if user.is_authenticated %}
-        <a href="{% url 'activite_quotidien:nourrissage-create' %}" class="btn btn-create mb-3">
-            <i class="bi bi-plus-circle"></i> Ajouter un repas
+        <a href="{% url 'activite_quotidien:choisir-site-enregistrement-repas' %}" class="btn btn-create mb-3">
+            <i class="bi bi-plus-circle"></i> Ajouter les repas par site
         </a>
+				<a href="{% url 'sites:bassins_carte' %}" class="btn btn-create mb-3">
+            <i class="bi bi-geo-alt-fill me-2"></i>Voir la carte des bassins
+        </a>
+
     {% endif %}
     <!-- Loader -->
     <div id="loader" class="text-center my-5">

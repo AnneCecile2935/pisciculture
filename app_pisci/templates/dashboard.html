@@ -49,8 +49,17 @@
 
     <!-- Espace pour d'autres éléments -->
     <div class="row mt-4">
-        <!-- Futurs graphiques ici -->
+    <div class="col-12">
+        <div class="card shadow text-center">
+            <div class="card-body">
+                <h5 class="card-title">Accéder à la carte des bassins</h5>
+                <a href="{% url 'sites:bassins_carte' %}" class="btn btn-custom">
+                    <i class="bi bi-geo-alt-fill me-2"></i>Voir la carte
+                </a>
+            </div>
+        </div>
     </div>
+</div>
 </div>
 {% endblock %}
 
