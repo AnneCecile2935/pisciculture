@@ -22,7 +22,7 @@ from apps.commun.view import StandardDeleteMixin  # Utilisé pour la suppression
 # Librairies Python
 from datetime import timedelta  # Utilisé pour les plages de dates dans les graphiques
 import hashlib  # Utilisé pour générer des couleurs uniques dans les graphiques
-import logging  # Utilisé pour le logging
+
 
 
 class NourrissageCreateView(LoginRequiredMixin, CreateView):
@@ -281,8 +281,6 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
         Valide et sauvegarde les repas pour chaque bassin.
         Ignore les bassins sans lot et gère les erreurs par repas.
         """
-        logger = logging.getLogger(__name__)
-        logger.info("Début de form_valid")
         self.formset = form
         date_repas = self.request.POST.get('date_repas') or timezone.now().date()
         notes = self.request.POST.get('notes')
@@ -296,7 +294,6 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
             # Vérifie si le bassin a un lot
             lot = bassin.lots_poissons.first()
             if not lot:
-                logger.info(f"Bassin {bassin.nom} sans lot : ignoré.")
                 continue  # On passe au suivant
 
             qte_str = subform.cleaned_data.get('qte')
@@ -345,20 +342,20 @@ class NourrissageParSiteView(LoginRequiredMixin, FormView):
                 cree_par=self.request.user,
             )
             nourrissages.append(nourrissage)
-            logger.info(f"Repas valide pour {bassin.nom}: {qte} kg de {aliment} (motif: {motif})")
+
 
         # Enregistrement des repas valides
         if nourrissages:
             try:
                 Nourrissage.objects.bulk_create(nourrissages)
-                logger.info(f"{len(nourrissages)} repas enregistrés avec succès")
+
                 for nourrissage in nourrissages:
                     if nourrissage.crea_lot:
                         nourrissage.crea_lot.dernier_nourrissage = timezone.now()
                         nourrissage.crea_lot.save(update_fields=['dernier_nourrissage'])
                 messages.success(self.request, f"{len(nourrissages)} repas enregistrés !")
             except Exception as e:
-                logger.error(f"Erreur lors de l'enregistrement: {e}")
+
                 messages.error(self.request, f"Erreur lors de l'enregistrement: {e}")
                 return self.form_invalid(form)
         else:

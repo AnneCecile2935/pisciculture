@@ -55,10 +55,23 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script>
+	// Ajoute cette fonction pour permettre le tri des dates en français
+$.fn.dataTable.ext.type.order['date-fr-pre'] = function(data) {
+    if (!data) return -Infinity; // Gère les valeurs null
+    var dateParts = data.split('/');
+    return new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getTime();
+};
 $(document).ready(function() {
     $('#lotsTable').DataTable({
         "searching": false,
         "processing": true,
+				"order": [[9, "desc"]],
+				"columnDefs": [
+            {
+                "type": "date-fr", // Applique le type de tri personnalisé à la colonne des dates
+                "targets": 9
+            }
+        ],
         "ajax": {
             "url": "{% url 'stocks:list-json' %}",
             "dataSrc": "",

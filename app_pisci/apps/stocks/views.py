@@ -57,7 +57,7 @@ class LotDeleteView(LoginRequiredMixin, UserPassesTestMixin, StandardDeleteMixin
 
 class LotListJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        lots = list(LotDePoisson.objects.all().values(
+        lots = list(LotDePoisson.objects.all().order_by('-date_arrivee').values(
             'id', 'code_lot', 'espece__nom_commun', 'site_prod__nom',
             'statut', 'quantite', 'quantite_actuelle', 'poids', 'poids_moyen', 'date_arrivee'
         ))
