@@ -18,6 +18,7 @@ async function afficherSites() {
             const bassinsK = site.bassins.filter(bassin => bassin.nom.startsWith('K'));
             const bassinsT = site.bassins.filter(bassin => bassin.nom.startsWith('T'));
             const bassinsB = site.bassins.filter(bassin => bassin.nom.startsWith('B'));
+			const bassinsD = site.bassin.filter(bassin => bassin.nom.startsWith('D'));
 
             const siteCard = document.createElement('div');
             siteCard.className = 'col-md-12 mb-4 site-container';
@@ -121,6 +122,26 @@ async function afficherSites() {
                     `;
                 }
             });
+			// Générer le HTML pour les bassins D
+			let bassinsDHTML = '';
+			const groupesD = groupByLine(bassinsD, 'D');
+			groupesD.forEach((ligne, index) => {
+				if (ligne.length > 0) {
+					bassinsDHTML += `
+						<div class="pond-line">
+							${ligne.map(bassin => `
+								<div class="bassin-card ${getBassinClass(bassin)}" data-bassin-id="${bassin.id}" onclick="showBassinDetails('${bassin.id}')">
+									<div class="pond-name">${bassin.nom}</div>
+									${bassin.a_un_lot ? `
+										<div class="pond-lot">${bassin.lot.quantite_actuelle}<br>${bassin.lot.poids_moyen || 0} kg</div>
+										<span class="badge bg-light text-dark">${bassin.lot.get_statut_display || '-'}</span>
+									` : '<div class="pond-lot">Vide</div>'}
+								</div>
+							`).join('')}
+						</div>
+					`;
+				}
+			});
 
             // Assembler le HTML du site
             siteCard.innerHTML = `
@@ -149,6 +170,12 @@ async function afficherSites() {
                             ${bassinsBHTML}
                         </div>
                     ` : ''}
+					${bassinsD.length > 0 ? `
+						<div class="ponds-column-new">
+							<h4 class="section-title">Bassins Demo</h4>
+							${bassinsDHTML}
+						</div>
+					` : ''}
                 </div>
             `;
 
