@@ -2,7 +2,34 @@ from django import forms
 from .models import Aliment
 
 class AlimentForm(forms.ModelForm):
+    """
+    Formulaire pour la création et l'édition des aliments.
+
+    Ce formulaire permet de :
+    - Saisir les informations principales d'un aliment (nom, code, description)
+    - Sélectionner un fournisseur parmi les fournisseurs actifs
+    - Valider les données selon les règles métier
+    - Afficher des messages d'aide et d'erreur personnalisés
+
+    Attributes:
+        Meta: Configuration du formulaire (modèle, champs, widgets, etc.)
+    """
     class Meta:
+        """
+        Métadonnées de configuration du formulaire.
+
+        Attributes:
+            model (Model): Modèle Aliment associé au formulaire
+            fields (list): Liste des champs à inclure dans le formulaire
+            widgets (dict): Personnalisation des widgets de saisie
+                - nom: Champ texte avec classe CSS et placeholder
+                - code_alim: Champ texte pour le code unique
+                - description: Zone de texte multi-lignes
+                - fournisseur: Liste déroulante de sélection
+            labels (dict): Étiquettes personnalisées pour chaque champ
+            help_texts (dict): Textes d'aide pour chaque champ
+            error_messages (dict): Messages d'erreur personnalisés
+        """
         model = Aliment
         fields = ["nom", "code_alim", "description", "fournisseur"]
         widgets = {
@@ -47,6 +74,17 @@ class AlimentForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialise le formulaire et applique des personnalisations supplémentaires.
+
+        Args:
+            *args: Arguments positionnels standard
+            **kwargs: Arguments nommés standard
+
+        Side Effects:
+            - Définit un label vide personnalisé pour le champ fournisseur
+            - Peut être étendu pour d'autres personnalisations
+        """
         super().__init__(*args, **kwargs)
-        # Personnalisation supplémentaire si nécessaire
+        # Personnalisation du champ fournisseur
         self.fields["fournisseur"].empty_label = "--- Sélectionnez un fournisseur ---"
