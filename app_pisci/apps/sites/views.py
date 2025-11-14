@@ -13,6 +13,7 @@ from typing import Any
 from django.utils import timezone
 from apps.stocks.models import LotDePoisson
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 class SiteListView(LoginRequiredMixin, ListView):
     model = Site
@@ -185,7 +186,7 @@ class BassinsAPIView(LoginRequiredMixin, View):
 
 
 class CarteBassinsView(LoginRequiredMixin, TemplateView):
-    template_name = 'sites/carte.html'  # Chemin vers ton template
+    template_name = 'sites/carte.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -193,29 +194,43 @@ class CarteBassinsView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(require_GET, name='dispatch')
 class BassinLotDetailsView(LoginRequiredMixin, View):
+    """API endpoint to fetch details of a fish pond, its current lot, and recent feedings."""
 
     def get(self, request, bassin_id, *args, **kwargs):
-        bassin = Bassin.objects.get(id=bassin_id)
-        lot = bassin.lots_poissons.first()  # type: ignore
-        repas = Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas')[:7]
+        # Fetch the pond with SQL queries
+        bassin = get_object_or_404(
+            Bassin.objects.select_related('site')
+                    .prefetch_related('lots_poissons__espece', 'nourrissage_set__aliment'),
+            id=bassin_id
+            )
 
+        # Get the first fish lot in the pond
+        lot = bassin.lots_poissons.first() # type:ignore
+
+        # Get the 7 most recent feedings for this pond, ordered by date
+        derniers_repas = Nourrissage.objects.filter(bassin=bassin).order_by('-date_repas')[:7]
+
+        # Prepare JSON response with pond, lot, and feeding details
         data = {
+            # Basin information
             "bassin_nom": bassin.nom,
             "site_nom": bassin.site.nom,
             "site_id": str(bassin.site.id),
+             # Lot information (if exists)
             "code_lot": lot.code_lot if lot else None,
             "espece": lot.espece.nom_commun if lot and lot.espece else None,
             "quantite_actuelle": lot.quantite_actuelle if lot else 0,
-            "poids_moyen": lot.poids_moyen if lot else None,
-            "poids_total": lot.poids if lot else None,
+            "poids_moyen": lot.poids_moyen if lot and lot.poids_moyen else None,
+            "poids_total": lot.poids if lot and lot.poids else None,
             "date_arrivee": lot.date_arrivee.strftime("%d/%m/%Y") if lot and lot.date_arrivee else None,
+            # Recent feedings
             "derniers_repas": [
                 {
                     "date": repas.date_repas.strftime("%d/%m/%Y %H:%M"),
-                    "type_aliment": repas.aliment.nom if repas.aliment else "Non spécifié", # type: ignore
+                    "type_aliment": repas.aliment.nom if repas.aliment else "Non spécifié",
                     "quantite": repas.qte,
                 }
-                for repas in repas
-            ] if repas else [],
+                for repas in derniers_repas
+            ] if derniers_repas.exists() else [],
         }
         return JsonResponse(data)
