@@ -27,7 +27,7 @@ def test_signup_view_non_admin_redirected(standard_user, client):
     assert reverse('login') in response.redirect_chain[0][0]
     messages = list(get_messages(response.wsgi_request))
     assert len(messages) == 1
-    assert "Seuls les admins peuvent créer des utilisateurs" in str(messages[0])
+    assert "Seuls les admins peuvent créer des utilisateurs." in str(messages[0])
 
 @pytest.mark.django_db(transaction=True)
 def test_signup_view_creates_user(admin_user, client):

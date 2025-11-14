@@ -14,7 +14,7 @@ class TestNourrissageForm:
         """Test : le formulaire est valide avec des données correctes."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory()
         aliment = AlimentFactory()
 
         data = {
@@ -33,7 +33,7 @@ class TestNourrissageForm:
         """Test : le formulaire est invalide si la quantité est <= 0."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory()
         aliment = AlimentFactory()
 
         # Quantité invalide (0)
@@ -54,7 +54,7 @@ class TestNourrissageForm:
         """Test : le formulaire est invalide si la date est mal formatée."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory()
         aliment = AlimentFactory()
 
         # Date invalide
@@ -76,7 +76,7 @@ class TestNourrissageForm:
         site1 = SiteFactory()
         site2 = SiteFactory()
         bassin = BassinFactory(site=site2)  # Bassin d'un autre site
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(site_prod=site1)
         aliment = AlimentFactory()
 
         data = {
@@ -117,7 +117,7 @@ class TestNourrissageForm:
         """Test : le formulaire enregistre correctement un repas."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory()
         aliment = AlimentFactory()
         user = UserFactory()
 
@@ -133,17 +133,18 @@ class TestNourrissageForm:
         form = NourrissageForm(data=data)
         assert form.is_valid()
         nourrissage = form.save(commit=False)
-        nourrissage.cree_par = UserFactory
+        nourrissage.cree_par = user
         nourrissage.save()
         assert Nourrissage.objects.count() == 1
-        assert Nourrissage.objects.first().qte == 2
+        assert Nourrissage.objects.first().qte == 2.5
 
     def test_form_initial_data(self):
         """Test : le formulaire peut être initialisé avec des données existantes."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(site_prod=site)
         aliment = AlimentFactory()
+        user = UserFactory()
         nourrissage = NourrissageFactory(
             site_prod=site,
             bassin=bassin,
@@ -151,9 +152,12 @@ class TestNourrissageForm:
             aliment=aliment,
             qte=2.5,
             date_repas='2023-10-15',
-            notes='Test note'
+            notes='Test note',
+            cree_par=user
         )
 
         form = NourrissageForm(instance=nourrissage)
         assert form.initial['qte'] == 2.5
         assert form.initial['date_repas'] == '2023-10-15'
+        assert form.initial['site_prod'] == site.id
+        assert form.initial['bassin'] == bassin.id

@@ -12,15 +12,24 @@ class LotDePoissonFactory(factory.django.DjangoModelFactory):
     espece = factory.SubFactory(EspeceFactory)
     site_prod = factory.SubFactory(SiteFactory)
     fournisseur = factory.SubFactory(FournisseurFactory)
-
-    @factory.lazy_attribute
-    def bassin(self):
-        return BassinFactory(site=self.site_prod)
-
     date_arrivee = factory.LazyFunction(timezone.now)
     quantite = factory.Faker("random_int", min=100, max=10000)
-    quantite_actuelle = factory.LazyAttribute(lambda o: o.quantite)
+    quantite_actuelle = factory.LazyAttribute(lambda o: o.quantite)  # Par défaut = quantite
     statut = "OEUF"
-    code_lot = factory.Sequence(lambda n: f"LOT{n}")
-    poids = factory.Faker("random_int", min=1, max=100)
-    poids_moyen = None  # Calculé automatiquement dans save()
+    code_lot = factory.Sequence(lambda n: f"LOT{n:04d}")  # Formatage plus propre (LOT0001)
+    poids = factory.Faker("pyfloat", positive=True, max_value=100)  # Poids réaliste
+
+    @factory.post_generation
+    def bassins(self, create, extracted, **kwargs):
+        """Gère la relation ManyToMany avec Bassin.
+        Usage:
+            - LotDePoissonFactory() → 1 bassin aléatoire
+            - LotDePoissonFactory(bassins=[bassin1, bassin2]) → bassins spécifiques
+        """
+        if not create:
+            return
+        if extracted:  # Si des bassins sont passés explicitement
+            for bassin in extracted:
+                self.bassins.add(bassin)
+        else:  # Sinon, ajoute un bassin par défaut
+            self.bassins.add(BassinFactory(site=self.site_prod))  # Lie le bassin au même site
