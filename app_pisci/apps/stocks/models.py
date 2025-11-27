@@ -5,6 +5,11 @@ from django.core.exceptions import ValidationError
 from apps.fournisseurs.models import Fournisseur
 
 class LotDePoisson(TimeStampedModel):
+    """
+    Modèle représentant un lot de poissons dans la pisciculture.
+    Un lot est associé à une espèce, un site de production, un fournisseur, et un ou plusieurs bassins.
+    Il suit un cycle de vie (œufs, alevin, truitelle, etc.) et son poids moyen est calculé automatiquement.
+    """
     STATUT_CHOICES = [
         ('OEUF', 'Œufs'),
         ('ALEVIN', 'Alevin'),
@@ -88,8 +93,17 @@ class LotDePoisson(TimeStampedModel):
                 name="quantite_positive"
             )
         ]
+        """
+        Meta:
+        - constraints (list): Contraintes de validation, notamment pour garantir que la quantité est toujours positive.
+        """
 
     def save(self, *args, **kwargs):
+        """
+        Sauvegarde le lot après validation des données.
+        Calcule automatiquement le poids moyen (en grammes) si la quantité actuelle est supérieure à 0.
+        Appelle `full_clean()` pour exécuter les validations définies dans `clean()`.
+        """
         self.full_clean()
         if self.quantite_actuelle > 0:
             self.poids_moyen = round((self.poids * 1000) / self.quantite_actuelle, 2)
@@ -98,6 +112,15 @@ class LotDePoisson(TimeStampedModel):
         super().save(*args, **kwargs)
 
     def clean(self):
+        """
+        Valide les données du lot avant sauvegarde.
+        Vérifie que :
+        - Aucun autre lot n'occupe les mêmes bassins.
+        - La quantité initiale n'est pas égale à 0.
+
+        Raises:
+            ValidationError: Si un bassin est déjà occupé ou si la quantité est 0.
+        """
         super().clean()
         # Vérifie que les bassins sélectionnés ne contiennent pas déjà un lot
         for bassin in self.bassins.all():
@@ -110,5 +133,12 @@ class LotDePoisson(TimeStampedModel):
             raise ValidationError({"quantite": "La quantité ne peut pas être 0"})
 
     def __str__(self):
+        """
+        Retourne une représentation lisible du lot, incluant son code, l'espèce, et les quantités initiale/actuelle.
+
+        Returns:
+            str: Chaîne formatée "Code lot - Espèce (Quantité actuelle/Quantité initiale)".
+            Exemple : "LOT2023 - Truite Arc en ciel (500/1000)".
+        """
         return f"{self.code_lot} - {self.espece.nom_commun} ({self.quantite_actuelle}/{self.quantite})"
 
