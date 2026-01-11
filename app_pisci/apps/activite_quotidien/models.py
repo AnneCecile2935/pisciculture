@@ -6,12 +6,17 @@ from apps.stocks.models import LotDePoisson
 from apps.aliments.models import Aliment
 from apps.users.models import User
 from django.core.validators import MinValueValidator
+from django.utils import timezone
+
 
 
 class Nourrissage(TimeStampedModel):
     """
     Modèle représentant un repas donné à un lot de poissons dans un bassin.
-    Gère les quantités d'aliment, les motifs d'absence de repas, et les commentaires.
+    Gère les quantités d'aliment, les motifs d'absence de repas, et
+    les commentaires.
+    Les champs redondants (site_prod_nom, bassin_nom, etc.) permettent de
+    conserver l'historique même après suppression des relations.
     """
     MOTIFS_ABSENCE = [
         ('eau_sale', 'Eau sale'),
@@ -24,21 +29,24 @@ class Nourrissage(TimeStampedModel):
     # Clé étrangère vers le site de production
     site_prod = models.ForeignKey(
         Site,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         verbose_name="Site de production"
     )
 
     # Clé étrangère vers le bassin concerné
     bassin = models.ForeignKey(
         Bassin,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         verbose_name="Bassin"
     )
 
     # Clé étrangère vers le lot de poissons concerné
     crea_lot = models.ForeignKey(
         LotDePoisson,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         verbose_name="Lot de poissons",
         related_name="nourrissages"  # Permet d'accéder aux repas d'un lot via lot.nourrissages.all()
     )
@@ -46,7 +54,7 @@ class Nourrissage(TimeStampedModel):
     # Clé étrangère vers le type d'aliment utilisé
     aliment = models.ForeignKey(
         Aliment,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name="Type d'aliment",
         null=True,
         blank=True
@@ -78,6 +86,7 @@ class Nourrissage(TimeStampedModel):
         User,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         verbose_name="Enregistré par",
     )
 
@@ -87,6 +96,36 @@ class Nourrissage(TimeStampedModel):
         null=True,
         verbose_name="Commentaires"
     )
+
+    # Champs redondants pour conserver l'historique
+    site_prod_nom = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Nom du site de production"
+    )
+    bassin_nom = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Nom du bassin"
+    )
+    crea_lot_code = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name="Code du lot de poissons"
+    )
+    aliment_nom = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Nom de l'aliment"
+    )
+    cree_par_nom = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Nom de l'utilisateur"
+    )
+
+    # ========================================================
+
 
     class Meta:
         verbose_name = "Repas Journalier"
@@ -100,6 +139,9 @@ class Nourrissage(TimeStampedModel):
         - Si la quantité est 0, un motif d'absence est requis.
         - Si le motif est "À jeun", la quantité doit être 0.
         """
+        super().clean()
+        if self.date_repas and self.date_repas > timezone.now().date():
+            raise ValidationError({"date_repas": "La date ne peut pas être dans le futur."})
 
         # Valide que si qte est None, alors motif_absence doit être renseigné
         if self.qte is None and not self.motif_absence:
@@ -115,26 +157,43 @@ class Nourrissage(TimeStampedModel):
             )
 
     def save(self, *args, **kwargs):
-        """Appelle la validation avant sauvegarde."""
+        """Appelle la validation avant sauvegarde.
+        Met à jour les champs redondants avant sauvegarde."""
         self.full_clean()  # Valide avant sauvegarde
+
+        # Met à jour les champs redondants
+        if self.site_prod:
+            self.site_prod_nom = self.site_prod.nom
+        if self.bassin:
+            self.bassin_nom = self.bassin.nom
+        if self.crea_lot:
+            self.crea_lot_code = getattr(self.crea_lot, 'code_lot', f"LOT-{self.crea_lot.id}")
+        if self.aliment:
+            self.aliment_nom = self.aliment.nom
+        if self.cree_par:
+            self.cree_par_nom = self.cree_par.get_username()
         super().save(*args, **kwargs)
 
     @property
     def code_lot(self):
         """
         Retourne le code du lot associé.
-        Si le lot n'a pas de code, génère un code par défaut.
+        Utilise le champ redondant si le lot est supprimé.
         """
-        if hasattr(self.crea_lot, 'code_lot') and self.crea_lot.code_lot:
-            return self.crea_lot.code_lot
-        return f"LOT-{self.crea_lot.id}"
+        if self.crea_lot:
+            return getattr(self.crea_lot, 'code_lot', f"LOT-{self.crea_lot.id}")
+        return self.crea_lot_code  # ← Utilise le champ redondant si le lot est supprimé
 
     @property
     def qte_affichage(self):
         """
         Retourne la quantité formatée (ex: "5 kg") ou "Aucun repas" si aucune quantité n'est renseignée.
         """
-        return f"{self.qte} kg" if self.qte is not None else "Aucun repas"
+        if self.qte is not None:
+                return f"{self.qte} kg"
+        elif self.motif_absence:
+            return f"Aucun repas ({self.get_motif_absence_display()})"
+        return "Aucun repas"
 
     @property
     def est_a_jeun(self):
@@ -144,8 +203,11 @@ class Nourrissage(TimeStampedModel):
     def __str__(self):
         """
         Représentation textuelle du repas (ex: "LOT-123 - 5 kg le 2025-11-27").
+        Utilise les champs redondants si les relations sont supprimées.
         """
-        return f"{self.code_lot} - {self.qte_affichage} le {self.date_repas}"
+        motif = f" ({self.get_motif_absence_display()})" if self.motif_absence else ""
+        return f"{self.crea_lot_code} - {self.qte_affichage}{motif} le {self.date_repas}"
+
 
 class ReleveTempOxy(TimeStampedModel):
 

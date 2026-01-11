@@ -27,7 +27,8 @@ class LotDePoisson(TimeStampedModel):
     )
     site_prod = models.ForeignKey(
         'sites.Site',
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
         related_name='lots_poissons',
         verbose_name="Site de production"
     )

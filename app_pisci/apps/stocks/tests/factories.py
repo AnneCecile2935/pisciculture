@@ -8,6 +8,7 @@ from django.utils import timezone
 class LotDePoissonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = LotDePoisson
+        skip_postgeneration_save = True
 
     espece = factory.SubFactory(EspeceFactory)
     site_prod = factory.SubFactory(SiteFactory)

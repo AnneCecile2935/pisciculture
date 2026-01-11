@@ -25,7 +25,7 @@ class Bassin(TimeStampedModel):
     Chaque bassin est associé à un site et peut avoir un volume et un type spécifiques.
     """
     nom = models.CharField(max_length=100)
-    site = models.ForeignKey('sites.Site', on_delete=models.CASCADE, related_name='bassins')
+    site = models.ForeignKey('sites.Site', on_delete=models.SET_NULL,null=True, related_name='bassins')
     volume = models.FloatField(blank=True, null=True, help_text="Volume en m3", validators=[MinValueValidator(0)])
     type = models.CharField(max_length=100, blank=True, null=True, help_text="categorie ecloserie, grossissement")
     est_actif= models.BooleanField(default=True)

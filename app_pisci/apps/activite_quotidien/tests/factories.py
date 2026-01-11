@@ -9,8 +9,7 @@ from apps.users.tests.factories import UserFactory
 class NourrissageFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Nourrissage
-        # Retire skip_postgeneration_save pour permettre les sauvegardes automatiques
-        # skip_postgeneration_save = True  # ← Commenté ou supprimé
+        skip_postgeneration_save = True
 
     site_prod = factory.SubFactory(SiteFactory)
     aliment = factory.SubFactory(AlimentFactory)
@@ -20,22 +19,20 @@ class NourrissageFactory(factory.django.DjangoModelFactory):
     notes = factory.Faker('text', max_nb_chars=100)
 
     @factory.lazy_attribute
-    def crea_lot(self):
-        """Crée un LotDePoisson avec un bassin lié au même site_prod."""
-        # Utilise la factory LotDePoissonFactory qui gère déjà bassins
-        return LotDePoissonFactory(site_prod=self.site_prod)
+    def bassin(self):
+        """Crée un bassin lié au site_prod."""
+        return BassinFactory(site=self.site_prod)
 
     @factory.lazy_attribute
-    def bassin(self):
-        """Crée un bassin lié au même site_prod que le nourrissage."""
-        return BassinFactory(site=self.site_prod)
+    def crea_lot(self):
+        """Crée un lot lié au bassin créé ci-dessus."""
+        lot = LotDePoissonFactory(site_prod=self.site_prod)
+        lot.bassins.add(self.bassin)  # Associe le bassin au lot
+        return lot
 
     @factory.post_generation
     def post_create(self, create, extracted, **kwargs):
-        """Assure que le crea_lot est lié au bassin (si nécessaire).
-        Note: Dans ton modèle, vérifie si cette relation est requise.
-        """
+        """Sauvegarde l'instance après création."""
         if create:
-            # Si ton modèle Nourrissage a une relation directe avec Bassin,
-            # ajoute-la ici. Sinon, cette méthode peut être supprimée.
-            pass
+            self.save()
+
