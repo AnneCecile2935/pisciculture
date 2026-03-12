@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
 from apps.users.forms import CustomAuthenticationForm
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
@@ -26,6 +27,7 @@ from apps.sites.views import BassinsAPIView
 
 urlpatterns = [
     # Auth
+    path('', lambda request: redirect('dashboard', permanent=True)),
     path('login/', CustomLoginView.as_view(authentication_form=CustomAuthenticationForm), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     # Dashboard
