@@ -9,6 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 5s
@@ -18,13 +19,14 @@ services:
   db_test: #base de donnée de test
     image: postgres:15
     environment:
-      POSTGRES_DB: pisciculture_test  # Nom différent
-      POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_password
+      - POSTGRES_DB=postgres  # Nom différent
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=test_password
     ports:
       - "5433:5432"
     volumes:
       - postgres_test_data:/var/lib/postgresql/data
+      - ./init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U test_user -d pisciculture_test"]
       interval: 5s
@@ -54,7 +56,16 @@ services:
       context: .
       args:
         BUILD_FOR_TEST: "true"  # Active l'installation des dépendances de test
-    command: sh -c "DB_HOST=db_test python manage.py migrate && pytest"
+    command: sh -c "
+      export DB_NAME=pisciculture_test &&
+      export DB_USER=test_user &&
+      export DB_PASSWORD=test_password &&
+      export DB_HOST=db_test &&
+      export DB_PORT=5432 &&
+      python manage.py migrate &&
+      pytest
+      "
+
     volumes:
       - ./app_pisci:/app
     working_dir: /app
