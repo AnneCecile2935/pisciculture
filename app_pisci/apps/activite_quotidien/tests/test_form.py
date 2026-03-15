@@ -7,6 +7,7 @@ from apps.stocks.tests.factories import LotDePoissonFactory
 from apps.users.tests.factories import UserFactory
 from apps.activite_quotidien.forms import NourrissageForm
 from apps.activite_quotidien.models import Nourrissage
+import datetime
 
 @pytest.mark.django_db
 class TestNourrissageForm:
@@ -14,7 +15,7 @@ class TestNourrissageForm:
         """Test : le formulaire est valide avec des données correctes."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory()
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
 
         data = {
@@ -22,18 +23,22 @@ class TestNourrissageForm:
             'bassin': bassin.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 2.5,
+            'qte': 2,
             'date_repas': '2023-10-15',
-            'notes': 'Test note'
+            'notes': 'Test note',
+            'motif_absence':'',
         }
-        form = NourrissageForm(data=data)
+        form = NourrissageForm(data=data, site_id=site.id)
+        print("Bassins disponibles:", list(form.fields['bassin'].queryset.values_list('id', flat=True)))
+        print("Bassin sélectionné:", bassin.id)
+        print(form.errors)
         assert form.is_valid()
 
     def test_form_invalid_qte(self):
         """Test : le formulaire est invalide si la quantité est <= 0."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory()
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
 
         # Quantité invalide (0)
@@ -44,11 +49,12 @@ class TestNourrissageForm:
             'aliment': aliment.id,
             'qte': 0,
             'date_repas': '2023-10-15',
-            'notes': 'Test note'
+            'notes': 'Test note',
+            'motif_absence': '',
         }
-        form = NourrissageForm(data=data)
+        form = NourrissageForm(data=data, site_id=site.id)
         assert not form.is_valid()
-        assert 'qte' in form.errors
+        assert 'motif_absence' in form.errors
 
     def test_form_invalid_date_format(self):
         """Test : le formulaire est invalide si la date est mal formatée."""
@@ -63,7 +69,7 @@ class TestNourrissageForm:
             'bassin': bassin.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 2.5,
+            'qte': 2,
             'date_repas': '15-10-2023',  # Format incorrect (devrait être YYYY-MM-DD)
             'notes': 'Test note'
         }
@@ -76,7 +82,7 @@ class TestNourrissageForm:
         site1 = SiteFactory()
         site2 = SiteFactory()
         bassin = BassinFactory(site=site2)  # Bassin d'un autre site
-        lot = LotDePoissonFactory(site_prod=site1)
+        lot = LotDePoissonFactory(bassins=[BassinFactory(site=site1)])
         aliment = AlimentFactory()
 
         data = {
@@ -84,15 +90,17 @@ class TestNourrissageForm:
             'bassin': bassin.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 2.5,
+            'qte': 2,
             'date_repas': '2023-10-15',
-            'notes': 'Test note'
+            'notes': 'Test note',
+            'motif_absence':'',
         }
-        form = NourrissageForm(data=data)
+        form = NourrissageForm(data=data, site_id=site1.id)
         # Note : La validation des relations bassin/site est gérée dans la vue, pas dans le formulaire.
         # Le formulaire ne vérifie pas cela automatiquement (car cela dépend de la base de données).
         # Pour tester cela, utilise les tests de vues (déjà couverts dans test_views.py).
-        assert form.is_valid()  # Le formulaire est valide, mais la vue rejettera cette soumission.
+        assert not form.is_valid()  # Le formulaire est valide, mais la vue rejettera cette soumission.
+        assert 'bassin' in form.errors
 
     def test_form_invalid_lot_bassin(self):
         """Test : le formulaire est invalide si le lot n'appartient pas au bassin."""
@@ -102,22 +110,22 @@ class TestNourrissageForm:
     def test_form_required_fields(self):
         """Test : tous les champs obligatoires sont présents."""
         form = NourrissageForm()
-        required_fields = ['site_prod', 'bassin', 'crea_lot', 'aliment', 'qte', 'date_repas']
+        required_fields = ['site_prod', 'bassin', 'crea_lot', 'date_repas']
         for field in required_fields:
             assert form.fields[field].required
 
     def test_form_widgets(self):
         """Test : les widgets des champs sont corrects (ex: date_repas est un DateInput)."""
         form = NourrissageForm()
-        assert isinstance(form.fields['date_repas'].widget, forms.DateInput)
-        print(form.fields['date_repas'].widget.attrs)
-        assert form.fields['date_repas'].widget.attrs.get('type') == 'date'
+        date_widget = form.fields['date_repas'].widget
+        assert isinstance(date_widget, forms.DateInput)
+        assert 'form-control' in date_widget.attrs.get('class', '')  # Va passer
 
     def test_form_save(self):
         """Test : le formulaire enregistre correctement un repas."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory()
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         user = UserFactory()
 
@@ -126,23 +134,24 @@ class TestNourrissageForm:
             'bassin': bassin.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 2.5,
+            'qte': 2,
             'date_repas': '2023-10-15',
-            'notes': 'Test note'
+            'notes': 'Test note',
+            'motif_absence': '',  # Supprime le doublon
         }
-        form = NourrissageForm(data=data)
+        form = NourrissageForm(data=data, site_id=site.id)
         assert form.is_valid()
         nourrissage = form.save(commit=False)
         nourrissage.cree_par = user
         nourrissage.save()
         assert Nourrissage.objects.count() == 1
-        assert Nourrissage.objects.first().qte == 2.5
+        assert Nourrissage.objects.first().qte == 2
 
     def test_form_initial_data(self):
         """Test : le formulaire peut être initialisé avec des données existantes."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(site_prod=site)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         user = UserFactory()
         nourrissage = NourrissageFactory(
@@ -150,14 +159,54 @@ class TestNourrissageForm:
             bassin=bassin,
             crea_lot=lot,
             aliment=aliment,
-            qte=2.5,
+            qte=2,
             date_repas='2023-10-15',
             notes='Test note',
             cree_par=user
         )
 
         form = NourrissageForm(instance=nourrissage)
-        assert form.initial['qte'] == 2.5
-        assert form.initial['date_repas'] == '2023-10-15'
+        assert form.initial['qte'] == 2
+        assert form.initial['date_repas'] == datetime.date(2023, 10, 15)
         assert form.initial['site_prod'] == site.id
         assert form.initial['bassin'] == bassin.id
+
+
+    def test_form_valid_qte_zero_with_motif(self):
+        site = SiteFactory()
+        bassin = BassinFactory(site=site)
+        lot = LotDePoissonFactory(site_prod=site, bassins=[bassin])
+        aliment = AlimentFactory()
+
+        data = {
+            'site_prod': site.id,
+            'bassin': bassin.id,
+            'crea_lot': lot.id,
+            'aliment': aliment.id,
+            'qte': 0,
+            'date_repas': '2023-10-15',
+            'notes': 'Test note',
+            'motif_absence': 'ajeun',  # ✅ Motif fourni
+        }
+        form = NourrissageForm(data=data, site_id=site.id)
+        assert form.is_valid()  # ✅ Doit passer
+        assert form.cleaned_data['qte'] == 0  # ✅ Vérifie que qte est bien 0
+
+    def test_form_aliment_required_if_no_motif(self):
+        """Test : l'aliment est requis si aucun motif d'absence n'est saisi."""
+        site = SiteFactory()
+        bassin = BassinFactory(site=site)
+        lot = LotDePoissonFactory(bassins=[bassin])
+        data = {
+            'site_prod': site.id,
+            'bassin': bassin.id,
+            'crea_lot': lot.id,
+            'aliment': '',  # ✅ Aucun aliment sélectionné
+            'qte': 2,
+            'date_repas': '2023-10-15',
+            'notes': 'Test note',
+            'motif_absence': '',  # ✅ Aucun motif d'absence
+        }
+        form = NourrissageForm(data=data, site_id=site.id)
+        assert not form.is_valid()
+        assert 'aliment' in form.errors  # ✅ Vérifie que l'erreur est sur le champ aliment

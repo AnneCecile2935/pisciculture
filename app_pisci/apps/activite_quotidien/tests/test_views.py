@@ -14,7 +14,7 @@ class TestNourrissageCreateView:
         client.force_login(standard_user)
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
 
         data = {
@@ -22,9 +22,10 @@ class TestNourrissageCreateView:
             'bassin': bassin.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 2.5,
+            'qte': 2,
             'date_repas': '2023-10-15',
-            'notes': 'Test note'
+            'notes': 'Test note',
+            'motif_repas': '',
         }
         response = client.post(reverse('activite_quotidien:nourrissage-create'), data, follow=True)
 
@@ -41,7 +42,7 @@ class TestNourrissageCreateView:
         site1 = SiteFactory()
         site2 = SiteFactory()
         bassin = BassinFactory(site=site2)  # Bassin d'un autre site
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
 
         data = {
@@ -49,7 +50,7 @@ class TestNourrissageCreateView:
             'bassin': bassin.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 2.5,
+            'qte': 2,
             'date_repas': '2023-10-15',
             'notes': 'Test note'
         }
@@ -67,7 +68,7 @@ class TestNourrissageCreateView:
         site = SiteFactory()
         bassin1 = BassinFactory(site=site)
         bassin2 = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin2)  # Lot d'un autre bassin
+        lot = LotDePoissonFactory(bassin=[bassin2])  # Lot d'un autre bassin
         aliment = AlimentFactory()
 
         data = {
@@ -75,7 +76,7 @@ class TestNourrissageCreateView:
             'bassin': bassin1.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 2.5,
+            'qte': 2,
             'date_repas': '2023-10-15',
             'notes': 'Test note'
         }
@@ -100,7 +101,7 @@ class TestNourrissageListView:
         client.force_login(standard_user)
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         NourrissageFactory(crea_lot=lot, bassin=bassin, site_prod=site, aliment=aliment, cree_par=standard_user)
 
@@ -121,7 +122,7 @@ class TestNourrissageDetailView:
         client.force_login(standard_user)
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         nourrissage = NourrissageFactory(crea_lot=lot, bassin=bassin, site_prod=site, aliment=aliment, cree_par=standard_user)
 
@@ -133,7 +134,7 @@ class TestNourrissageDetailView:
         """Test : accès refusé si non authentifié."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         nourrissage = NourrissageFactory(crea_lot=lot, bassin=bassin, site_prod=site, aliment=aliment)
 
@@ -148,7 +149,7 @@ class TestNourrissageUpdateView:
         client.force_login(standard_user)
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         nourrissage = NourrissageFactory(crea_lot=lot, bassin=bassin, site_prod=site, aliment=aliment, cree_par=standard_user)
 
@@ -157,7 +158,7 @@ class TestNourrissageUpdateView:
             'bassin': bassin.id,
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 3.0,  # Nouvelle quantité
+            'qte': 3,  # Nouvelle quantité
             'date_repas': '2023-10-16',
             'notes': 'Updated note'
         }
@@ -165,7 +166,7 @@ class TestNourrissageUpdateView:
 
         assert response.status_code == 200
         nourrissage.refresh_from_db()
-        assert nourrissage.qte == 3.0
+        assert nourrissage.qte == 3
         messages = list(get_messages(response.wsgi_request))
         assert len(messages) == 1
         assert "Le repas a été mis à jour avec succès!" in str(messages[0])
@@ -177,7 +178,7 @@ class TestNourrissageUpdateView:
         site2 = SiteFactory()
         bassin1 = BassinFactory(site=site1)
         bassin2 = BassinFactory(site=site2)
-        lot = LotDePoissonFactory(bassin=bassin1)
+        lot = LotDePoissonFactory(bassin=[bassin1])
         aliment = AlimentFactory()
         nourrissage = NourrissageFactory(crea_lot=lot, bassin=bassin1, site_prod=site1, aliment=aliment, cree_par=standard_user)
 
@@ -186,7 +187,7 @@ class TestNourrissageUpdateView:
             'bassin': bassin2.id,  # Bassin d'un autre site
             'crea_lot': lot.id,
             'aliment': aliment.id,
-            'qte': 3.0,
+            'qte': 3,
             'date_repas': '2023-10-16',
             'notes': 'Updated note'
         }
@@ -203,7 +204,7 @@ class TestNourrissageUpdateView:
         """Test : accès refusé si non authentifié."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         nourrissage = NourrissageFactory(crea_lot=lot, bassin=bassin, site_prod=site, aliment=aliment)
 
@@ -218,7 +219,7 @@ class TestNourrissageDeleteView:
         client.force_login(standard_user)
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         nourrissage = NourrissageFactory(crea_lot=lot, bassin=bassin, site_prod=site, aliment=aliment, cree_par=standard_user)
 
@@ -233,7 +234,7 @@ class TestNourrissageDeleteView:
         """Test : accès refusé si non authentifié."""
         site = SiteFactory()
         bassin = BassinFactory(site=site)
-        lot = LotDePoissonFactory(bassin=bassin)
+        lot = LotDePoissonFactory(bassins=[bassin])
         aliment = AlimentFactory()
         nourrissage = NourrissageFactory(crea_lot=lot, bassin=bassin, site_prod=site, aliment=aliment)
 

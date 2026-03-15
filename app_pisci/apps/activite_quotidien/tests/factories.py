@@ -15,7 +15,6 @@ class NourrissageFactory(factory.django.DjangoModelFactory):
     aliment = factory.SubFactory(AlimentFactory)
     qte = factory.Faker('pydecimal', left_digits=2, right_digits=2, positive=True, min_value=0.01)
     date_repas = factory.Faker('date_this_year')
-    cree_par = factory.SubFactory(UserFactory)
     notes = factory.Faker('text', max_nb_chars=100)
 
     @factory.lazy_attribute
