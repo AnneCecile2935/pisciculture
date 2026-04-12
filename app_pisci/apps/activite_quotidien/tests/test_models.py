@@ -9,7 +9,7 @@ from apps.stocks.tests.factories import LotDePoissonFactory
 from apps.aliments.tests.factories import AlimentFactory
 from django.utils import timezone
 
-pytest.mark.django_db
+@pytest.mark.django_db
 class TestNourrissageModel:
     def test_nourrissage_creation(self):
         """Test : création d'un nourrissage valide."""
@@ -85,7 +85,7 @@ class TestNourrissageModel:
         nourrissage = NourrissageFactory(qte=1, motif_absence=None)
         assert nourrissage.est_a_jeun is False
 
-@pytest.mark.django_db
+pytestmark = pytest.mark.django_db
 class TestNourrissageValidations:
     def test_qte_min_value(self):
         """Test : la quantité ne peut pas être < 0.01."""
@@ -187,7 +187,7 @@ class TestNourrissageValidations:
         assert nourrissage.site_prod is None  # La relation est nulle
 
 
-@pytest.mark.django_db
+
 class TestNourrissageRelations:
     def test_nourrissage_lot_relation(self):
         """Test : un nourrissage est lié à un lot de poissons."""
@@ -222,7 +222,7 @@ class TestNourrissageRelations:
         assert Nourrissage.objects.filter(id=nourrissage.id).exists()
         assert Nourrissage.objects.get(id=nourrissage.id).cree_par is None
 
-@pytest.mark.django_db
+
 class TestNourrissageQueries:
     def test_filter_by_site(self):
         """Test : filtrer les nourrissages par site."""
@@ -254,7 +254,7 @@ class TestNourrissageQueries:
         assert nourrissages[0].date_repas == yesterday
 
 
-@pytest.mark.django_db
+
 class TestNourrissageDenormalizedFields:
     """Tests pour vérifier que les champs redondants sont correctement remplis et conservés."""
 
