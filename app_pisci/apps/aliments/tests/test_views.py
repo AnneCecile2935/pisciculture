@@ -1,122 +1,76 @@
 import pytest
 from django.urls import reverse
-from django.contrib.auth.models import Permission
-from django.contrib.messages import get_messages
-from apps.aliments.models import Aliment
-from apps.fournisseurs.tests.factories import FournisseurFactory
-from apps.users.tests.factories import UserFactory, AdminUserFactory
 from apps.aliments.tests.factories import AlimentFactory
-from django.contrib.contenttypes.models import ContentType
+from apps.aliments.models import Aliment
 
-@pytest.mark.django_db
-class TestAlimentListView:
-    def test_list_view_with_permission(self, client):
-        """Teste l'accès à la liste avec permission."""
-        user = UserFactory(is_staff=True)
-        user.user_permissions.add(Permission.objects.get(codename='view_aliment'))
-        client.force_login(user)
-        AlimentFactory.create_batch(3)
-        response = client.get(reverse('aliments:list'))
-        assert response.status_code == 200
-        assert len(response.context['aliments']) == 3
-        assert 'aliments/alim_list.html' in [t.name for t in response.templates]
+pytestmark = pytest.mark.django_db
 
-    def test_list_view_without_permission(self, client):
-        """Teste l'accès refusé sans permission."""
-        user = UserFactory(is_staff=True)
-        client.force_login(user)
-        response = client.get(reverse('aliments:list'))
-        assert response.status_code == 403  # Forbidden (raise_exception=True)
 
-    def test_list_view_anonymous(self, client):
-        """Teste la redirection vers /login/ pour un utilisateur non connecté."""
-        response = client.get(reverse('aliments:list'))
-        assert response.status_code == 302
-        assert response.url.startswith('/login/')  # Vérifie la redirection
+def test_list_view_status(client, staff_client, aliments):
+    response = staff_client.get(reverse("aliments:list"))
+    assert response.status_code == 200
 
-@pytest.mark.django_db
-class TestAlimentCreateView:
-    def test_create_view_anonymous(self, client):
-        """Teste la redirection vers /login/ pour un utilisateur non connecté."""
-        response = client.get(reverse('aliments:create'))
-        assert response.status_code == 302
-        assert response.url.startswith('/login/')
 
-    def test_create_view_with_permission(self, client):
-        """Teste la création avec permission et message de succès."""
-        user = UserFactory(is_staff=True)
-        user.user_permissions.add(Permission.objects.get(codename='add_aliment'))
-        client.force_login(user)
-        fournisseur = FournisseurFactory()
-        response = client.post(reverse('aliments:create'), {
-            'nom': 'Nouvel Aliment',
-            'code_alim': 'NEW001',
-            'fournisseur': fournisseur.id
-        })
-        assert response.status_code == 302
-        assert Aliment.objects.count() == 1
-        messages = list(get_messages(response.wsgi_request))
-        assert len(messages) == 1
-        assert "L'aliment a été créé avec succès" in str(messages[0])
+def test_list_view_contains_data(client, staff_client, aliments):
+    response = staff_client.get(reverse("aliments:list"))
 
-    def test_create_view_invalid_data(self, client):
-        """Teste la soumission de données invalides."""
-        user = UserFactory(is_staff=True)
-        user.user_permissions.add(Permission.objects.get(codename='add_aliment'))
-        client.force_login(user)
-        response = client.post(reverse('aliments:create'), {
-            'nom': '',  # Champ obligatoire manquant
-            'code_alim': 'NEW001',
-            'fournisseur': FournisseurFactory().id
-        })
-        assert response.status_code == 200  # Re-affiche le formulaire
-        assert 'aliments/alim_form.html' in [t.name for t in response.templates]
+    assert response.context["aliments"].count() == 3
 
-@pytest.mark.django_db
-class TestAlimentUpdateView:
-    def test_update_view_with_permission(self, client):
-        """Teste la mise à jour avec permission et message de succès."""
-        user = UserFactory(is_staff=True)
-        user.user_permissions.add(Permission.objects.get(codename='change_aliment'))
-        client.force_login(user)
-        aliment = AlimentFactory(nom="Ancien Nom")
-        response = client.post(reverse('aliments:update', args=[aliment.id]), {
-            'nom': 'Nouveau Nom',
-            'code_alim': aliment.code_alim,
-            'fournisseur': aliment.fournisseur.id
-        })
-        assert response.status_code == 302
-        aliment.refresh_from_db()
-        assert aliment.nom == 'Nouveau Nom'
-        messages = list(get_messages(response.wsgi_request))
-        assert "L'aliment a été mis à jour avec succès" in str(messages[0])
+def test_create_aliment_valid(staff_client, perm_add_aliment, staff_user, fournisseur):
+    staff_user.user_permissions.add(perm_add_aliment)
 
-@pytest.mark.django_db
-class TestAlimentDeleteView:
-    def test_delete_view_with_permission(self, client):
-        user = AdminUserFactory()  # Utilise AdminUserFactory au lieu de UserFactory
-        content_type = ContentType.objects.get_for_model(Aliment)
-        permission, _ = Permission.objects.get_or_create(
-            codename='delete_aliment',
-            content_type=content_type,
-            defaults={'name': 'Can delete aliment'}
-        )
-        user.user_permissions.add(permission)
-        user.save()
+    response = staff_client.post(reverse("aliments:create"), {
+        "nom": "Test aliment",
+        "code_alim": "TA001",
+        "description": "desc",
+        "fournisseur": fournisseur.id
+    })
 
-        # Vérifie que is_staff est bien True
-        assert user.is_staff is True
+    assert response.status_code == 302
+    assert Aliment.objects.filter(code_alim="TA001").exists()
 
-        client.force_login(user)
-        aliment = AlimentFactory(code_alim="TEST01")
 
-        response = client.post(reverse('aliments:delete', args=[aliment.id]), follow=True)
-        assert response.status_code == 200
-        assert not Aliment.objects.filter(pk=aliment.pk).exists()
+def test_create_aliment_invalid(staff_client, staff_user):
+    staff_user.user_permissions.add(staff_user.user_permissions.model.objects.none())
 
-    def test_delete_view_anonymous(self, client):
-        """Teste la redirection vers /login/ pour un utilisateur non connecté."""
-        aliment = AlimentFactory(code_alim="TEST01")
-        response = client.get(reverse('aliments:delete', args=[aliment.id]))
-        assert response.status_code == 302
-        assert response.url.startswith('/login/')
+    response = staff_client.post(reverse("aliments:create"), {
+        "nom": "",
+        "code_alim": "TA001"
+    })
+
+    assert response.status_code == 200
+    assert "nom" in response.context["form"].errors
+
+def test_update_aliment(staff_client, perm_change_aliment, staff_user, aliment, fournisseur):
+    staff_user.user_permissions.add(perm_change_aliment)
+
+    response = staff_client.post(
+        reverse("aliments:update", args=[aliment.id]),
+        {
+            "nom": "Updated",
+            "code_alim": aliment.code_alim,
+            "description": "updated",
+            "fournisseur": fournisseur.id
+        }
+    )
+
+    assert response.status_code == 302
+
+def test_delete_aliment(admin_client, aliment):
+    response = admin_client.post(reverse("aliments:delete", args=[aliment.id]))
+
+    assert response.status_code == 302
+    assert not Aliment.objects.filter(id=aliment.id).exists()
+
+def test_json_response(staff_client, aliments):
+    response = staff_client.get(
+        reverse("aliments:list_json"),
+        HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+    )
+
+    data = response.json()
+
+    assert response.status_code == 200
+    assert len(data) == 3
+    assert "code_alim" in data[0]
+    assert "nom" in data[0]

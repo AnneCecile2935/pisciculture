@@ -20,6 +20,6 @@ class AlimentAdmin(admin.ModelAdmin):
         list_filter (tuple): Champs utilisables pour filtrer la liste.
             Permet de filtrer les aliments par fournisseur.
     """
-    list_display = ("code_alim", "nom", "fournisseur", "description")
+    list_display = ("code_alim", "nom", "fournisseur")
     search_fields = ("code_alim", "nom")
     list_filter = ("fournisseur",)

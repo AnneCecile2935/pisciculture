@@ -1,50 +1,105 @@
 import pytest
-from django.conf import settings
-from apps.users.tests.factories import UserFactory, AdminUserFactory
-from apps.stocks.tests.factories import LotDePoissonFactory
-from rest_framework.test import APIClient
 from django.test import Client
-from django.db import transaction
+from rest_framework.test import APIClient
+from django.contrib.auth.models import Permission
 
-@pytest.fixture(autouse=True)
-def enable_db_access_for_all_tests(db):
-    """
-    Fixture pour activer l'accès à la base de données pour tous les tests.
-    """
-    pass
+from apps.users.tests.factories import UserFactory, AdminUserFactory
+from apps.aliments.tests.factories import AlimentFactory
+from apps.fournisseurs.tests.factories import FournisseurFactory
+from apps.stocks.tests.factories import LotDePoissonFactory
+
+
+# ======================
+# CLIENTS
+# ======================
 
 @pytest.fixture
-def db_transactional(db):
-    """
-    Fixture pour encapsuler chaque test dans une transaction qui est annulée à la fin.
-    """
-    with transaction.atomic():
-        yield db
+def client():
+    return Client()
+
+@pytest.fixture
+def api_client():
+    return APIClient()
+
+
+# ======================
+# USERS
+# ======================
+
+@pytest.fixture
+def standard_user(db):
+    return UserFactory(password="securepassword123")
 
 
 @pytest.fixture
 def admin_user(db):
-    user = AdminUserFactory()
-    assert user.is_admin is True
-    assert user.is_staff is True
+    user = AdminUserFactory(password="securepassword123")
     return user
 
-@pytest.fixture
-def standard_user(db):
-    return UserFactory()
 
 @pytest.fixture
-def client(db):
-    return Client()
+def staff_user(db):
+    return UserFactory(password="securepassword123", is_staff=True)
+
+
+# ======================
+# FACTORIES
+# ======================
 
 @pytest.fixture
-def api_client(db):
-    return APIClient()
+def aliment_factory():
+    return AlimentFactory
 
 @pytest.fixture
-def lot_factory(db):
+def fournisseur_factory():
+    return FournisseurFactory
+
+@pytest.fixture
+def lot_factory():
     return LotDePoissonFactory
 
+
+# ======================
+# OBJECTS READY TO USE
+# ======================
+
 @pytest.fixture
-def normal_user(db):
-    return UserFactory(is_admin=False, is_staff=False)
+def fournisseur(db):
+    return FournisseurFactory()
+
+@pytest.fixture
+def aliment(db, fournisseur):
+    return AlimentFactory(fournisseur=fournisseur)
+
+@pytest.fixture
+def aliments(db, fournisseur):
+    return AlimentFactory.create_batch(3, fournisseur=fournisseur)
+
+
+# ======================
+# PERMISSIONS (IMPORTANT)
+# ======================
+
+@pytest.fixture
+def perm_add_aliment(db):
+    return Permission.objects.get(codename="add_aliment")
+
+@pytest.fixture
+def perm_change_aliment(db):
+    return Permission.objects.get(codename="change_aliment")
+
+@pytest.fixture
+def perm_delete_aliment(db):
+    return Permission.objects.get(codename="delete_aliment")
+
+
+# ======================
+# AUTH HELPERS (OPTIONNEL MAIS PROPRE)
+# ======================
+
+@pytest.fixture
+def login(client):
+    def _login(user):
+        client.force_login(user)
+        return client
+    return _login

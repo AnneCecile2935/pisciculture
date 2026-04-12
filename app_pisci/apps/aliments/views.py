@@ -1,4 +1,4 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
@@ -32,6 +32,10 @@ class AlimentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         messages.success(self.request, "L'aliment a été créé avec succès")
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        print("FORM ERRORS:", form.errors)
+        return super().form_invalid(form)
+
 
 class AlimentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Aliment
@@ -54,7 +58,7 @@ class AlimentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, StandardDel
     model = Aliment
     list_url_name= "aliments:list"
     login_url = '/login/'
-    permission_required = "aliments: delete_aliment"
+    permission_required = "aliments.delete_aliment"
 
     def test_func(self):
         has_perm = self.request.user.has_perm('aliments.delete_aliment')
@@ -62,16 +66,13 @@ class AlimentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, StandardDel
         return has_perm and self.request.user.is_staff  # ⭐ Vérifie aussi is_staff
 
 
-class AlimentListJsonView(LoginRequiredMixin,ListView):
-    model = Aliment
-    context_object_name = 'aliments'
+class AlimentListJsonView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            # Si la requête est AJAX, retourner les données en JSON
-            aliments = list(self.get_queryset().values(
-                'id', 'code_alim', 'nom', 'fournisseur__nom'
-            ))
-            return JsonResponse(aliments, safe=False)
-        # Sinon, comportement normal de la ListView
-        return super().get(request, *args, **kwargs)
+        aliments = Aliment.objects.all().values(
+            "id",
+            "code_alim",
+            "nom",
+            "fournisseur__nom"
+        )
+        return JsonResponse(list(aliments), safe=False)
