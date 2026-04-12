@@ -141,27 +141,15 @@ TESTING = os.getenv('TESTING', 'false').lower() == 'true'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'postgres'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'db'),
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': '5432',
 
     }
 }
 
-# =============================================
-# Surcharge pour les tests
-# =============================================
-if TESTING:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'pisciculture_test'),
-        'USER': os.getenv('DB_USER', 'test_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'test_password'),
-        'HOST': os.getenv('DB_HOST', 'db_test'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-
-    }
 # =============================================
 # 7. AUTH / SECURITY
 # =============================================
