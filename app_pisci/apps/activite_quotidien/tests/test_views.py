@@ -74,4 +74,4 @@ class NourrissageParSiteViewTest(TestCase):
         response = self.client.post(self.url, data)
 
         self.assertEqual(Nourrissage.objects.count(), 0)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
