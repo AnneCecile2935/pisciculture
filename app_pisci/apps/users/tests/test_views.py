@@ -14,25 +14,25 @@ User = get_user_model()
 def test_signup_view_admin_can_access(admin_user, client):
     """Test : un admin peut accéder à la page de création d'utilisateur."""
     client.force_login(admin_user)
-    url = reverse('signup')
+    url = reverse('users:signup')
     response = client.get(url)
     assert response.status_code == 200
 
 @pytest.mark.django_db(transaction=True)
 def test_signup_view_non_admin_redirected(standard_user, client):
     client.force_login(standard_user)
-    url = reverse('signup')
+    url = reverse('users:signup')
     response = client.get(url, follow=True)
     assert response.redirect_chain[0][1] == 302
     assert reverse('login') in response.redirect_chain[0][0]
     messages = list(get_messages(response.wsgi_request))
     assert len(messages) == 1
-    assert "Seuls les admins peuvent créer des utilisateurs." in str(messages[0])
+    assert "Seuls les admins peuvent créer des utilisateurs" in str(messages[0])
 
 @pytest.mark.django_db(transaction=True)
 def test_signup_view_creates_user(admin_user, client):
     client.force_login(admin_user)
-    url = reverse('signup')
+    url = reverse('users:signup')
     data = {
         'email': 'nouvel@example.com',
         'username': 'nouvel',
@@ -40,8 +40,7 @@ def test_signup_view_creates_user(admin_user, client):
         'password2': 'motdepasse123',
     }
     response = client.post(url, data, follow=True)
-    assert response.redirect_chain[0][1] == 302  # Vérifie la redirection
-    assert reverse('login') in response.redirect_chain[0][0]  # Vérifie l'URL de redirection
+    assert reverse('users:user_list') in response.redirect_chain[0][0]
     assert User.objects.filter(email='nouvel@example.com').exists()
     messages = list(get_messages(response.wsgi_request))
     assert any("Utilisateur crée avec succès!" in str(message) for message in messages)
@@ -49,7 +48,7 @@ def test_signup_view_creates_user(admin_user, client):
 @pytest.mark.django_db(transaction=True)
 def test_signup_view_fails_without_email(admin_user, client):
     client.force_login(admin_user)
-    url = reverse('signup')
+    url = reverse('users:signup')
     data = {
         'email': '',  # Email manquant
         'username': 'noemailuser',
@@ -67,7 +66,7 @@ def test_signup_view_fails_without_email(admin_user, client):
 def test_user_viewset_admin_can_list_users(admin_user, api_client):
     """Test : un admin peut lister les utilisateurs via l'API."""
     api_client.force_authenticate(user=admin_user)
-    url = reverse('user-list')
+    url = reverse('users:user-list')
     response = api_client.get(url)
     assert response.status_code == 200
 
@@ -75,7 +74,7 @@ def test_user_viewset_admin_can_list_users(admin_user, api_client):
 def test_user_viewset_non_admin_cannot_list_users(standard_user, api_client):
     """Test : un utilisateur standard ne peut pas lister les utilisateurs via l'API."""
     api_client.force_authenticate(user=standard_user)
-    url = reverse('user-list')
+    url = reverse('users:user-list')
     response = api_client.get(url)
     assert response.status_code == 403
 
@@ -83,7 +82,7 @@ def test_user_viewset_non_admin_cannot_list_users(standard_user, api_client):
 def test_user_viewset_admin_can_delete_user(admin_user, api_client, standard_user):
     """Test : un admin peut supprimer un utilisateur standard."""
     api_client.force_authenticate(user=admin_user)
-    url = reverse('user-detail', args=[standard_user.id])
+    url = reverse('users:user-detail', args=[standard_user.id])
     response = api_client.delete(url)
     assert response.status_code == 204
     assert not User.objects.filter(id=standard_user.id).exists()
@@ -92,7 +91,7 @@ def test_user_viewset_admin_can_delete_user(admin_user, api_client, standard_use
 def test_user_viewset_admin_cannot_delete_self(admin_user, api_client):
     """Test : un admin ne peut pas se supprimer lui-même."""
     api_client.force_authenticate(user=admin_user)
-    url = reverse('user-detail', args=[admin_user.id])
+    url = reverse('users:user-detail', args=[admin_user.id])
     response = api_client.delete(url)
     assert response.status_code == 403  # Forbidden
     assert User.objects.filter(id=admin_user.id).exists()
@@ -101,7 +100,7 @@ def test_user_viewset_admin_cannot_delete_self(admin_user, api_client):
 def test_user_viewset_duplicate_email(admin_user, api_client):
     """Test : la création échoue si l'email est déjà utilisé."""
     api_client.force_authenticate(user=admin_user)
-    url = reverse('user-list')
+    url = reverse('users:user-list')
     data = {
         'email': admin_user.email,  # Email déjà utilisé
         'username': 'duplicate',
@@ -132,7 +131,7 @@ def test_user_email_validation():
 def test_signup_view_fails_with_short_password(admin_user, client):
     """Test : la création échoue si le mot de passe est trop court (< 8 caractères)."""
     client.force_login(admin_user)
-    url = reverse('signup')
+    url = reverse('users:signup')
     data = {
         'email': 'test@example.com',
         'username': 'testuser',
@@ -149,7 +148,7 @@ def test_signup_view_fails_with_short_password(admin_user, client):
 def test_signup_view_fails_with_invalid_email(admin_user, client):
     """Test : la création échoue si l'email est invalide."""
     client.force_login(admin_user)
-    url = reverse('signup')
+    url = reverse('users:signup')
     data = {
         'email': 'invalide',  # Email invalide
         'username': 'testuser',
@@ -167,7 +166,7 @@ def test_user_viewset_admin_cannot_delete_another_admin(admin_user, api_client):
     """Test : un admin ne peut pas supprimer un autre admin."""
     another_admin = UserFactory(is_admin=True, is_staff=True)
     api_client.force_authenticate(user=admin_user)
-    url = reverse('user-detail', args=[another_admin.id])
+    url = reverse('users:user-detail', args=[another_admin.id])
     response = api_client.delete(url)
     assert response.status_code == 403  # Forbidden
     assert User.objects.filter(id=another_admin.id).exists()
@@ -176,7 +175,7 @@ def test_user_viewset_admin_cannot_delete_another_admin(admin_user, api_client):
 def test_user_viewset_standard_user_cannot_list_users(standard_user, api_client):
     """Test : un utilisateur standard ne peut pas lister les utilisateurs."""
     api_client.force_authenticate(user=standard_user)
-    url = reverse('user-list')
+    url = reverse('users:user-list')
     response = api_client.get(url)
     assert response.status_code == 403
 

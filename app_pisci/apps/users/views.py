@@ -15,7 +15,7 @@ from rest_framework.decorators import api_view
 class SignupView(UserPassesTestMixin,CreateView):
     model = User
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy('user_list')
+    success_url = reverse_lazy('users:user_list')
     template_name = 'users/user_form.html'
 
     # Methode pour vérifier si l'utilisateur est un admin
