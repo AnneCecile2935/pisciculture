@@ -49,8 +49,13 @@ def test_create_aliment_invalid(staff_client_with_add_perm, fournisseur):
     assert "nom" in response.context["form"].errors
 
 
-def test_update_aliment(staff_client_with_add_perm, aliment, fournisseur):
-    response = staff_client_with_add_perm.post(
+def test_update_aliment(staff_client, staff_user, perm_change_aliment, aliment, fournisseur):
+    staff_user.user_permissions.add(perm_change_aliment)
+    staff_user.save()
+
+    staff_client.force_login(staff_user)
+
+    response = staff_client.post(
         reverse("aliments:update", args=[aliment.id]),
         {
             "nom": "Updated",
