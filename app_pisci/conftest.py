@@ -21,6 +21,25 @@ def client():
 def api_client():
     return APIClient()
 
+@pytest.fixture
+def staff_client(client, staff_user):
+    client.force_login(staff_user)
+    return client
+
+
+@pytest.fixture
+def admin_client(client, admin_user):
+    client.force_login(admin_user)
+    return client
+
+
+@pytest.fixture
+def staff_client_with_add_perm(client, staff_user, perm_add_aliment):
+    staff_user.user_permissions.add(perm_add_aliment)
+    staff_user.refresh_from_db()
+    client.force_login(staff_user)
+    return client
+
 
 # ======================
 # USERS
@@ -41,6 +60,11 @@ def admin_user(db):
 def staff_user(db):
     return UserFactory(password="securepassword123", is_staff=True)
 
+@pytest.fixture
+def staff_user_with_add_perm(staff_user, perm_add_aliment):
+    staff_user.user_permissions.add(perm_add_aliment)
+    staff_user.refresh_from_db()
+    return staff_user
 
 # ======================
 # FACTORIES

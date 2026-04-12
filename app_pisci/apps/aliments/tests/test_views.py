@@ -3,58 +3,65 @@ from django.urls import reverse
 from apps.aliments.tests.factories import AlimentFactory
 from apps.aliments.models import Aliment
 
+import pytest
+from django.urls import reverse
+from apps.aliments.models import Aliment
+
 pytestmark = pytest.mark.django_db
 
 
-def test_list_view_status(client, staff_client, aliments):
+def test_list_view_status(staff_client, aliments):
     response = staff_client.get(reverse("aliments:list"))
     assert response.status_code == 200
 
 
-def test_list_view_contains_data(client, staff_client, aliments):
+def test_list_view_contains_data(staff_client, aliments):
     response = staff_client.get(reverse("aliments:list"))
-
     assert response.context["aliments"].count() == 3
 
-def test_create_aliment_valid(staff_client, perm_add_aliment, staff_user, fournisseur):
-    staff_user.user_permissions.add(perm_add_aliment)
 
-    response = staff_client.post(reverse("aliments:create"), {
-        "nom": "Test aliment",
-        "code_alim": "TA001",
-        "description": "desc",
-        "fournisseur": fournisseur.id
-    })
+def test_create_aliment_valid(staff_client_with_add_perm, fournisseur):
+    response = staff_client_with_add_perm.post(
+        reverse("aliments:create"),
+        {
+            "nom": "Test aliment",
+            "code_alim": "TA001",
+            "description": "desc",
+            "fournisseur": fournisseur.id,
+        },
+    )
 
     assert response.status_code == 302
     assert Aliment.objects.filter(code_alim="TA001").exists()
 
 
-def test_create_aliment_invalid(staff_client, staff_user):
-    staff_user.user_permissions.add(staff_user.user_permissions.model.objects.none())
-
-    response = staff_client.post(reverse("aliments:create"), {
-        "nom": "",
-        "code_alim": "TA001"
-    })
+def test_create_aliment_invalid(staff_client_with_add_perm, fournisseur):
+    response = staff_client_with_add_perm.post(
+        reverse("aliments:create"),
+        {
+            "nom": "",
+            "code_alim": "TA002",
+            "fournisseur": fournisseur.id,
+        },
+    )
 
     assert response.status_code == 200
     assert "nom" in response.context["form"].errors
 
-def test_update_aliment(staff_client, perm_change_aliment, staff_user, aliment, fournisseur):
-    staff_user.user_permissions.add(perm_change_aliment)
 
-    response = staff_client.post(
+def test_update_aliment(staff_client_with_add_perm, aliment, fournisseur):
+    response = staff_client_with_add_perm.post(
         reverse("aliments:update", args=[aliment.id]),
         {
             "nom": "Updated",
             "code_alim": aliment.code_alim,
             "description": "updated",
-            "fournisseur": fournisseur.id
-        }
+            "fournisseur": fournisseur.id,
+        },
     )
 
     assert response.status_code == 302
+
 
 def test_delete_aliment(admin_client, aliment):
     response = admin_client.post(reverse("aliments:delete", args=[aliment.id]))
@@ -62,10 +69,11 @@ def test_delete_aliment(admin_client, aliment):
     assert response.status_code == 302
     assert not Aliment.objects.filter(id=aliment.id).exists()
 
+
 def test_json_response(staff_client, aliments):
     response = staff_client.get(
         reverse("aliments:list_json"),
-        HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+        HTTP_X_REQUESTED_WITH="XMLHttpRequest",
     )
 
     data = response.json()
