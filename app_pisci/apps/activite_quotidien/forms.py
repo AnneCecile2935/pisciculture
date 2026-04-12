@@ -3,80 +3,120 @@ from .models import ReleveTempOxy, Nourrissage, Bassin, Aliment
 from django.utils import timezone
 from django.forms import formset_factory
 
+from django import forms
+from .models import Nourrissage, Aliment, Bassin
+
+
+from django import forms
+from django.forms import formset_factory
+from .models import Nourrissage, Aliment, Bassin
+
 class NourrissageForm(forms.ModelForm):
     """
-    Formulaire pour la création et la modification d'un repas (nourrissage) dans un bassin.
-    Gère dynamiquement la liste des bassins en fonction du site sélectionné.
-    Valide la quantité, l'aliment et le motif d'absence.
+    Formulaire métier de saisie d’un nourrissage.
 
-    Attributes:
-        bassin (ModelChoiceField): Champ masqué et désactivé pour le bassin (défini dynamiquement par le site).
-        aliment (ModelChoiceField): Liste déroulante des aliments disponibles.
+    Règle métier principale :
+    - Soit on saisit : aliment + quantité
+    - Soit on saisit : motif d’absence (et alors quantité = 0)
     """
-    bassin = forms.ModelChoiceField(
-        queryset=Bassin.objects.none(),  # Sera défini dynamiquement dans __init__
-        widget=forms.HiddenInput(),
-        empty_label=None,
-        required=True,
+# Bassin affiché mais non modifiable ici (rempli depuis la vue)
+    bassin = forms.ModelChoiceField(queryset=Bassin.objects.all())
+
+    # Aliment optionnel car dépend de la logique métier (aliment OU motif)
+    aliment = forms.ModelChoiceField(queryset=Aliment.objects.all(), required=False)
+
+    # Quantité optionnelle car dépend du cas métier
+    qte = forms.FloatField(required=False)
+
+    # Motif d'absence = alternative au nourrissage classique
+    motif_absence = forms.ChoiceField(
+        choices=[("", "----------")] + Nourrissage.MOTIFS_ABSENCE,
+        required=False
     )
 
-    aliment = forms.ModelChoiceField(
-        queryset=Aliment.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False,
-        disabled=False,
-    )
-
-    qte = forms.IntegerField(
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        required=False,
-    )
     class Meta:
-        """Configuration du formulaire lié au modèle Nourrissage."""
         model = Nourrissage
-        fields = [
-            'site_prod',
-            'bassin',
-            'crea_lot',
-            'aliment',
-            'qte',
-            'date_repas',
-            'notes',
-            'motif_absence',
-        ]
-        widgets = {
-            'date_repas': forms.DateInput(attrs={'type': 'date', 'class':'form-control'}),
-            'motif_absence': forms.Select(attrs={'class': 'form-control'}),
-        }
+
+        # Champs exposés dans le formulaire utilisateur
+        fields = ["bassin", "aliment", "qte", "motif_absence"]
+
+    def __init__(self, *args, bassin_id=None, site_id=None, **kwargs):
+        """
+        Initialisation dynamique du formulaire :
+
+        - site_id → filtre les bassins affichés
+        - bassin_id → permet de retrouver le dernier aliment utilisé
+        """
+
+        super().__init__(*args, **kwargs)
+
+        # Filtrage des bassins par site (multi-site support)
+        if site_id:
+            self.fields["bassin"].queryset = Bassin.objects.filter(site_id=site_id)
+
+        # logique métier importante :
+        # préremplir le dernier aliment utilisé dans ce bassin
+        if bassin_id:
+            last = (
+                Nourrissage.objects
+                .filter(bassin_id=bassin_id, aliment__isnull=False)
+                .order_by("-date_repas")
+                .first()
+            )
+
+            if last:
+                self.fields["aliment"].initial = last.aliment
 
     def clean(self):
+        """
+        Validation métier centrale du formulaire.
+
+        On applique une logique stricte :
+
+        CAS 1 :
+            aliment + quantité => OK
+
+        CAS 2 :
+            motif d’absence => OK + force qte = 0
+
+        CAS 3 :
+            rien ou incomplet => erreur
+        """
+
         cleaned_data = super().clean()
-        motif_absence = cleaned_data.get('motif_absence')
-        qte = cleaned_data.get('qte')
-        aliment = cleaned_data.get('aliment')
 
-        # Si "à jeun" est sélectionné, force qte à 0
-        if motif_absence == 'ajeun':
-            cleaned_data['qte'] = 0  # ✅ Force la quantité à 0
+        aliment = cleaned_data.get("aliment")
+        qte = cleaned_data.get("qte")
+        motif = cleaned_data.get("motif_absence")
 
-        if not motif_absence and not aliment:
-            self.add_error(
-                'aliment',
-                "L'aliment est obligatoire si aucun motif d'absence n'est indiqué."
-            )
-        return cleaned_data
+        # -------------------------
+        # CAS 1 : nourrissage normal
+        # -------------------------
+        if aliment and qte not in [None, ""]:
+            if motif:
+                raise forms.ValidationError(
+                    "Vous ne pouvez pas saisir un motif ET un aliment"
+                )
+            return cleaned_data
 
-    def __init__(self, *args, site_id=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.site_id = site_id
+        # -------------------------
+        # CAS 2 : absence de nourrissage
+        # -------------------------
+        if motif:
+            # transformation métier :
+            # motif => pas d’aliment + quantité forcée à 0
+            cleaned_data["qte"] = 0
+            cleaned_data["aliment"] = None
+            return cleaned_data
 
-
-
-        if self.site_id:
-            self.fields['bassin'].queryset = Bassin.objects.filter(site=self.site_id)
-
-# Crée un FormSet pour gérer plusieurs formulaires NourrissageForm en une fois
-# extra=0 : Aucun formulaire supplémentaire vide par défaut
+        # -------------------------
+        # CAS 3 : données insuffisantes
+        # -------------------------
+        raise forms.ValidationError(
+            "Vous devez saisir soit un aliment + quantité, soit un motif d'absence"
+        )
+# Formset utilisé pour gérer plusieurs bassins en une seule soumission
+# (cas typique : nourrir plusieurs bassins d’un site)
 NourrissageFormSet = formset_factory(NourrissageForm, extra=0)
 
 class ReleveTempOxyForm(forms.ModelForm):
