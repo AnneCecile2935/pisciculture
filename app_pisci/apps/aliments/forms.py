@@ -88,3 +88,6 @@ class AlimentForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Personnalisation du champ fournisseur
         self.fields["fournisseur"].empty_label = "--- Sélectionnez un fournisseur ---"
+
+    def clean_code_alim(self):
+        return self.cleaned_data["code_alim"].strip().upper()

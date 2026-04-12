@@ -1,5 +1,5 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from apps.commun.view import StandardDeleteMixin
 from django.urls import reverse_lazy
 from .models import Aliment
@@ -15,18 +15,19 @@ class AlimentListView(LoginRequiredMixin, ListView):
     context_object_name = "aliments"
     login_url = '/login/'
 
-class AlimentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class AlimentCreateView(LoginRequiredMixin, CreateView):
     model = Aliment
     form_class = AlimentForm
     template_name = "aliments/alim_form.html"
     success_url = reverse_lazy("aliments:list")
-    permission_required = "aliments.add_aliment"
     login_url = '/login/'
 
+    def test_func(self):
+        return self.request.user.is_staff
+
     def handle_no_permission(self):
-        if not self.request.user.is_authenticated:
-            return redirect(f'{self.login_url}?next={self.request.path}')
-        return super().handle_no_permission()
+        messages.error(self.request, "Accès réservé aux administrateurs.")
+        return redirect("aliments:list")
 
     def form_valid(self, form):
         messages.success(self.request, "L'aliment a été créé avec succès")
@@ -36,35 +37,38 @@ class AlimentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         print("FORM ERRORS:", form.errors)
         return super().form_invalid(form)
 
+    def dispatch(self, request, *args, **kwargs):
+        print("USER:", request.user)
+        print("STAFF:", request.user.is_staff)
+        return super().dispatch(request, *args, **kwargs)
 
-class AlimentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+
+class AlimentUpdateView(LoginRequiredMixin, UpdateView):
     model = Aliment
     form_class = AlimentForm
     template_name = "aliments/alim_form.html"
     success_url = reverse_lazy("aliments:list")
-    permission_required = "aliments.change_aliment"
     login_url = '/login/'
-
-    def handle_no_permission(self):
-        if not self.request.user.is_authenticated:
-            return redirect(f'{self.login_url}?next={self.request.path}')
-        return super().handle_no_permission()
 
     def form_valid(self, form):
         messages.success(self.request, "L'aliment a été mis à jour avec succès")
         return super().form_valid(form)
 
-class AlimentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, StandardDeleteMixin, DeleteView):
+class AlimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Aliment
+    template_name = "confirm_delete.html"
     list_url_name= "aliments:list"
     login_url = '/login/'
-    permission_required = "aliments.delete_aliment"
 
     def test_func(self):
-        has_perm = self.request.user.has_perm('aliments.delete_aliment')
-        print(f"User has permission: {has_perm}, is_staff: {self.request.user.is_staff}")
-        return has_perm and self.request.user.is_staff  # ⭐ Vérifie aussi is_staff
+        return self.request.user.is_staff
 
+    def handle_no_permission(self):
+        messages.error(self.request, "Accès réservé aux administrateurs.")
+        return redirect("aliments:list")
+
+    def get_success_url(self):
+        return reverse_lazy("aliments:list")
 
 class AlimentListJsonView(LoginRequiredMixin, View):
 

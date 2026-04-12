@@ -28,3 +28,7 @@ class Aliment(TimeStampedModel):
             str: Chaîne formatée "Nom (Fournisseur: nom_du_fournisseur)".
         """
         return f"{self.nom} (Fournisseur: {self.fournisseur.nom})"
+
+    def save(self, *args, **kwargs):
+        self.code_alim = self.code_alim.strip().upper()
+        super().save(*args, **kwargs)
